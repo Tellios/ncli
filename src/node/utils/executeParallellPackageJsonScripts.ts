@@ -1,5 +1,4 @@
-import * as path from 'path';
-import { runCmdInConsole } from '../../common';
+import * as concurrently from 'concurrently';
 
 export async function executeParallellPackageJsonScripts(
   scripts: string[],
@@ -14,12 +13,9 @@ export async function executeParallellPackageJsonScripts(
     throw Error(`Scripts not found: ${invalidScripts}`);
   }
 
-  const concurrentlyPath = path.resolve(
-    __dirname,
-    '../../../node_modules/.bin/concurrently'
-  );
+  const concurrentlyArgs = scripts.map((script) => `npm:${script}`);
 
-  const concurrentlyArgs = scripts.map((script) => `npm run ${script}`);
-
-  await runCmdInConsole(concurrentlyPath, concurrentlyArgs, true, directory);
+  await concurrently(concurrentlyArgs, {
+    cwd: directory
+  });
 }
