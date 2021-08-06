@@ -1,8 +1,9 @@
 import { colorizeCommand } from '../../common';
 import { IUserArguments } from './parseUserArguments';
+import { ICommand } from '../alias.interfaces';
 
 export const injectArguments = (
-  commands: Alias.ICommand[],
+  commands: ICommand[],
   userArguments: IUserArguments,
   workingDirectory: string
 ): string[] => {

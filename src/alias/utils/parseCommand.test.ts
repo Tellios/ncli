@@ -1,9 +1,10 @@
 import { parseCommand } from './parseCommand';
+import { ICommand } from '../alias.interfaces';
 
 describe('parseCommand', () => {
   it('should return the positonal arguments and command text', () => {
     const command = parseCommand('test $1 $2');
-    const expected: Alias.ICommand[] = [
+    const expected: ICommand[] = [
       {
         commandText: 'test $1 $2',
         positionalArguments: ['$1', '$2']
@@ -15,7 +16,7 @@ describe('parseCommand', () => {
 
   it('should only return a positional argument once', () => {
     const command = parseCommand('test $1 $1 $2');
-    const expected: Alias.ICommand[] = [
+    const expected: ICommand[] = [
       {
         commandText: 'test $1 $1 $2',
         positionalArguments: ['$1', '$2']
@@ -27,7 +28,7 @@ describe('parseCommand', () => {
 
   it('should return empty positional arguments array if there are none', () => {
     const command = parseCommand('docker rm -f');
-    const expected: Alias.ICommand[] = [
+    const expected: ICommand[] = [
       {
         commandText: 'docker rm -f',
         positionalArguments: []
@@ -39,7 +40,7 @@ describe('parseCommand', () => {
 
   it('should handle multiple commands at the same time', () => {
     const command = parseCommand(['docker rm -f $2', 'echo test arg $1']);
-    const expected: Alias.ICommand[] = [
+    const expected: ICommand[] = [
       {
         commandText: 'docker rm -f $2',
         positionalArguments: ['$2']

@@ -2,17 +2,16 @@ import * as jsYaml from 'js-yaml';
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import { getNcliDir } from '../../common';
+import { IAlias, IAliasesConfig } from '../alias.interfaces';
 
-export const getAliases = (): Promise<Alias.IAlias[]> => {
+export const getAliases = (): Promise<IAlias[]> => {
   const configPath = path.join(getNcliDir(), 'alias.yml');
 
-  return new Promise<Alias.IAlias[]>((resolve, reject) => {
+  return new Promise<IAlias[]>((resolve, reject) => {
     if (fse.existsSync(configPath)) {
       fse.readFile(configPath, 'utf8').then((config: string) => {
         try {
-          const doc: Alias.IAliasesConfig = jsYaml.safeLoad(
-            config
-          ) as Alias.IAliasesConfig;
+          const doc: IAliasesConfig = jsYaml.safeLoad(config) as IAliasesConfig;
 
           if (!doc) {
             reject(

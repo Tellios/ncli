@@ -4,9 +4,10 @@ import { resolveMissingArguments } from './resolveMissingArguments';
 import { parseUserArguments } from './parseUserArguments';
 import { injectArguments } from './injectArguments';
 import { executeCmd } from './executeCommand';
+import { IAlias } from '../alias.interfaces';
 
 export const executeAlias = async (
-  alias: Alias.IAlias,
+  alias: IAlias,
   print: boolean,
   args: string[]
 ): Promise<void> => {

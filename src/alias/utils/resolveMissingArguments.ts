@@ -2,9 +2,10 @@ import { cloneDeep } from 'lodash';
 import { inputString } from '../../common';
 import { IUserArguments } from './parseUserArguments';
 import { builtInArguments } from './builtInArguments';
+import { IAlias } from '../alias.interfaces';
 
 export const resolveMissingArguments = async (
-  alias: Alias.IAlias,
+  alias: IAlias,
   userArguments: IUserArguments
 ): Promise<IUserArguments> => {
   const commands = getAliasCommands(alias);
@@ -32,7 +33,7 @@ export const resolveMissingArguments = async (
   return newUserArguments;
 };
 
-const getAliasCommands = (alias: Alias.IAlias): string[] => {
+const getAliasCommands = (alias: IAlias): string[] => {
   return Array.isArray(alias.cmd) ? alias.cmd : [alias.cmd];
 };
 

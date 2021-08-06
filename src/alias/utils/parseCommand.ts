@@ -1,8 +1,7 @@
 import { positionalArgsRegexProvider } from '../../common';
+import { ICommand } from '../alias.interfaces';
 
-export const parseCommand = (
-  commandText: string | string[]
-): Alias.ICommand[] => {
+export const parseCommand = (commandText: string | string[]): ICommand[] => {
   const commands: string[] = [];
 
   if (Array.isArray(commandText)) {
@@ -22,7 +21,7 @@ export const parseCommand = (
   }
 
   return commands.map(
-    (cmd): Alias.ICommand => {
+    (cmd): ICommand => {
       const positionalArgsRegex = positionalArgsRegexProvider();
       const positionalArguments = new Set<string>();
       let matches: string[] | null;

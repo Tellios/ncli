@@ -1,7 +1,8 @@
 import { colorizeCommand } from '../../common';
+import { IAlias } from '../alias.interfaces';
 
 export const getAliasHelpTableContent = (
-  alias: Alias.IAlias
+  alias: IAlias
 ): Array<Record<string, unknown>[]> => {
   const texts: any[] = [];
 
