@@ -87,7 +87,7 @@ commandBase<'ni'>(async ({ workingDirectory, settings }) => {
       workingDirectory,
       packageJson,
       ((args as unknown) as { saveExact: boolean }).saveExact,
-      args._[1]?.toString(),
+      args._[1]?.toString()
     );
   } else if (args._.length > 0) {
     ConsoleInterface.printLine('Unknown command');
