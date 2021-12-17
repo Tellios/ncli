@@ -4,6 +4,7 @@ import { installPackages } from './installPackages';
 export async function updatePackages(
   workingDirectory: string,
   packageJson: NcliNode.IPackageJson,
+  saveExact: boolean,
   searchString?: string
 ): Promise<void> {
   const packages = await selectPackages(packageJson, searchString);
@@ -22,6 +23,7 @@ export async function updatePackages(
     workingDirectory,
     packagesToUpdate,
     devPackagesToUpdate,
-    'ignore'
+    'ignore',
+    saveExact
   );
 }
