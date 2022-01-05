@@ -1,2 +1,2 @@
-export * from './ParalellProcesses';
+export * from './ParallelProcesses';
 export * from './Process';

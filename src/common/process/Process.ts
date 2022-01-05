@@ -23,7 +23,10 @@ export interface IProcessResult {
 export class Process {
   public readonly options: Required<IProcessOptions>;
   private instance: execa.ExecaChildProcess | null = null;
-  private killed = false;
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private onData: (data: Buffer) => void = () => {};
+  private isKilled = false;
+  private isOutputEnabled = true;
 
   constructor(options: IProcessOptions) {
     this.options = {
@@ -37,7 +40,7 @@ export class Process {
       throw Error(`Process '${this.options.name}' is already running`);
     }
 
-    this.killed = false;
+    this.isKilled = false;
 
     const { executable, args, workingDirectory } = this.options;
 
@@ -46,16 +49,17 @@ export class Process {
       stdin: 'ignore'
     });
 
-    this.instance.stderr?.on('data', (data) => {
-      stdout?.write(data);
-    });
+    this.onData = (data: Buffer) => {
+      this.isOutputEnabled && stdout && stdout.write(data);
+    };
 
-    this.instance.stdout?.on('data', (data) => {
-      stdout?.write(data);
-    });
+    if (stdout) {
+      this.instance.stderr?.on('data', this.onData);
+      this.instance.stdout?.on('data', this.onData);
+    }
 
     return await this.instance.catch((error) => {
-      if (this.killed) {
+      if (this.isKilled) {
         // If the process was killed an error will bubble up,
         // but we want to treat it as any other response since
         // it is expected.
@@ -66,10 +70,21 @@ export class Process {
     });
   }
 
+  resumeOutput(): void {
+    this.isOutputEnabled = true;
+  }
+
+  pauseOutput(): void {
+    this.isOutputEnabled = false;
+  }
+
   exit(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.instance) {
-        this.killed = true;
+        this.isKilled = true;
+
+        this.instance?.stderr?.off('data', this.onData);
+        this.instance?.stdout?.off('data', this.onData);
 
         treeKill(this.instance?.pid, (error) => {
           if (error) {

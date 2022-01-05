@@ -3,7 +3,7 @@ import { IProcessOptions, IProcessRunOptions, Process } from './Process';
 import { cyan } from 'chalk';
 import * as execa from 'execa';
 
-export class ParalellProcesses {
+export class ParallelProcesses {
   private processes: Process[];
   private streamFilter: string[] = [];
 
@@ -31,11 +31,13 @@ export class ParalellProcesses {
     return await Promise.all(instances);
   }
 
-  exit(): void {
-    this.processes.forEach((process, index) => {
-      console.log(`Stopping process ${this.processOptions[index].name}`);
-      process.exit();
-    });
+  exit(): Promise<void[]> {
+    return Promise.all(
+      this.processes.map((process, index) => {
+        console.log(`Stopping process ${this.processOptions[index].name}`);
+        process.exit();
+      })
+    );
   }
 
   filterStreams(scriptNames: string[]): void {

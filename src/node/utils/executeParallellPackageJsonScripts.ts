@@ -1,7 +1,6 @@
 import { exit, stdin, stdout } from 'process';
 import { PassThrough } from 'stream';
-// import * as concurrently from 'concurrently';
-import { ParalellProcesses } from '../../common/process';
+import { ParallelProcesses } from '../../common/process';
 import { selectItems } from '../../common/console';
 
 export async function executeParallellPackageJsonScripts(
@@ -17,7 +16,7 @@ export async function executeParallellPackageJsonScripts(
     throw Error(`Scripts not found: ${invalidScripts}`);
   }
 
-  const pp = new ParalellProcesses(
+  const pp = new ParallelProcesses(
     scripts.map((script) => ({
       name: script,
       executable: 'npm',
@@ -35,22 +34,18 @@ export async function executeParallellPackageJsonScripts(
     }
   });
 
-  const aggregatedPromise = pp.run({
+  const runPromise = pp.run({
     stdout: terminalPassthrough
   });
 
-  stdin.setRawMode(true);
-  stdin.setEncoding('utf-8');
-  stdin.on('data', async (data) => {
-    const input = (data as unknown) as string;
+  const onStdinData = async (data: Buffer) => {
+    const input = data.toString();
 
     if (input === '\u0003' || input === '\u0004') {
       // ctrl + c or ctrl + d
 
       console.log('Stopping processes...');
-      pp.exit();
-      await aggregatedPromise;
-
+      await pp.exit();
       exit(0);
     } else if (input === '\u000C') {
       // ctrl + l
@@ -61,13 +56,24 @@ export async function executeParallellPackageJsonScripts(
         message: 'Select streams to follow'
       });
 
+      // Reset stdin after selectItems due to conflicts
+      // with inquirer's readline
+      stdin.setRawMode(true);
+      stdin.setEncoding('utf-8');
+      stdin.resume();
+
       const selectedScripts = indices.map((index) => scripts[index]);
 
       pp.filterStreams(selectedScripts);
-      stdin.resume();
 
       enableTerminalOutput = true;
     }
-  });
+  };
+
+  stdin.on('data', onStdinData);
+  stdin.setRawMode(true);
+  stdin.setEncoding('utf-8');
   stdin.resume();
+
+  await runPromise;
 }
