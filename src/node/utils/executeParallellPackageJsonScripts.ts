@@ -1,7 +1,11 @@
-import { exit, stdin, stdout } from 'process';
+import { exit, stdout } from 'process';
 import { PassThrough } from 'stream';
 import { ParallelProcesses } from '../../common/process';
-import { selectItems } from '../../common/console';
+import {
+  selectItems,
+  ShortcutListener,
+  CommonShortcuts
+} from '../../common/console';
 
 export async function executeParallellPackageJsonScripts(
   scripts: string[],
@@ -38,42 +42,39 @@ export async function executeParallellPackageJsonScripts(
     stdout: terminalPassthrough
   });
 
-  const onStdinData = async (data: Buffer) => {
-    const input = data.toString();
+  const shortcutListener = new ShortcutListener();
 
-    if (input === '\u0003' || input === '\u0004') {
-      // ctrl + c or ctrl + d
-
-      console.log('Stopping processes...');
-      await pp.exit();
-      exit(0);
-    } else if (input === '\u000C') {
-      // ctrl + l
-      enableTerminalOutput = false;
-
-      const indices = await selectItems({
-        items: scripts,
-        message: 'Select streams to follow'
-      });
-
-      // Reset stdin after selectItems due to conflicts
-      // with inquirer's readline
-      stdin.setRawMode(true);
-      stdin.setEncoding('utf-8');
-      stdin.resume();
-
-      const selectedScripts = indices.map((index) => scripts[index]);
-
-      pp.filterStreams(selectedScripts);
-
-      enableTerminalOutput = true;
-    }
+  const stopProcesses = async () => {
+    await pp.exit();
+    exit(0);
   };
 
-  stdin.on('data', onStdinData);
-  stdin.setRawMode(true);
-  stdin.setEncoding('utf-8');
-  stdin.resume();
+  const filterOutput = async () => {
+    enableTerminalOutput = false;
+
+    shortcutListener.stop();
+
+    const indices = await selectItems({
+      items: scripts,
+      message: 'Select streams to follow'
+    });
+
+    shortcutListener.start();
+
+    const selectedScripts = indices.map((index) => scripts[index]);
+
+    pp.filterStreams(selectedScripts);
+
+    enableTerminalOutput = true;
+  };
+
+  shortcutListener.registerShortcut(CommonShortcuts.Ctrl_C, stopProcesses);
+  shortcutListener.registerShortcut(CommonShortcuts.Ctrl_D, stopProcesses);
+  shortcutListener.registerShortcut(CommonShortcuts.Ctrl_L, filterOutput);
+  shortcutListener.start();
 
   await runPromise;
+
+  terminalPassthrough.removeAllListeners();
+  terminalPassthrough.destroy();
 }

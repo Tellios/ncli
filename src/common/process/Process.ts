@@ -1,6 +1,7 @@
 import { Stream, Writable } from 'stream';
 import * as execa from 'execa';
 import * as treeKill from 'tree-kill';
+import { green } from 'chalk';
 
 export interface IProcessOptions {
   name: string;
@@ -46,7 +47,12 @@ export class Process {
 
     this.instance = execa(executable, args, {
       cwd: workingDirectory,
-      stdin: 'ignore'
+      stdin: 'ignore',
+      env: {
+        // If the process uses colors we want to make sure to propagate
+        // those as well
+        FORCE_COLOR: 'true'
+      }
     });
 
     this.onData = (data: Buffer) => {
@@ -58,16 +64,25 @@ export class Process {
       this.instance.stdout?.on('data', this.onData);
     }
 
-    return await this.instance.catch((error) => {
-      if (this.isKilled) {
-        // If the process was killed an error will bubble up,
-        // but we want to treat it as any other response since
-        // it is expected.
-        return error;
-      }
+    return await this.instance
+      .then((result) => {
+        stdout && stdout.write(green(`Process finished successfully\n`));
+        return result;
+      })
+      .catch((error) => {
+        if (this.isKilled) {
+          // If the process was killed an error will bubble up,
+          // but we want to treat it as any other response since
+          // it is expected.
+          return error;
+        }
 
-      throw error;
-    });
+        throw error;
+      })
+      .finally(() => {
+        this.instance?.stderr?.off('data', this.onData);
+        this.instance?.stdout?.off('data', this.onData);
+      });
   }
 
   resumeOutput(): void {
@@ -86,6 +101,10 @@ export class Process {
         this.instance?.stderr?.off('data', this.onData);
         this.instance?.stdout?.off('data', this.onData);
 
+        // Simply doing instance.cancel on some processes, like
+        // NPM run scripts for example, does not properly stop
+        // it. tree-kill on the other hand handles this
+        // flawlessly.
         treeKill(this.instance?.pid, (error) => {
           if (error) {
             console.error(
