@@ -2,7 +2,7 @@ import { IProcessOptions, IProcessRunOptions, Process } from './Process';
 import * as execa from 'execa';
 import { ProcessesBase } from './ProcessesBase';
 
-export class ParallelProcesses extends ProcessesBase {
+export class SequentialProcesses extends ProcessesBase {
   protected readonly processes: ReadonlyArray<Process>;
 
   constructor(private readonly processOptions: IProcessOptions[]) {
@@ -13,15 +13,13 @@ export class ParallelProcesses extends ProcessesBase {
   async run(
     options: IProcessRunOptions
   ): Promise<execa.ExecaReturnValue<string>[]> {
-    const results: execa.ExecaReturnValue[] = [];
+    const responses: execa.ExecaReturnValue<string>[] = [];
 
-    const instances = this.processes.map(async (process) => {
+    for await (const process of this.processes) {
       const result = await this.runProcess(process, options);
-      result && results.push(result);
-    });
+      result && responses.push(result);
+    }
 
-    await Promise.allSettled(instances);
-
-    return results;
+    return responses;
   }
 }

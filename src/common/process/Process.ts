@@ -26,7 +26,7 @@ export class Process {
   private instance: execa.ExecaChildProcess | null = null;
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onData: (data: Buffer) => void = () => {};
-  private isKilled = false;
+  private isExiting = false;
   private isOutputEnabled = true;
 
   constructor(options: IProcessOptions) {
@@ -41,7 +41,7 @@ export class Process {
       throw Error(`Process '${this.options.name}' is already running`);
     }
 
-    this.isKilled = false;
+    this.isExiting = false;
 
     const { executable, args, workingDirectory } = this.options;
 
@@ -70,7 +70,7 @@ export class Process {
         return result;
       })
       .catch((error) => {
-        if (this.isKilled) {
+        if (this.isExiting) {
           // If the process was killed an error will bubble up,
           // but we want to treat it as any other response since
           // it is expected.
@@ -96,7 +96,7 @@ export class Process {
   exit(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.instance) {
-        this.isKilled = true;
+        this.isExiting = true;
 
         this.instance?.stderr?.off('data', this.onData);
         this.instance?.stdout?.off('data', this.onData);

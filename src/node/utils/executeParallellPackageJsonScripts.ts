@@ -1,6 +1,6 @@
 import { exit, stdout } from 'process';
 import { PassThrough } from 'stream';
-import { ParallelProcesses } from '../../common/process';
+import { IProcessOptions, ParallelProcesses } from '../../common/process';
 import {
   selectItems,
   ShortcutListener,
@@ -20,14 +20,16 @@ export async function executeParallellPackageJsonScripts(
     throw Error(`Scripts not found: ${invalidScripts}`);
   }
 
-  const pp = new ParallelProcesses(
-    scripts.map((script) => ({
+  const processOptions = scripts.map(
+    (script): IProcessOptions => ({
       name: script,
       executable: 'npm',
       args: ['run', script],
       workingDirectory: directory
-    }))
+    })
   );
+
+  const pp = new ParallelProcesses(processOptions);
 
   let enableTerminalOutput = true;
 
