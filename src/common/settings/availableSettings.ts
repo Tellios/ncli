@@ -68,6 +68,13 @@ export const availableSettings = {
       type: 'string',
       hidden: true
     })
+    .getSettings(),
+  na: new Builder()
+    .add('lastExecutedAlias', {
+      description: 'Last alias executed in working directory',
+      type: 'string',
+      hidden: true
+    })
     .getSettings()
 };
 

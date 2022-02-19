@@ -47,7 +47,8 @@ const args = yargsWrapper()
   })
   .option('workspace', {
     alias: 'w',
-    describe: 'If the script should be executed inside a workspace instead',
+    describe:
+      'If the script should be executed inside a workspace project instead',
     boolean: true
   }).argv;
 

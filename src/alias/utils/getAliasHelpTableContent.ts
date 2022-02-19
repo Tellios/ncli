@@ -1,3 +1,4 @@
+import * as chalk from 'chalk';
 import { colorizeCommand } from '../../common';
 import { IAlias } from '../alias.interfaces';
 
@@ -15,8 +16,14 @@ export const getAliasHelpTableContent = (
       ...alias.cmd.map((cmd, index) => {
         const key = `cmd ${index + 1}`;
 
+        if (typeof cmd === 'string') {
+          return {
+            [key]: colorizeCommand(cmd)
+          };
+        }
+
         return {
-          [key]: colorizeCommand(cmd)
+          [key]: chalk.yellow('[task]')
         };
       })
     );

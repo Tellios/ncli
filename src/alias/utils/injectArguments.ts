@@ -27,7 +27,7 @@ function injectArgumentsIntoCommandText(
     positionalArguments.length > 0 &&
     userArguments.positional.length < positionalArguments.length
   ) {
-    throw new Error(
+    throw Error(
       `Some positional arguments are missing: ${colorizeCommand(commandText)}`
     );
   }

@@ -16,9 +16,9 @@ export const executeMatchingAlias = async (args: string[]): Promise<void> => {
     });
 
     if (matchingAlias === undefined) {
-      return Promise.reject(new Error(`No alias matching ${args[0]}`));
+      throw Error(`No alias matching ${args[0]}`);
     }
 
-    executeAlias(matchingAlias, print, args.slice(1));
+    await executeAlias(matchingAlias, print, args.slice(1));
   });
 };

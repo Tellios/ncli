@@ -2,39 +2,38 @@ import { cloneDeep } from 'lodash';
 import { inputString } from '../../common';
 import { IUserArguments } from './parseUserArguments';
 import { builtInArguments } from './builtInArguments';
-import { IAlias } from '../alias.interfaces';
+import { ExecutionPlan } from '../alias.interfaces';
 
 export const resolveMissingArguments = async (
-  alias: IAlias,
+  plan: ExecutionPlan,
   userArguments: IUserArguments
 ): Promise<IUserArguments> => {
-  const commands = getAliasCommands(alias);
-
-  const requestedPositionalArguments = await getMissingPositonalArguments(
-    commands,
-    userArguments
-  );
-
-  const requestedNamedArguments = await getMissingNamedArguments(
-    commands,
-    userArguments
-  );
-
   const newUserArguments = cloneDeep(userArguments);
-  newUserArguments.named = {
-    ...newUserArguments.named,
-    ...requestedNamedArguments
-  };
-  newUserArguments.positional = [
-    ...newUserArguments.positional,
-    ...requestedPositionalArguments
-  ];
+
+  for await (const step of plan) {
+    const commands = step.commands.map((c) => c.commandText);
+
+    const requestedPositionalArguments = await getMissingPositonalArguments(
+      commands,
+      userArguments
+    );
+
+    const requestedNamedArguments = await getMissingNamedArguments(
+      commands,
+      userArguments
+    );
+
+    newUserArguments.named = {
+      ...newUserArguments.named,
+      ...requestedNamedArguments
+    };
+    newUserArguments.positional = [
+      ...newUserArguments.positional,
+      ...requestedPositionalArguments
+    ];
+  }
 
   return newUserArguments;
-};
-
-const getAliasCommands = (alias: IAlias): string[] => {
-  return Array.isArray(alias.cmd) ? alias.cmd : [alias.cmd];
 };
 
 const getMissingNamedArguments = async (
