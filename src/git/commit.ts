@@ -12,9 +12,10 @@ commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
     })
     .option('message', {
       alias: 'm',
-      describe: 'Commit message',
+      describe:
+        'Commit message, if you are using amend message is optional. Not supplying a message will automatically supply --no-edit to the git commit command.',
       type: 'string',
-      demandOption: true
+      demandOption: false
     })
     .option('push', {
       alias: 'p',
@@ -33,7 +34,16 @@ commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
       describe: 'Also push all tags',
       type: 'boolean',
       default: settings.tags ?? false
+    })
+    .option('amend', {
+      describe: 'Amend the previous commit',
+      type: 'boolean',
+      default: false
     }).argv;
+
+  if (!args.amend && !args.message) {
+    throw new Error(`'message' is required when 'amend' is not used`);
+  }
 
   const status = await getStatus(workingDirectory);
 
@@ -47,7 +57,8 @@ commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
       args.message,
       args.push,
       args.noVerify,
-      args.tags
+      args.tags,
+      args.amend
     );
   } else {
     throw new Error('Nothing to commit');

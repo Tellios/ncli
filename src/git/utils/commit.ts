@@ -9,12 +9,16 @@ import { appendNoVerifyIfEnabled } from './appendNoVerifyIfEnabled';
  */
 export const commit = (
   workingDirectory: string,
-  message: string,
+  message: string | undefined,
   pushCommit: boolean,
   useNoVerify: boolean,
-  alsoPushTags: boolean
+  alsoPushTags: boolean,
+  amend: boolean
 ): Promise<void> => {
-  let commitArgs = ['commit', '-m', message];
+  let commitArgs = ['commit'];
+  message && commitArgs.push('-m', message);
+  amend && commitArgs.push('--amend');
+  amend && !message && commitArgs.push('--no-edit');
   commitArgs = appendNoVerifyIfEnabled(useNoVerify, commitArgs);
 
   return runCmdInConsole('git', commitArgs)
