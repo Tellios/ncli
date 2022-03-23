@@ -46,6 +46,10 @@ export const availableSettings = {
       description: 'Whether tags should be pushed by default',
       type: 'boolean'
     })
+    .add('force', {
+      description: 'Whether --force flag should be enabled by default',
+      type: 'boolean'
+    })
     .getSettings(),
   npush: new Builder()
     .add('noVerify', {

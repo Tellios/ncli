@@ -14,7 +14,13 @@ commandBase<'npush'>(async ({ workingDirectory, settings }) => {
       describe: 'Also push all tags',
       type: 'boolean',
       default: settings.tags ?? false
+    })
+    .option('force', {
+      alias: 'f',
+      describe: 'If --force should be used when pushing to remote',
+      type: 'boolean',
+      default: false
     }).argv;
 
-  await push(workingDirectory, args.noVerify, args.tags);
+  await push(workingDirectory, args.noVerify, args.tags, args.force);
 });

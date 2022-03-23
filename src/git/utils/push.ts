@@ -6,11 +6,22 @@ import { appendNoVerifyIfEnabled } from './appendNoVerifyIfEnabled';
 export async function push(
   workingDirectory: string,
   useNoVerify: boolean,
-  alsoPushTags: boolean
+  alsoPushTags: boolean,
+  force: boolean
 ): Promise<void> {
   try {
+    if (
+      force &&
+      !(await confirm(
+        'WARNING: Force push will be performed, are you sure you want to continue?'
+      ))
+    ) {
+      throw new Error('Push aborted');
+    }
+
     let pushArgs = ['push'];
     pushArgs = appendNoVerifyIfEnabled(useNoVerify, pushArgs);
+    force && pushArgs.push('--force');
 
     await runCmdInConsole('git', pushArgs);
 

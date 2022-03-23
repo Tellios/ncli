@@ -13,7 +13,7 @@ commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
     .option('message', {
       alias: 'm',
       describe:
-        'Commit message, if you are using amend message is optional. Not supplying a message will automatically supply --no-edit to the git commit command.',
+        'Commit message. If you are using edit, message is optional. Not supplying a message will automatically supply --no-edit to the git commit command.',
       type: 'string',
       demandOption: false
     })
@@ -22,6 +22,12 @@ commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
       describe: 'Push to remote after commiting',
       type: 'boolean',
       default: settings.push ?? false
+    })
+    .option('force', {
+      alias: 'f',
+      describe: 'If --force should be used when pushing to remote',
+      type: 'boolean',
+      default: settings.force ?? false
     })
     .option('noVerify', {
       alias: 'n',
@@ -35,14 +41,15 @@ commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
       type: 'boolean',
       default: settings.tags ?? false
     })
-    .option('amend', {
-      describe: 'Amend the previous commit',
+    .option('edit', {
+      alias: 'e',
+      describe: 'Edit the previous commit (git commit --amend)',
       type: 'boolean',
       default: false
     }).argv;
 
-  if (!args.amend && !args.message) {
-    throw new Error(`'message' is required when 'amend' is not used`);
+  if (!args.edit && !args.message) {
+    throw new Error(`'message' is required when 'edit' is not used`);
   }
 
   const status = await getStatus(workingDirectory);
@@ -58,7 +65,8 @@ commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
       args.push,
       args.noVerify,
       args.tags,
-      args.amend
+      args.edit,
+      args.force
     );
   } else {
     throw new Error('Nothing to commit');

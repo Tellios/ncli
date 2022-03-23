@@ -13,7 +13,8 @@ export const commit = (
   pushCommit: boolean,
   useNoVerify: boolean,
   alsoPushTags: boolean,
-  amend: boolean
+  amend: boolean,
+  forcePush: boolean
 ): Promise<void> => {
   let commitArgs = ['commit'];
   message && commitArgs.push('-m', message);
@@ -24,7 +25,7 @@ export const commit = (
   return runCmdInConsole('git', commitArgs)
     .then(() => {
       if (pushCommit) {
-        return push(workingDirectory, useNoVerify, alsoPushTags);
+        return push(workingDirectory, useNoVerify, alsoPushTags, forcePush);
       }
 
       return Promise.resolve();
