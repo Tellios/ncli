@@ -75,6 +75,12 @@ export const availableSettings = {
       type: 'string',
       hidden: true
     })
+    .getSettings(),
+  ni: new Builder()
+    .add('saveExact', {
+      description: 'If save-exact should be enabled or disabled by default',
+      type: 'boolean'
+    })
     .getSettings()
 };
 

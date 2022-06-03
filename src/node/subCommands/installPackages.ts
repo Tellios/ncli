@@ -7,23 +7,34 @@ export async function installPackages(
   workingDirectory: string,
   packagesToInstall: string[],
   devPackagesToInstall: string[],
-  autoInstallTypings: AutoInstallTypingsMode
+  autoInstallTypings: AutoInstallTypingsMode,
+  saveExact: boolean
 ): Promise<void> {
   if (await containsYarnLockFile(workingDirectory)) {
+    const args: string[] = ['add'];
+    saveExact && args.push('--exact');
+
     if (packagesToInstall.length > 0) {
-      await runCmdInConsole('yarn', ['add', ...packagesToInstall]);
+      await runCmdInConsole('yarn', [...args, ...packagesToInstall]);
     }
 
     if (devPackagesToInstall.length > 0) {
-      await runCmdInConsole('yarn', ['add', '--dev', ...devPackagesToInstall]);
+      await runCmdInConsole('yarn', [
+        ...args,
+        '--dev',
+        ...devPackagesToInstall
+      ]);
     }
   } else if (await containsPackageLockFile(workingDirectory)) {
+    const args: string[] = ['i'];
+    saveExact && args.push('--save-exact');
+
     if (packagesToInstall.length > 0) {
-      await runCmdInConsole('npm', ['i', ...packagesToInstall]);
+      await runCmdInConsole('npm', [...args, ...packagesToInstall]);
     }
 
     if (devPackagesToInstall.length > 0) {
-      await runCmdInConsole('npm', ['i', '-D', ...devPackagesToInstall]);
+      await runCmdInConsole('npm', [...args, '-D', ...devPackagesToInstall]);
     }
   } else {
     ConsoleInterface.printLine('No yarn or npm lock file found');
@@ -40,7 +51,8 @@ export async function installPackages(
         ...devPackagesToInstall.map(addTypesPrefix)
       ],
       [],
-      'ignore'
+      'ignore',
+      saveExact
     );
   } else if (autoInstallTypings === 'installAsDev') {
     await installPackages(
@@ -50,7 +62,8 @@ export async function installPackages(
         ...packagesToInstall.map(addTypesPrefix),
         ...devPackagesToInstall.map(addTypesPrefix)
       ],
-      'ignore'
+      'ignore',
+      saveExact
     );
   }
 }
