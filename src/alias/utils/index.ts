@@ -1,6 +1,5 @@
-export * from './argConstants';
+export * from './aliasFile';
 export * from './executeAlias';
-export * from './executeCommand';
 export * from './getAliases';
 export * from './getAliasHelpTableContent';
 export * from './injectArguments';

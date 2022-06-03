@@ -1,25 +1,29 @@
-import * as jsYaml from 'js-yaml';
-import * as fse from 'fs-extra';
-import * as path from 'path';
-import { getNcliDir } from '../../common';
-import { IAlias, IAliasesConfig } from '../alias.interfaces';
+import { confirm, ConsoleInterface } from '../../common';
+import { IAlias } from '../alias.interfaces';
 import { validateAliases } from './validateAliases';
+import { aliasFile } from './aliasFile';
 
 export const getAliases = async (): Promise<IAlias[]> => {
-  const configPath = path.join(getNcliDir(), 'alias.yml');
+  const exists = await aliasFile.exists();
 
-  if (fse.existsSync(configPath)) {
-    const config = await fse.readFile(configPath, 'utf8');
-    const doc: IAliasesConfig = jsYaml.safeLoad(config) as IAliasesConfig;
+  if (!exists) {
+    if (await confirm('No alias file found, do you want to create it?')) {
+      await aliasFile.create();
+      ConsoleInterface.printLine(`File created at ${aliasFile.getPath()}`);
 
-    if (!doc) {
-      throw Error(
-        'Failed to load yaml config, expected object but got undefined'
-      );
+      process.exit(0);
     }
 
-    return await validateAliases(doc.aliases);
-  } else {
-    throw Error(`No alias file found at: ${configPath}`);
+    throw Error(`No alias file found at: ${aliasFile.getPath()}`);
   }
+
+  const doc = await aliasFile.read();
+
+  if (!doc) {
+    throw Error(
+      'Failed to load yaml config, expected object but got undefined'
+    );
+  }
+
+  return await validateAliases(doc.aliases);
 };

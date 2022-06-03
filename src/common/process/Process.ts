@@ -11,7 +11,7 @@ export interface IProcessOptions {
 }
 
 export interface IProcessRunOptions {
-  stdio?: Stream;
+  stdin?: Stream;
   stdout?: Writable;
 }
 

@@ -1,17 +1,16 @@
 import { positionalArgsRegexProvider } from '../../common';
 import {
   ExecutionPlan,
+  IAlias,
   IAliasTask,
   ICommand,
   isAliasTask
 } from '../alias.interfaces';
 
-export const parseCommand = (
-  command: string | string[] | IAliasTask[]
-): ExecutionPlan => {
-  if (Array.isArray(command)) {
-    if (isAliasTask(command[0])) {
-      return (command as IAliasTask[]).map((task) => ({
+export const parseCommand = (alias: IAlias): ExecutionPlan => {
+  if (Array.isArray(alias.cmd)) {
+    if (isAliasTask(alias.cmd[0])) {
+      return (alias.cmd as IAliasTask[]).map((task) => ({
         type: task.type ?? 'sequential',
         name: task.name,
         workingDirectory: task.workingDirectory,
@@ -23,17 +22,17 @@ export const parseCommand = (
 
     return [
       {
-        type: 'sequential',
-        commands: (command as string[]).map(parseCommandText)
+        type: alias.type ?? 'sequential',
+        commands: (alias.cmd as string[]).map(parseCommandText)
       }
     ];
-  } else if (command === '') {
+  } else if (alias.cmd === '') {
     throw new Error('Command text is an empty string');
   } else {
     return [
       {
-        type: 'sequential',
-        commands: [parseCommandText(command)]
+        type: alias.type ?? 'sequential',
+        commands: [parseCommandText(alias.cmd)]
       }
     ];
   }

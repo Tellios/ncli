@@ -18,7 +18,7 @@ export const executeAlias = async (
   print: boolean,
   args: string[]
 ): Promise<void> => {
-  const executionPlan = parseCommand(alias.cmd);
+  const executionPlan = parseCommand(alias);
 
   const userArguments = await resolveMissingArguments(
     executionPlan,
@@ -26,7 +26,7 @@ export const executeAlias = async (
   );
 
   if (print) {
-    printExecutionPlan(executionPlan, userArguments);
+    printExecutionPlan(alias, executionPlan, userArguments);
   } else if (alias.type === 'parallel') {
     await executeParallelPlan(
       executionPlan,
@@ -43,9 +43,18 @@ export const executeAlias = async (
 };
 
 const printExecutionPlan = (
+  alias: IAlias,
   executionPlan: ExecutionPlan,
   userArguments: IUserArguments
 ) => {
+  ConsoleInterface.printLine(`Execution plan for ${alias.name}`);
+
+  if (alias.type === undefined || alias.type === 'sequential') {
+    ConsoleInterface.printLine(chalk.greenBright('Sequential: ['));
+  } else {
+    ConsoleInterface.printLine(chalk.greenBright('Parallel: ['));
+  }
+
   for (const step of executionPlan) {
     const commandTexts = injectArguments(
       step.commands,
@@ -54,17 +63,23 @@ const printExecutionPlan = (
     );
 
     if (step.type === 'sequential') {
-      ConsoleInterface.printLine(chalk.cyanBright('Sequential: ['));
+      ConsoleInterface.printLine(chalk.cyanBright('  Sequential: ['));
     } else {
-      ConsoleInterface.printLine(chalk.bgMagentaBright('Sequential: ['));
+      ConsoleInterface.printLine(chalk.magentaBright('  Parallel: ['));
     }
 
     for (const commandText of commandTexts) {
-      ConsoleInterface.printLine(`  ${commandText}`);
+      ConsoleInterface.printLine(`    ${commandText}`);
     }
 
-    ConsoleInterface.printLine(']');
+    if (step.type === 'sequential') {
+      ConsoleInterface.printLine(chalk.cyanBright('  ]'));
+    } else {
+      ConsoleInterface.printLine(chalk.magentaBright('  ]'));
+    }
   }
+
+  ConsoleInterface.printLine(chalk.greenBright(']'));
 };
 
 const executeSequentialPlan = async (
@@ -97,7 +112,9 @@ const executeSequentialPlan = async (
         ? new SequentialProcesses(options)
         : new ParallelProcesses(options);
 
-    await processor.run({});
+    await processor.run({
+      stdout: process.stdout
+    });
   }
 };
 
@@ -136,5 +153,11 @@ const executeParallelPlan = async (
     processors.push(processor);
   }
 
-  await Promise.all(processors.map((p) => p.run({})));
+  await Promise.all(
+    processors.map((p) =>
+      p.run({
+        stdout: process.stdout
+      })
+    )
+  );
 };

@@ -1,12 +1,12 @@
 import { commandBase } from '../../common';
-import { argConstants, getAliases, executeAlias } from '../utils';
+import { getAliases, executeAlias } from '../utils';
 
 export const executeMatchingAlias = async (args: string[]): Promise<void> => {
   commandBase(async () => {
     const aliases = await getAliases();
     let print = false;
 
-    if (args[0] === argConstants.printArg) {
+    if (args[0] === '--print') {
       print = true;
       args.splice(0, 1);
     }

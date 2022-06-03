@@ -7,6 +7,8 @@ export const getAliasHelpTableContent = (
 ): Array<Record<string, unknown>[]> => {
   const texts: any[] = [];
 
+  texts.push({ name: alias.name });
+
   if (alias.description) {
     texts.push({ description: alias.description });
   }
