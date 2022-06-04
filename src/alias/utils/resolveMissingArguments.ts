@@ -10,28 +10,28 @@ export const resolveMissingArguments = async (
 ): Promise<IUserArguments> => {
   const newUserArguments = cloneDeep(userArguments);
 
-  for await (const step of plan) {
-    const commands = step.commands.map((c) => c.commandText);
+  const commands = plan
+    .map((step) => step.commands.map((c) => c.commandText))
+    .flat();
 
-    const requestedPositionalArguments = await getMissingPositonalArguments(
-      commands,
-      userArguments
-    );
+  const requestedPositionalArguments = await getMissingPositionalArguments(
+    commands,
+    userArguments
+  );
 
-    const requestedNamedArguments = await getMissingNamedArguments(
-      commands,
-      userArguments
-    );
+  const requestedNamedArguments = await getMissingNamedArguments(
+    commands,
+    userArguments
+  );
 
-    newUserArguments.named = {
-      ...newUserArguments.named,
-      ...requestedNamedArguments
-    };
-    newUserArguments.positional = [
-      ...newUserArguments.positional,
-      ...requestedPositionalArguments
-    ];
-  }
+  newUserArguments.named = {
+    ...newUserArguments.named,
+    ...requestedNamedArguments
+  };
+  newUserArguments.positional = [
+    ...newUserArguments.positional,
+    ...requestedPositionalArguments
+  ];
 
   return newUserArguments;
 };
@@ -48,7 +48,7 @@ const getMissingNamedArguments = async (
   return await requestMissingNamedArguments(missingNamedArguments);
 };
 
-const getMissingPositonalArguments = async (
+const getMissingPositionalArguments = async (
   commands: string[],
   userArguments: IUserArguments
 ): Promise<string[]> => {
