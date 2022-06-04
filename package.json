@@ -39,7 +39,9 @@
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "build:watch": "tsc --watch -p tsconfig.build.json",
     "setup": "npm ci && npm run prettier && npm run test && npm run build && npm link",
-    "lint": "eslint . --cache --fix --ext .ts,.tsx"
+    "lint": "npm run script:eslint -- --cache --fix",
+    "lint:ci": "npm run script:eslint",
+    "script:eslint": "eslint . --ext .ts,.tsx --max-warnings=0"
   },
   "author": "",
   "license": "ISC",
