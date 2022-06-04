@@ -94,18 +94,16 @@ const executeSequentialPlan = async (
       process.cwd()
     );
 
-    const options = commandTexts.map(
-      (commandText): IProcessOptions => {
-        const [executable, ...args] = commandText.split(' ');
+    const options = commandTexts.map((commandText): IProcessOptions => {
+      const [executable, ...args] = commandText.split(' ');
 
-        return {
-          name: step.name ?? executable,
-          args,
-          executable,
-          workingDirectory: step.workingDirectory ?? aliasWorkingDirectory
-        };
-      }
-    );
+      return {
+        name: step.name ?? executable,
+        args,
+        executable,
+        workingDirectory: step.workingDirectory ?? aliasWorkingDirectory
+      };
+    });
 
     const processor =
       step.type === 'sequential'
@@ -132,18 +130,16 @@ const executeParallelPlan = async (
       process.cwd()
     );
 
-    const options = commandTexts.map(
-      (commandText): IProcessOptions => {
-        const [executable, ...args] = commandText.split(' ');
+    const options = commandTexts.map((commandText): IProcessOptions => {
+      const [executable, ...args] = commandText.split(' ');
 
-        return {
-          name: step.name ?? executable,
-          args,
-          executable,
-          workingDirectory: step.workingDirectory ?? aliasWorkingDirectory
-        };
-      }
-    );
+      return {
+        name: step.name ?? executable,
+        args,
+        executable,
+        workingDirectory: step.workingDirectory ?? aliasWorkingDirectory
+      };
+    });
 
     const processor =
       step.type === 'sequential'

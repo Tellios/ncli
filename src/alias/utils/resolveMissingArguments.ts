@@ -53,10 +53,11 @@ const getMissingPositionalArguments = async (
   userArguments: IUserArguments
 ): Promise<string[]> => {
   const positionalArguments = getPositionalArgumentsFromCommands(commands);
-  const missingPositionalArguments = getPositionalArgumentsMissingInUserArguments(
-    userArguments,
-    positionalArguments
-  );
+  const missingPositionalArguments =
+    getPositionalArgumentsMissingInUserArguments(
+      userArguments,
+      positionalArguments
+    );
 
   return await requestMissingPositionalArguments(missingPositionalArguments);
 };

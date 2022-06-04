@@ -32,8 +32,7 @@ const yargs = yargsWrapper()
     string: true
   })
   .option('inputContainer', {
-    desc:
-      'If the encoding of the input file is different from the data you can define the file encoding here',
+    desc: 'If the encoding of the input file is different from the data you can define the file encoding here',
     choices: supportedEncodings
   })
   .option('output', {
@@ -42,34 +41,31 @@ const yargs = yargsWrapper()
     string: true
   })
   .option('outputContainer', {
-    desc:
-      'If the encoding of the output file should be different from the data you can define the file encoding here',
+    desc: 'If the encoding of the output file should be different from the data you can define the file encoding here',
     choices: supportedEncodings
   });
 
 const args = yargs.argv;
 
-commandBase(
-  async (): Promise<void> => {
-    const readStream = createReadStream(args.input, {
-      encoding: args.inputContainer ?? (args.from as BufferEncoding)
-    });
-    const chunks: string[] = [];
+commandBase(async (): Promise<void> => {
+  const readStream = createReadStream(args.input, {
+    encoding: args.inputContainer ?? (args.from as BufferEncoding)
+  });
+  const chunks: string[] = [];
 
-    for await (const chunk of readStream) {
-      chunks.push(chunk);
-    }
-
-    const buffer = Buffer.from(
-      chunks.join(''),
-      args.inputContainer ? (args.from as BufferEncoding) : undefined
-    );
-
-    const writeStream = args.outputContainer
-      ? createWriteStream(args.output, { encoding: args.outputContainer })
-      : createWriteStream(args.output, { encoding: args.to });
-    writeStream.write(
-      buffer.toString(args.outputContainer ? args.to : undefined)
-    );
+  for await (const chunk of readStream) {
+    chunks.push(chunk);
   }
-);
+
+  const buffer = Buffer.from(
+    chunks.join(''),
+    args.inputContainer ? (args.from as BufferEncoding) : undefined
+  );
+
+  const writeStream = args.outputContainer
+    ? createWriteStream(args.output, { encoding: args.outputContainer })
+    : createWriteStream(args.output, { encoding: args.to });
+  writeStream.write(
+    buffer.toString(args.outputContainer ? args.to : undefined)
+  );
+});

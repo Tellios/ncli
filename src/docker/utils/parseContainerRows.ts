@@ -64,7 +64,7 @@ export const parseContainerRows = (processRows: string[]): IContainerRow[] => {
       {}
     );
 
-    processes.push((process as unknown) as IContainerRow);
+    processes.push(process as unknown as IContainerRow);
   });
 
   return processes;

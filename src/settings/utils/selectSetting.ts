@@ -10,9 +10,8 @@ export const selectSetting = async (
   command: NcliCommand
 ): Promise<[string, ISettingDescription<SettingType>]> => {
   const commandSettings = availableSettings[command];
-  const settingEntries = Object.entries<ISettingDescription<SettingType>>(
-    commandSettings
-  );
+  const settingEntries =
+    Object.entries<ISettingDescription<SettingType>>(commandSettings);
 
   const index = await selectItem(
     settingEntries.map(

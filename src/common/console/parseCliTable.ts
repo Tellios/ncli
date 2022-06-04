@@ -49,7 +49,7 @@ export const parseCliTable = <T>(processRows: string[]): T[] => {
       {}
     );
 
-    parsedRows.push((parsedRow as unknown) as T);
+    parsedRows.push(parsedRow as unknown as T);
   });
 
   return parsedRows;

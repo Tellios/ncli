@@ -74,7 +74,7 @@ commandBase<'ni'>(async ({ workingDirectory, settings }) => {
       packagesToInstall,
       devPackagesToInstall,
       typingsMode,
-      ((args as unknown) as { saveExact: boolean }).saveExact
+      (args as unknown as { saveExact: boolean }).saveExact
     );
   } else if (args._[0] === 'del') {
     return await uninstallPackages(
@@ -86,7 +86,7 @@ commandBase<'ni'>(async ({ workingDirectory, settings }) => {
     return await updatePackages(
       workingDirectory,
       packageJson,
-      ((args as unknown) as { saveExact: boolean }).saveExact,
+      (args as unknown as { saveExact: boolean }).saveExact,
       args._[1]?.toString()
     );
   } else if (args._.length > 0) {

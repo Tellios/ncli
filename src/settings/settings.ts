@@ -33,16 +33,14 @@ const runCommandIfMatch = async (cmd: string | number): Promise<boolean> => {
   return true;
 };
 
-commandBase(
-  async (): Promise<void> => {
-    if (!(await runCommandIfMatch(args._[0]))) {
-      const commandEntries = Object.entries(commands);
-      const commandTexts = commandEntries.map(
-        ([key, config]) => `${key} - ${config.desc}`
-      );
-      const index = await selectItem(commandTexts, 'Select command to execute');
-      const selectedCommand = commandEntries[index][0];
-      await runCommandIfMatch(selectedCommand);
-    }
+commandBase(async (): Promise<void> => {
+  if (!(await runCommandIfMatch(args._[0]))) {
+    const commandEntries = Object.entries(commands);
+    const commandTexts = commandEntries.map(
+      ([key, config]) => `${key} - ${config.desc}`
+    );
+    const index = await selectItem(commandTexts, 'Select command to execute');
+    const selectedCommand = commandEntries[index][0];
+    await runCommandIfMatch(selectedCommand);
   }
-);
+});
