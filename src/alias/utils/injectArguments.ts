@@ -27,7 +27,7 @@ function injectArgumentsIntoCommandText(
     positionalArguments.length > 0 &&
     userArguments.positional.length < positionalArguments.length
   ) {
-    throw new Error(
+    throw Error(
       `Some positional arguments are missing: ${colorizeCommand(commandText)}`
     );
   }
@@ -56,5 +56,9 @@ function injectArgumentsIntoCommandText(
     commandWithArgs += ' ' + userArguments.appended.join(' ');
   }
 
-  return commandWithArgs.replace(/\${cwd}/g, workingDirectory);
+  commandWithArgs = commandWithArgs.replace(/\${cwd}/g, workingDirectory);
+
+  // console.log(commandText, positionalArguments, userArguments, commandWithArgs);
+
+  return commandWithArgs;
 }

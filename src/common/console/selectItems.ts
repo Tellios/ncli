@@ -28,7 +28,7 @@ export async function selectItems({
     }
   }
 
-  const choice: any = await inquirer.prompt([
+  const choice = await inquirer.prompt([
     {
       type: 'checkbox',
       name: 'item',

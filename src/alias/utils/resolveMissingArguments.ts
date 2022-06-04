@@ -2,15 +2,19 @@ import { cloneDeep } from 'lodash';
 import { inputString } from '../../common';
 import { IUserArguments } from './parseUserArguments';
 import { builtInArguments } from './builtInArguments';
-import { IAlias } from '../alias.interfaces';
+import { ExecutionPlan } from '../alias.interfaces';
 
 export const resolveMissingArguments = async (
-  alias: IAlias,
+  plan: ExecutionPlan,
   userArguments: IUserArguments
 ): Promise<IUserArguments> => {
-  const commands = getAliasCommands(alias);
+  const newUserArguments = cloneDeep(userArguments);
 
-  const requestedPositionalArguments = await getMissingPositonalArguments(
+  const commands = plan
+    .map((step) => step.commands.map((c) => c.commandText))
+    .flat();
+
+  const requestedPositionalArguments = await getMissingPositionalArguments(
     commands,
     userArguments
   );
@@ -20,7 +24,6 @@ export const resolveMissingArguments = async (
     userArguments
   );
 
-  const newUserArguments = cloneDeep(userArguments);
   newUserArguments.named = {
     ...newUserArguments.named,
     ...requestedNamedArguments
@@ -31,10 +34,6 @@ export const resolveMissingArguments = async (
   ];
 
   return newUserArguments;
-};
-
-const getAliasCommands = (alias: IAlias): string[] => {
-  return Array.isArray(alias.cmd) ? alias.cmd : [alias.cmd];
 };
 
 const getMissingNamedArguments = async (
@@ -49,7 +48,7 @@ const getMissingNamedArguments = async (
   return await requestMissingNamedArguments(missingNamedArguments);
 };
 
-const getMissingPositonalArguments = async (
+const getMissingPositionalArguments = async (
   commands: string[],
   userArguments: IUserArguments
 ): Promise<string[]> => {

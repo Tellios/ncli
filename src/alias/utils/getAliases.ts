@@ -1,42 +1,29 @@
-import * as jsYaml from 'js-yaml';
-import * as fse from 'fs-extra';
-import * as path from 'path';
-import { getNcliDir } from '../../common';
-import { IAlias, IAliasesConfig } from '../alias.interfaces';
+import { confirm, ConsoleInterface } from '../../common';
+import { IAlias } from '../alias.interfaces';
+import { validateAliases } from './validateAliases';
+import { aliasFile } from './aliasFile';
 
-export const getAliases = (): Promise<IAlias[]> => {
-  const configPath = path.join(getNcliDir(), 'alias.yml');
+export const getAliases = async (): Promise<IAlias[]> => {
+  const exists = await aliasFile.exists();
 
-  return new Promise<IAlias[]>((resolve, reject) => {
-    if (fse.existsSync(configPath)) {
-      fse.readFile(configPath, 'utf8').then((config: string) => {
-        try {
-          const doc: IAliasesConfig = jsYaml.safeLoad(config) as IAliasesConfig;
+  if (!exists) {
+    if (await confirm('No alias file found, do you want to create it?')) {
+      await aliasFile.create();
+      ConsoleInterface.printLine(`File created at ${aliasFile.getPath()}`);
 
-          if (!doc) {
-            reject(
-              'Failed to load yaml config, expected object but got undefined'
-            );
-            return;
-          }
-
-          const invalidAliases = doc.aliases.filter((alias) => {
-            return !alias.cmd || !alias.name;
-          });
-
-          if (invalidAliases && invalidAliases.length) {
-            reject(
-              'One or more aliases are missing the required fields "name" and/or "cmd"'
-            );
-          } else {
-            resolve(doc.aliases);
-          }
-        } catch (e) {
-          reject(e);
-        }
-      });
-    } else {
-      reject(new Error(`No alias file found at: ${configPath}`));
+      process.exit(0);
     }
-  });
+
+    throw Error(`No alias file found at: ${aliasFile.getPath()}`);
+  }
+
+  const doc = await aliasFile.read();
+
+  if (!doc) {
+    throw Error(
+      'Failed to load yaml config, expected object but got undefined'
+    );
+  }
+
+  return await validateAliases(doc.aliases);
 };

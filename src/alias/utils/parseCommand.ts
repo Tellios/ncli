@@ -1,39 +1,54 @@
 import { positionalArgsRegexProvider } from '../../common';
-import { ICommand } from '../alias.interfaces';
+import {
+  ExecutionPlan,
+  IAlias,
+  IAliasTask,
+  ICommand,
+  isAliasTask
+} from '../alias.interfaces';
 
-export const parseCommand = (commandText: string | string[]): ICommand[] => {
-  const commands: string[] = [];
-
-  if (Array.isArray(commandText)) {
-    if (commandText.length === 0) {
-      throw new Error('Command is an empty array');
+export const parseCommand = (alias: IAlias): ExecutionPlan => {
+  if (Array.isArray(alias.cmd)) {
+    if (isAliasTask(alias.cmd[0])) {
+      return (alias.cmd as IAliasTask[]).map((task) => ({
+        type: task.type ?? 'sequential',
+        name: task.name,
+        workingDirectory: task.workingDirectory,
+        commands: Array.isArray(task.cmd)
+          ? task.cmd.map(parseCommandText)
+          : [parseCommandText(task.cmd)]
+      }));
     }
 
-    if (commandText.some((cmd) => cmd === '')) {
-      throw new Error('One or more command texts is an empty string');
-    }
-
-    commands.push(...commandText);
-  } else if (commandText === '') {
+    return [
+      {
+        type: alias.type ?? 'sequential',
+        commands: (alias.cmd as string[]).map(parseCommandText)
+      }
+    ];
+  } else if (alias.cmd === '') {
     throw new Error('Command text is an empty string');
   } else {
-    commands.push(commandText);
+    return [
+      {
+        type: alias.type ?? 'sequential',
+        commands: [parseCommandText(alias.cmd)]
+      }
+    ];
+  }
+};
+
+const parseCommandText = (commandText: string): ICommand => {
+  const positionalArgsRegex = positionalArgsRegexProvider();
+  const positionalArguments = new Set<string>();
+  let matches: string[] | null;
+
+  while ((matches = positionalArgsRegex.exec(commandText)) !== null) {
+    positionalArguments.add(matches[0]);
   }
 
-  return commands.map(
-    (cmd): ICommand => {
-      const positionalArgsRegex = positionalArgsRegexProvider();
-      const positionalArguments = new Set<string>();
-      let matches: string[] | null;
-
-      while ((matches = positionalArgsRegex.exec(cmd)) !== null) {
-        positionalArguments.add(matches[0]);
-      }
-
-      return {
-        commandText: cmd,
-        positionalArguments: [...positionalArguments.values()]
-      };
-    }
-  );
+  return {
+    commandText,
+    positionalArguments: [...positionalArguments.values()]
+  };
 };

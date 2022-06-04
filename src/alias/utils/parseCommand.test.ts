@@ -1,13 +1,18 @@
 import { parseCommand } from './parseCommand';
-import { ICommand } from '../alias.interfaces';
+import { ExecutionPlan } from '../alias.interfaces';
 
 describe('parseCommand', () => {
   it('should return the positonal arguments and command text', () => {
-    const command = parseCommand('test $1 $2');
-    const expected: ICommand[] = [
+    const command = parseCommand({ name: 'mock', cmd: 'test $1 $2' });
+    const expected: ExecutionPlan = [
       {
-        commandText: 'test $1 $2',
-        positionalArguments: ['$1', '$2']
+        type: 'sequential',
+        commands: [
+          {
+            commandText: 'test $1 $2',
+            positionalArguments: ['$1', '$2']
+          }
+        ]
       }
     ];
 
@@ -15,11 +20,16 @@ describe('parseCommand', () => {
   });
 
   it('should only return a positional argument once', () => {
-    const command = parseCommand('test $1 $1 $2');
-    const expected: ICommand[] = [
+    const command = parseCommand({ name: 'mock', cmd: 'test $1 $1 $2' });
+    const expected: ExecutionPlan = [
       {
-        commandText: 'test $1 $1 $2',
-        positionalArguments: ['$1', '$2']
+        type: 'sequential',
+        commands: [
+          {
+            commandText: 'test $1 $1 $2',
+            positionalArguments: ['$1', '$2']
+          }
+        ]
       }
     ];
 
@@ -27,11 +37,11 @@ describe('parseCommand', () => {
   });
 
   it('should return empty positional arguments array if there are none', () => {
-    const command = parseCommand('docker rm -f');
-    const expected: ICommand[] = [
+    const command = parseCommand({ name: 'mock', cmd: 'docker rm -f' });
+    const expected: ExecutionPlan = [
       {
-        commandText: 'docker rm -f',
-        positionalArguments: []
+        type: 'sequential',
+        commands: [{ commandText: 'docker rm -f', positionalArguments: [] }]
       }
     ];
 
@@ -39,15 +49,64 @@ describe('parseCommand', () => {
   });
 
   it('should handle multiple commands at the same time', () => {
-    const command = parseCommand(['docker rm -f $2', 'echo test arg $1']);
-    const expected: ICommand[] = [
+    const command = parseCommand({
+      name: 'mock',
+      cmd: ['docker rm -f $2', 'echo test arg $1']
+    });
+    const expected: ExecutionPlan = [
       {
-        commandText: 'docker rm -f $2',
-        positionalArguments: ['$2']
+        type: 'sequential',
+        commands: [
+          { commandText: 'docker rm -f $2', positionalArguments: ['$2'] },
+          { commandText: 'echo test arg $1', positionalArguments: ['$1'] }
+        ]
+      }
+    ];
+
+    expect(command).toEqual(expected);
+  });
+
+  it('should handle task alias', () => {
+    const command = parseCommand({
+      name: 'mock',
+      type: 'parallel',
+      cmd: [
+        { name: 'step 1', cmd: ['docker rm -f $2', 'docker rm -f ${named}'] },
+        { name: 'step 2', type: 'sequential', cmd: 'echo test arg $1' },
+        {
+          name: 'step 3',
+          type: 'parallel',
+          cmd: ['echo test step 3', 'this is parallel', 'and mocked']
+        }
+      ]
+    });
+    const expected: ExecutionPlan = [
+      {
+        name: 'step 1',
+        type: 'sequential',
+        commands: [
+          { commandText: 'docker rm -f $2', positionalArguments: ['$2'] },
+          { commandText: 'docker rm -f ${named}', positionalArguments: [] }
+        ],
+        workingDirectory: undefined
       },
       {
-        commandText: 'echo test arg $1',
-        positionalArguments: ['$1']
+        name: 'step 2',
+        type: 'sequential',
+        commands: [
+          { commandText: 'echo test arg $1', positionalArguments: ['$1'] }
+        ],
+        workingDirectory: undefined
+      },
+      {
+        name: 'step 3',
+        type: 'parallel',
+        commands: [
+          { commandText: 'echo test step 3', positionalArguments: [] },
+          { commandText: 'this is parallel', positionalArguments: [] },
+          { commandText: 'and mocked', positionalArguments: [] }
+        ],
+        workingDirectory: undefined
       }
     ];
 
@@ -55,7 +114,7 @@ describe('parseCommand', () => {
   });
 
   it('should throw if command text is empty', () => {
-    expect(() => parseCommand('')).toThrowError();
+    expect(() => parseCommand({ name: 'mock', cmd: '' })).toThrowError();
   });
 
   it('true', () => {

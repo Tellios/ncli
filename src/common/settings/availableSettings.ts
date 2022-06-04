@@ -73,6 +73,13 @@ export const availableSettings = {
       hidden: true
     })
     .getSettings(),
+  na: new Builder()
+    .add('lastExecutedAlias', {
+      description: 'Last alias executed in working directory',
+      type: 'string',
+      hidden: true
+    })
+    .getSettings(),
   ni: new Builder()
     .add('saveExact', {
       description: 'If save-exact should be enabled or disabled by default',

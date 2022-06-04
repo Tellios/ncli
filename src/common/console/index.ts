@@ -8,4 +8,5 @@ export * from './parseCliTable';
 export * from './runCmdInConsole';
 export * from './selectItem';
 export * from './selectItems';
+export * from './ShortcutListener';
 export * from './yargsWrapper';

@@ -68,7 +68,7 @@ export async function commandBase<T extends NcliCommand = any>(
     if (err instanceof CmdError) {
       ConsoleInterface.printLine(err.processMessage, Type.error);
     } else {
-      ConsoleInterface.printLine(err.toString(), Type.error);
+      ConsoleInterface.printLine((err as any).toString(), Type.error);
     }
 
     process.exit(1);
