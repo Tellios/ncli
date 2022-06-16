@@ -8,8 +8,11 @@ export async function installPackages(
   packagesToInstall: string[],
   devPackagesToInstall: string[],
   autoInstallTypings: AutoInstallTypingsMode,
-  saveExact: boolean
+  saveExact: boolean,
+  workspace: string | undefined
 ): Promise<void> {
+  console.log('deps', packagesToInstall, 'dev deps', devPackagesToInstall);
+
   if (await containsYarnLockFile(workingDirectory)) {
     const args: string[] = ['add'];
     saveExact && args.push('--exact');
@@ -28,6 +31,7 @@ export async function installPackages(
   } else if (await containsPackageLockFile(workingDirectory)) {
     const args: string[] = ['i'];
     saveExact && args.push('--save-exact');
+    workspace && args.push('--workspace', workspace);
 
     if (packagesToInstall.length > 0) {
       await runCmdInConsole('npm', [...args, ...packagesToInstall]);
@@ -52,7 +56,8 @@ export async function installPackages(
       ],
       [],
       'ignore',
-      saveExact
+      saveExact,
+      workspace
     );
   } else if (autoInstallTypings === 'installAsDev') {
     await installPackages(
@@ -63,7 +68,8 @@ export async function installPackages(
         ...devPackagesToInstall.map(addTypesPrefix)
       ],
       'ignore',
-      saveExact
+      saveExact,
+      workspace
     );
   }
 }

@@ -1,15 +1,9 @@
-import { exit } from 'process';
-import {
-  yargsWrapper,
-  commandBase,
-  ConsoleInterface,
-  selectItem
-} from '../common';
+import { yargsWrapper, commandBase } from '../common';
 import {
   parsePackageJson,
   executePackageJsonScript,
   selectScript,
-  getWorkspaces,
+  selectWorkspace,
   Workspace
 } from './utils';
 import {
@@ -49,7 +43,7 @@ const args = yargsWrapper()
     alias: 'w',
     describe:
       'If the script should be executed inside a workspace project instead',
-    boolean: true
+    type: 'boolean'
   }).argv;
 
 commandBase<'nr'>(
@@ -58,27 +52,16 @@ commandBase<'nr'>(
     let workspace: Workspace | undefined;
 
     if (args.workspace) {
-      if (packageJson.workspaces && packageJson.workspaces.length > 0) {
-        const workspaces = await getWorkspaces(workingDirectory, packageJson);
-        workspace =
-          workspaces[
-            await selectItem(
-              workspaces.map((p) => p.relativePath),
-              'Select workspace to execute the script for',
-              settings.lastSelectedWorkspace
-            )
-          ];
+      workspace = await selectWorkspace(
+        workingDirectory,
+        packageJson,
+        settings.lastSelectedWorkspace
+      );
 
-        packageJson = await parsePackageJson(workspace.absolutePath);
-        workingDirectory = workspace.absolutePath;
-        await setSetting('lastSelectedWorkspace', workspace.relativePath);
-        settings = await getSettings(workspace.absolutePath);
-      } else {
-        ConsoleInterface.printLine(
-          'Workspaces are not configured for this project'
-        );
-        exit(1);
-      }
+      packageJson = await parsePackageJson(workspace.absolutePath);
+      workingDirectory = workspace.absolutePath;
+      await setSetting('lastSelectedWorkspace', workspace.relativePath);
+      settings = await getSettings(workspace.absolutePath);
     }
 
     if (args.list) {

@@ -85,6 +85,11 @@ export const availableSettings = {
       description: 'If save-exact should be enabled or disabled by default',
       type: 'boolean'
     })
+    .add('lastSelectedWorkspace', {
+      description: 'Last selected workspace',
+      type: 'string',
+      hidden: true
+    })
     .getSettings()
 };
 

@@ -5,7 +5,8 @@ export async function updatePackages(
   workingDirectory: string,
   packageJson: NcliNode.IPackageJson,
   saveExact: boolean,
-  searchString?: string
+  searchString: string | undefined,
+  workspace: string | undefined
 ): Promise<void> {
   const packages = await selectPackages(packageJson, searchString);
   const addLatestSuffix = (name: string): string => `${name}@latest`;
@@ -24,6 +25,7 @@ export async function updatePackages(
     packagesToUpdate,
     devPackagesToUpdate,
     'ignore',
-    saveExact
+    saveExact,
+    workspace
   );
 }

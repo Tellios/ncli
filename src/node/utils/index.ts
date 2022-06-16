@@ -6,6 +6,7 @@ export * from './getWorkspacePaths';
 export * from './packageJsonParser';
 export * from './searchScripts';
 export * from './selectScript';
+export * from './selectWorkspace';
 export * from './updatePackageJson';
 export * from './validateScript';
 export * from './validateScriptName';

@@ -6,7 +6,7 @@ export interface Workspace {
   absolutePath: string;
 }
 
-export async function getWorkspaces(
+export async function getWorkspacePaths(
   packageJsonDirectory: string,
   packageJson: NcliNode.IPackageJson
 ): Promise<Workspace[]> {
