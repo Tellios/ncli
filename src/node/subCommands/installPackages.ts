@@ -11,8 +11,6 @@ export async function installPackages(
   saveExact: boolean,
   workspace: string | undefined
 ): Promise<void> {
-  console.log('deps', packagesToInstall, 'dev deps', devPackagesToInstall);
-
   if (await containsYarnLockFile(workingDirectory)) {
     const args: string[] = ['add'];
     saveExact && args.push('--exact');

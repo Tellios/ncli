@@ -92,7 +92,6 @@ commandBase<'ni'>(
       let typingsMode: AutoInstallTypingsMode = 'ignore';
 
       addArgs.forEach((addArg) => {
-        console.log(addArg);
         if (addArg === '--dev' || addArg === '-d') {
           devFlag = true;
         } else if (addArg === '--auto-types' || addArg === '-a') {
