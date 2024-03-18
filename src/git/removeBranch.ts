@@ -1,9 +1,14 @@
-import { yargsWrapper, commandBase } from '../common';
 import {
-  selectBranch,
-  localizeBranchName,
+  ConsoleInterface,
+  commandBase,
+  confirm,
+  yargsWrapper
+} from '../common';
+import {
+  deleteBranch,
   getCurrentBranch,
-  deleteBranch
+  localizeBranchName,
+  selectBranch
 } from './utils';
 
 const args = yargsWrapper()
@@ -28,6 +33,11 @@ const args = yargsWrapper()
     alias: 'f',
     describe: 'Branch name filter',
     type: 'string'
+  })
+  .option('force', {
+    describe: 'Allows force deleting a branch',
+    type: 'boolean',
+    default: false
   }).argv;
 
 function getBranchToDelete(workingDirectory: string): Promise<string> {
@@ -55,8 +65,27 @@ commandBase(async ({ workingDirectory }) => {
     );
   }
 
-  await deleteBranch(branch, {
-    alsoDeleteRemote: args.push,
-    noVerify: args.noVerify
-  });
+  try {
+    await deleteBranch(branch, {
+      alsoDeleteRemote: args.push,
+      noVerify: args.noVerify,
+      force: args.force
+    });
+  } catch (error) {
+    ConsoleInterface.printLine(`Failed to delete the branch.`);
+
+    if (
+      await confirm(
+        'Branch might not be fully merged. Do you want to force a delete instead?'
+      )
+    ) {
+      return await deleteBranch(branch, {
+        alsoDeleteRemote: args.push,
+        noVerify: args.noVerify,
+        force: true
+      });
+    }
+
+    throw error;
+  }
 });

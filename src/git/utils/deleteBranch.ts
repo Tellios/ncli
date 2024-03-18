@@ -4,10 +4,17 @@ export const deleteBranch = (
   branchName: string,
   {
     alsoDeleteRemote = false,
-    noVerify = false
-  }: { alsoDeleteRemote: boolean; noVerify: boolean }
+    noVerify = false,
+    force = false
+  }: { alsoDeleteRemote: boolean; noVerify: boolean; force: boolean }
 ): Promise<void> => {
-  return runCmdInConsole('git', ['branch', '-d', branchName]).then(() => {
+  const args = ['branch', '-d', branchName];
+
+  if (force) {
+    args[1] = '-D';
+  }
+
+  return runCmdInConsole('git', args).then(() => {
     if (alsoDeleteRemote) {
       return runCmdInConsole('git', [
         'push',
