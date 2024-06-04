@@ -5,6 +5,5 @@ export const selectCommandToConfigure = async (
   commandList: NcliCommand[] = supportedNcliCommands
 ): Promise<NcliCommand> => {
   const index = await selectItem(commandList, 'Select command to configure');
-
-  return supportedNcliCommands[index];
+  return commandList[index];
 };

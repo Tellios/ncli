@@ -1,6 +1,6 @@
 import { runCmdInConsole } from '../../common';
-import { push } from './push';
 import { appendNoVerifyIfEnabled } from './appendNoVerifyIfEnabled';
+import { push } from './push';
 
 /*
  * Since it is a bunch of code that is required to create a commit using
@@ -14,9 +14,11 @@ export const commit = (
   useNoVerify: boolean,
   alsoPushTags: boolean,
   amend: boolean,
-  forcePush: boolean
+  forcePush: boolean,
+  sign: boolean
 ): Promise<void> => {
   let commitArgs = ['commit'];
+  sign && commitArgs.push('-S');
   message && commitArgs.push('-m', message);
   amend && commitArgs.push('--amend');
   amend && !message && commitArgs.push('--no-edit');

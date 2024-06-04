@@ -1,5 +1,5 @@
-import { yargsWrapper, commandBase } from '../common';
-import { getStatus, addAll, commit } from './utils';
+import { commandBase, yargsWrapper } from '../common';
+import { addAll, commit, getStatus } from './utils';
 
 commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
   const args = yargsWrapper()
@@ -46,6 +46,12 @@ commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
       describe: 'Edit the previous commit (git commit --amend)',
       type: 'boolean',
       default: false
+    })
+    .option('sign', {
+      alias: 's',
+      describe: 'Sign the commit',
+      type: 'boolean',
+      default: settings.sign ?? false
     }).argv;
 
   if (!args.edit && !args.message) {
@@ -66,7 +72,8 @@ commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
       args.noVerify,
       args.tags,
       args.edit,
-      args.force
+      args.force,
+      args.sign
     );
   } else {
     throw new Error('Nothing to commit');

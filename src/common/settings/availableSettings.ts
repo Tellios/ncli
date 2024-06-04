@@ -50,6 +50,10 @@ export const availableSettings = {
       description: 'Whether --force flag should be enabled by default',
       type: 'boolean'
     })
+    .add('sign', {
+      description: 'Whether to sign the commit by default',
+      type: 'boolean'
+    })
     .getSettings(),
   npush: new Builder()
     .add('noVerify', {

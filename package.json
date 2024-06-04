@@ -15,6 +15,7 @@
     "nt": "./bin/node/nt",
     "nclone": "./bin/git/clone",
     "ncommit": "./bin/git/commit",
+    "nlog": "./bin/git/log",
     "ncb": "./bin/git/createBranch",
     "ngcb": "./bin/git/getCurrentBranch",
     "ngb": "./bin/git/getBranches",
