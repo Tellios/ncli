@@ -87,10 +87,10 @@ For nested workflows, enable interactivity only on the step that needs it:
       interactive: true
       cmd: docker run -it --rm myimage bash
     - name: after shell
-      cmd: echo Back on the host - later alias steps still run
+      cmd: echo Back on the host
 ```
 
-When you leave an interactive step (`exit`, Ctrl+D, or Ctrl+C inside the child), `na` continues with the next alias command in the plan. Non-zero exit codes from interactive commands are logged as warnings but do not stop the rest of a sequential alias.
+Interactive steps use your terminal like any other sequential command: if the command exits with a non-zero code, the rest of the alias does not run.
 
 Run `na` from a real terminal (`stdin` must be a TTY). Pipes, CI, or non-interactive environments may still fail.
 
