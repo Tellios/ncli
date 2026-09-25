@@ -14,6 +14,7 @@ export const parseCommand = (alias: IAlias): ExecutionPlan => {
         type: task.type ?? 'sequential',
         name: task.name,
         workingDirectory: task.workingDirectory,
+        interactive: task.interactive ?? alias.interactive,
         commands: Array.isArray(task.cmd)
           ? task.cmd.map(parseCommandText)
           : [parseCommandText(task.cmd)]
@@ -23,6 +24,7 @@ export const parseCommand = (alias: IAlias): ExecutionPlan => {
     return [
       {
         type: alias.type ?? 'sequential',
+        interactive: alias.interactive,
         commands: (alias.cmd as string[]).map(parseCommandText)
       }
     ];
@@ -32,6 +34,7 @@ export const parseCommand = (alias: IAlias): ExecutionPlan => {
     return [
       {
         type: alias.type ?? 'sequential',
+        interactive: alias.interactive,
         commands: [parseCommandText(alias.cmd)]
       }
     ];

@@ -9,7 +9,8 @@ const aliasTaskSchema = joi.object<IAliasTask>({
   cmd: joi
     .alternatives(joi.string().min(1), joi.array().items(joi.string()).min(1))
     .required(),
-  workingDirectory: joi.string()
+  workingDirectory: joi.string(),
+  interactive: joi.boolean()
 });
 
 const aliasSchema = joi.object<IAlias>({
@@ -23,7 +24,8 @@ const aliasSchema = joi.object<IAlias>({
     )
     .required(),
   description: joi.string(),
-  workingDirectory: joi.string()
+  workingDirectory: joi.string(),
+  interactive: joi.boolean()
 });
 
 const aliasesSchema = joi.array().items(aliasSchema);

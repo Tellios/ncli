@@ -49,6 +49,53 @@ aliases:
         workingDirectory: dist
 ```
 
+### Optional alias fields
+
+| Field              | Required | Description                                                                                           |
+| ------------------ | -------- | ----------------------------------------------------------------------------------------------------- |
+| `description`      | No       | Help text shown in `na list`                                                                          |
+| `workingDirectory` | No       | Directory to run the alias in (instead of the current directory)                                      |
+| `interactive`      | No       | When `true`, passes your terminal through to the command (needed for `docker run -it`, shells, REPLs) |
+
+## Interactive aliases
+
+By default, alias commands run without attaching your terminal stdin. That is fine for most commands, but Docker fails with **cannot attach stdin to a TTY-enabled container because stdin is not a terminal** when the command uses `-t` or `-it`.
+
+Set `interactive: true` on the alias (or on a nested task) so `na run` runs the command in a pseudo-TTY. That is required for `docker run -it`, Jest `--watch`, and other tools that read keyboard input. Without it, stdin is ignored and menus like Jest watch will not accept input.
+
+Commands with `--watch`, `--watchAll`, or `-it` are treated as interactive automatically unless you set `interactive: false`.
+
+```yaml
+aliases:
+  - name: test-hub
+    interactive: true
+    cmd: yarn test -- --watch
+    workingDirectory: /path/to/project
+  - name: drun
+    interactive: true
+    cmd: docker run -it --rm -v ${cwd}:/work -w /work alpine sh
+```
+
+For nested workflows, enable interactivity only on the step that needs it:
+
+```yaml
+- name: dev
+  cmd:
+    - name: prep
+      cmd: docker pull myimage
+    - name: shell
+      interactive: true
+      cmd: docker run -it --rm myimage bash
+    - name: after shell
+      cmd: echo Back on the host - later alias steps still run
+```
+
+When you leave an interactive step (`exit`, Ctrl+D, or Ctrl+C inside the child), `na` continues with the next alias command in the plan. Non-zero exit codes from interactive commands are logged as warnings but do not stop the rest of a sequential alias.
+
+Run `na` from a real terminal (`stdin` must be a TTY). Pipes, CI, or non-interactive environments may still fail.
+
+Do not combine `interactive: true` with `type: parallel` when a step runs multiple commands at once; stdin cannot be shared across parallel processes.
+
 With the file above you can then invoke aliases like this:
 
 ```bash
@@ -122,6 +169,10 @@ aliases:
   # Triggerd by running na npm 8.9.4 install
   - name: npm-v
     cmd: docker run --rm -w /opt/workdir -v ${cwd}/:/opt/workdir node:$1-alpine npm
+  # Interactive shell inside a container (requires interactive: true for -it)
+  - name: node-sh
+    interactive: true
+    cmd: docker run -it --rm -w /opt/workdir -v ${cwd}/:/opt/workdir node:${nodeVersion}-alpine sh
 ```
 
 ### Named

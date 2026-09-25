@@ -6,6 +6,10 @@
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
+  "allowScripts": {
+    "husky": true,
+    "node-pty": true
+  },
   "bin": {
     "na": "./bin/alias",
     "ncode64": "./bin/ncode64",
@@ -39,7 +43,7 @@
     "test:watch": "jest --watchAll --runInBand",
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "build:watch": "tsc --watch -p tsconfig.build.json",
-    "setup": "npm ci && npm run prettier && npm run test && npm run build && npm link",
+    "setup": "sh -c \"unset npm_config_allow_scripts NPM_CONFIG_ALLOW_SCRIPTS; npm ci && npm run prettier && npm run test && npm run build && npm link\"",
     "lint": "npm run script:eslint -- --cache --fix",
     "lint:ci": "npm run script:eslint",
     "script:eslint": "eslint . --ext .ts,.tsx --max-warnings=0"
@@ -58,6 +62,7 @@
     "joi": "^17.6.0",
     "js-yaml": "^3.14.0",
     "lodash": "^4.17.20",
+    "node-pty": "^1.0.0",
     "readline-sync": "^1.4.10",
     "tree-kill": "^1.2.2",
     "yargs": "^16.1.0"

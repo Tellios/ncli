@@ -117,7 +117,70 @@ describe('parseCommand', () => {
     expect(() => parseCommand({ name: 'mock', cmd: '' })).toThrowError();
   });
 
-  it('true', () => {
-    expect(true).toBe(true);
+  it('should propagate interactive flag on top-level alias', () => {
+    const command = parseCommand({
+      name: 'mock',
+      interactive: true,
+      cmd: 'docker run -it alpine sh'
+    });
+
+    expect(command).toEqual([
+      {
+        type: 'sequential',
+        interactive: true,
+        commands: [
+          {
+            commandText: 'docker run -it alpine sh',
+            positionalArguments: []
+          }
+        ]
+      }
+    ]);
+  });
+
+  it('should inherit interactive from alias and allow task override', () => {
+    const command = parseCommand({
+      name: 'mock',
+      interactive: true,
+      cmd: [
+        { name: 'prep', cmd: 'docker pull alpine' },
+        {
+          name: 'shell',
+          interactive: false,
+          cmd: 'docker run alpine echo hi'
+        },
+        { name: 'interactive shell', cmd: 'docker run -it alpine sh' }
+      ]
+    });
+
+    expect(command).toEqual([
+      {
+        name: 'prep',
+        type: 'sequential',
+        interactive: true,
+        workingDirectory: undefined,
+        commands: [
+          { commandText: 'docker pull alpine', positionalArguments: [] }
+        ]
+      },
+      {
+        name: 'shell',
+        type: 'sequential',
+        interactive: false,
+        workingDirectory: undefined,
+        commands: [
+          { commandText: 'docker run alpine echo hi', positionalArguments: [] }
+        ]
+      },
+      {
+        name: 'interactive shell',
+        type: 'sequential',
+        interactive: true,
+        workingDirectory: undefined,
+        commands: [
+          { commandText: 'docker run -it alpine sh', positionalArguments: [] }
+        ]
+      }
+    ]);
   });
 });

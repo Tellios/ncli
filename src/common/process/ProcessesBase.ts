@@ -56,6 +56,22 @@ export abstract class ProcessesBase {
       return;
     }
 
+    if (process.options.interactive) {
+      const activeProcess: IActiveProcess = {
+        process,
+        closeStream: () => undefined,
+        promise: process.run({}).finally(() => {
+          this.activeProcesses = this.activeProcesses.filter(
+            (activeProcess) => activeProcess.process !== process
+          );
+        })
+      };
+
+      this.activeProcesses.push(activeProcess);
+
+      return activeProcess.promise;
+    }
+
     const onData = (data: Buffer) => {
       stdout?.write(
         `${this.getProcessPrefix(process)} ${data.toString('utf-8')}`

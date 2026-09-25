@@ -2,14 +2,16 @@ import {
   ConsoleInterface,
   IProcessOptions,
   ParallelProcesses,
-  SequentialProcesses
+  SequentialProcesses,
+  Type
 } from '../../common';
 import { parseCommand } from './parseCommand';
 import { resolveMissingArguments } from './resolveMissingArguments';
 import { parseUserArguments } from './parseUserArguments';
 import { injectArguments } from './injectArguments';
-import { ExecutionPlan, IAlias } from '../alias.interfaces';
+import { ExecutionPlan, IAlias, IExecutionStep } from '../alias.interfaces';
 import { IUserArguments } from '.';
+import { resolveStepInteractive } from './detectInteractiveCommand';
 import chalk = require('chalk');
 import { ProcessesBase } from '../../common/process/ProcessesBase';
 
@@ -96,14 +98,19 @@ const executeSequentialPlan = async (
 
     const options = commandTexts.map((commandText): IProcessOptions => {
       const [executable, ...args] = commandText.split(' ');
+      const interactive = resolveStepInteractive(commandText, step.interactive);
 
       return {
         name: step.name ?? executable,
         args,
         executable,
-        workingDirectory: step.workingDirectory ?? aliasWorkingDirectory
+        workingDirectory: step.workingDirectory ?? aliasWorkingDirectory,
+        interactive,
+        shellCommand: interactive ? commandText : undefined
       };
     });
+
+    warnInteractiveStep(step, options);
 
     const processor =
       step.type === 'sequential'
@@ -132,14 +139,19 @@ const executeParallelPlan = async (
 
     const options = commandTexts.map((commandText): IProcessOptions => {
       const [executable, ...args] = commandText.split(' ');
+      const interactive = resolveStepInteractive(commandText, step.interactive);
 
       return {
         name: step.name ?? executable,
         args,
         executable,
-        workingDirectory: step.workingDirectory ?? aliasWorkingDirectory
+        workingDirectory: step.workingDirectory ?? aliasWorkingDirectory,
+        interactive,
+        shellCommand: interactive ? commandText : undefined
       };
     });
+
+    warnInteractiveStep(step, options);
 
     const processor =
       step.type === 'sequential'
@@ -156,4 +168,27 @@ const executeParallelPlan = async (
       })
     )
   );
+};
+
+const warnInteractiveStep = (
+  step: IExecutionStep,
+  options: IProcessOptions[]
+): void => {
+  if (!options.some((option) => option.interactive)) {
+    return;
+  }
+
+  if (!process.stdin.isTTY) {
+    ConsoleInterface.printLine(
+      'Interactive alias requires a terminal (stdin is not a TTY)',
+      Type.warn
+    );
+  }
+
+  if (step.type === 'parallel' && step.commands.length > 1) {
+    ConsoleInterface.printLine(
+      'Interactive mode is not supported for parallel steps with multiple commands',
+      Type.warn
+    );
+  }
 };

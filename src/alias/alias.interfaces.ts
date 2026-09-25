@@ -10,6 +10,7 @@ export interface IAlias {
   cmd: string | string[] | IAliasTask[];
   description?: string;
   workingDirectory?: string;
+  interactive?: boolean;
 }
 
 export interface IAliasTask {
@@ -17,6 +18,7 @@ export interface IAliasTask {
   name: string;
   cmd: string | string[];
   workingDirectory?: string;
+  interactive?: boolean;
 }
 
 export const isAliasTask = (cmd: unknown): cmd is IAliasTask =>
@@ -34,4 +36,5 @@ export interface IExecutionStep {
   name?: string;
   commands: ICommand[];
   workingDirectory?: string;
+  interactive?: boolean;
 }
