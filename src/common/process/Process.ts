@@ -37,10 +37,10 @@ export class Process {
 
   constructor(options: IProcessOptions) {
     this.options = {
-      workingDirectory: process.cwd(),
       interactive: false,
       shellCommand: '',
-      ...options
+      ...options,
+      workingDirectory: options.workingDirectory ?? process.cwd()
     };
   }
 
