@@ -1,3 +1,3 @@
-export * from './deleteCommand';
-export * from './listCommand';
-export * from './setCommand';
+export * from './deleteCommand.ts';
+export * from './listCommand.ts';
+export * from './setCommand.ts';

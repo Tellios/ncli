@@ -1,1 +1,1 @@
-export const builtInArguments: ReadonlyArray<string> = ['cwd'];
+export const builtInArguments: readonly string[] = ['cwd'];

@@ -1,7 +1,7 @@
-import * as pty from 'node-pty';
-import { buildInteractiveShellCommand } from './runInteractiveCommand';
+import pty from 'node-pty';
+import {buildInteractiveShellCommand} from './runInteractiveCommand.ts';
 
-export interface IInteractivePtyResult {
+export type IInteractivePtyResult = {
   exitCode: number;
   failed: boolean;
   stdout: string;
@@ -12,17 +12,17 @@ export interface IInteractivePtyResult {
   timedOut: boolean;
   isCanceled: boolean;
   killed: boolean;
-}
+};
 
-export interface IInteractivePtyRun {
+export type IInteractivePtyRun = {
   term: pty.IPty;
   completed: Promise<IInteractivePtyResult>;
-}
+};
 
 export const startInteractivePty = (
   shellCommand: string,
   workingDirectory: string,
-  env: NodeJS.ProcessEnv
+  env: NodeJS.ProcessEnv,
 ): IInteractivePtyRun => {
   const shell = env.SHELL || '/bin/bash';
   const command = buildInteractiveShellCommand(shellCommand, workingDirectory);
@@ -34,13 +34,12 @@ export const startInteractivePty = (
     cols,
     rows,
     cwd: workingDirectory,
-    env: env as Record<string, string>
+    env,
   });
 
-  const stdinWasRaw = Boolean(
+  const isStdinWasRaw =
     process.stdin.isTTY &&
-      (process.stdin as NodeJS.ReadStream & { isRaw?: boolean }).isRaw
-  );
+    (process.stdin as NodeJS.ReadStream & {isRaw?: boolean}).isRaw;
 
   const onStdin = (data: Buffer): void => {
     term.write(data.toString('utf-8'));
@@ -51,7 +50,7 @@ export const startInteractivePty = (
   };
 
   const onSigint = (): void => {
-    term.write('\u0003');
+    term.write('\u{3}');
   };
 
   if (process.stdin.isTTY) {
@@ -74,7 +73,7 @@ export const startInteractivePty = (
   });
 
   const completed = new Promise<IInteractivePtyResult>((resolve) => {
-    term.onExit(({ exitCode }) => {
+    term.onExit(({exitCode}) => {
       cleanup();
 
       const code = exitCode ?? 1;
@@ -90,7 +89,7 @@ export const startInteractivePty = (
           code === 0 ? '' : `Command failed with exit code ${code}`,
         timedOut: false,
         isCanceled: false,
-        killed: false
+        killed: false,
       });
     });
   });
@@ -102,12 +101,14 @@ export const startInteractivePty = (
       process.stdout.off('resize', onResize);
     }
 
-    if (process.stdin.isTTY) {
-      process.stdin.off('data', onStdin);
-      process.stdin.setRawMode(stdinWasRaw);
-      process.stdin.pause();
+    if (!process.stdin.isTTY) {
+      return;
     }
+
+    process.stdin.off('data', onStdin);
+    process.stdin.setRawMode(isStdinWasRaw);
+    process.stdin.pause();
   };
 
-  return { term, completed };
+  return {term, completed};
 };

@@ -1,21 +1,25 @@
-import { yargsWrapper, ConsoleInterface, commandBase } from '../common';
-import { parsePackageJson, selectWorkspace, Workspace } from './utils';
+import {yargsWrapper, ConsoleInterface, commandBase} from '../common/index.ts';
+import {
+  parsePackageJson,
+  selectWorkspace,
+  type Workspace,
+} from './utils/index.ts';
 import {
   installAllPackagesUsingLockFile,
   uninstallPackages,
   installPackages,
-  AutoInstallTypingsMode,
-  updatePackages
-} from './subCommands';
+  type AutoInstallTypingsMode,
+  updatePackages,
+} from './subCommands/index.ts';
 
 commandBase<'ni'>(
-  async ({ workingDirectory, settings, setSetting, getSettings }) => {
+  async ({workingDirectory, settings, setSetting, getSettings}) => {
     const args = yargsWrapper(false)
       .command('add', 'Install one or more packages', {
         dev: {
           alias: 'd',
           desc: 'All packages after dev will be installed as dev packages',
-          type: 'boolean'
+          type: 'boolean',
         },
         'auto-types': {
           alias: 'a',
@@ -23,27 +27,27 @@ commandBase<'ni'>(
           desc: [
             'Automatically install @types packages for the packages being installed. ',
             'If autoTypes is provided after the dev flag, ',
-            'they will be installed as dev packages'
-          ].join('')
+            'they will be installed as dev packages',
+          ].join(''),
         },
         saveExact: {
           alias: 'e',
           desc: 'Packages will be installed with exact versioning',
           type: 'boolean',
-          default: settings.saveExact ?? false
+          default: settings.saveExact ?? false,
         },
         workspace: {
           type: 'boolean',
           alias: 'w',
-          desc: 'If the installation should be performed in a workspace package instead'
-        }
+          desc: 'If the installation should be performed in a workspace package instead',
+        },
       })
       .command('del', 'Uninstall one or more packages', {
         workspace: {
           type: 'boolean',
           alias: 'w',
-          desc: 'If the uninstall should be performed in a workspace package instead'
-        }
+          desc: 'If the uninstall should be performed in a workspace package instead',
+        },
       })
       .command(
         'update',
@@ -53,14 +57,14 @@ commandBase<'ni'>(
             alias: 'e',
             desc: 'Packages will be installed with exact versioning',
             type: 'boolean',
-            default: settings.saveExact ?? false
+            default: settings.saveExact ?? false,
           },
           workspace: {
             type: 'boolean',
             alias: 'w',
-            desc: 'If the updates should be performed in a workspace package instead'
-          }
-        }
+            desc: 'If the updates should be performed in a workspace package instead',
+          },
+        },
       ).argv;
 
     let packageJson = await parsePackageJson(workingDirectory);
@@ -76,7 +80,7 @@ commandBase<'ni'>(
       workspace = await selectWorkspace(
         workingDirectory,
         packageJson,
-        settings.lastSelectedWorkspace
+        settings.lastSelectedWorkspace,
       );
 
       await setSetting('lastSelectedWorkspace', workspace.relativePath);
@@ -88,17 +92,17 @@ commandBase<'ni'>(
       const addArgs = process.argv.slice(3);
       const packagesToInstall: string[] = [];
       const devPackagesToInstall: string[] = [];
-      let devFlag = false;
+      let isDevFlag = false;
       let typingsMode: AutoInstallTypingsMode = 'ignore';
 
-      addArgs.forEach((addArg) => {
+      for (const addArg of addArgs) {
         if (addArg === '--dev' || addArg === '-d') {
-          devFlag = true;
+          isDevFlag = true;
         } else if (addArg === '--auto-types' || addArg === '-a') {
-          typingsMode = devFlag ? 'installAsDev' : 'install';
+          typingsMode = isDevFlag ? 'installAsDev' : 'install';
         } else if (addArg.startsWith('-')) {
           if (addArg.startsWith('--')) {
-            return;
+            continue;
           }
 
           const autoTypesIndex = addArg.indexOf('a');
@@ -106,47 +110,53 @@ commandBase<'ni'>(
 
           if (devIndex < autoTypesIndex) {
             // -da
-            devFlag = true;
+            isDevFlag = true;
             typingsMode = 'installAsDev';
           } else if (autoTypesIndex < devIndex) {
             // -ad
-            devFlag = true;
+            isDevFlag = true;
             typingsMode = 'install';
           }
-        } else if (devFlag) {
+        } else if (isDevFlag) {
           devPackagesToInstall.push(addArg);
         } else {
           packagesToInstall.push(addArg);
         }
-      });
+      }
 
-      return await installPackages(
+      return installPackages(
         workingDirectory,
         packagesToInstall,
         devPackagesToInstall,
         typingsMode,
         flags.saveExact,
-        workspace
+        workspace,
       );
-    } else if (args._[0] === 'del') {
-      return await uninstallPackages(
+    }
+
+    if (args._[0] === 'del') {
+      return uninstallPackages(
         workingDirectory,
         packageJson,
         args._[1]?.toString(),
-        workspace
+        workspace,
       );
-    } else if (args._[0] === 'update') {
-      return await updatePackages(
+    }
+
+    if (args._[0] === 'update') {
+      return updatePackages(
         workingDirectory,
         packageJson,
         flags.saveExact,
         args._[1]?.toString(),
-        workspace
+        workspace,
       );
-    } else if (args._.length > 0) {
+    }
+
+    if (args._.length > 0) {
       ConsoleInterface.printLine('Unknown command');
     } else {
       await installAllPackagesUsingLockFile(workingDirectory);
     }
-  }
+  },
 );

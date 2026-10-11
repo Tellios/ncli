@@ -1,8 +1,8 @@
-import * as fs from 'fs-extra';
-import { resolvePackageJsonFile } from './resolvePackageJsonFile';
+import fs from 'fs-extra';
+import {resolvePackageJsonFile} from './resolvePackageJsonFile.ts';
 
 export async function parsePackageJson(
-  directory: string
+  directory: string,
 ): Promise<NcliNode.IPackageJson> {
-  return await fs.readJson(resolvePackageJsonFile(directory));
+  return fs.readJson(resolvePackageJsonFile(directory));
 }

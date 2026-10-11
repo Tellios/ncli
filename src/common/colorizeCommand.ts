@@ -1,10 +1,10 @@
-import { EOL } from 'os';
-import { positionalArgsRegexProvider } from './positionalArgsRegexProvider';
-import { namedArgsRegexProvider } from './namedArgsRegexProvider';
-import { dashArgsRegexProvider } from './dashArgsRegexProvider';
-import * as chalk from 'chalk';
+import {EOL} from 'node:os';
+import chalk from 'chalk';
+import {positionalArgsRegexProvider} from './positionalArgsRegexProvider.ts';
+import {namedArgsRegexProvider} from './namedArgsRegexProvider.ts';
+import {dashArgsRegexProvider} from './dashArgsRegexProvider.ts';
 
-const controlOperators = ['&&', '||'];
+const controlOperators = new Set(['&&', '||']);
 
 export const colorizeCommand = (commandText: string): string => {
   const cmdSplit = commandText.split(' ');
@@ -13,21 +13,29 @@ export const colorizeCommand = (commandText: string): string => {
     .map((cmdPart, index) => {
       const previousPart = cmdSplit[index - 1];
 
-      if (index === 0 || controlOperators.includes(previousPart)) {
+      if (index === 0 || controlOperators.has(previousPart)) {
         return chalk.greenBright(cmdPart);
-      } else if (cmdPart.indexOf('${cwd}') !== -1) {
-        return chalk.blue(cmdPart);
-      } else if (positionalArgsRegexProvider().test(cmdPart)) {
-        return chalk.yellow(cmdPart);
-      } else if (namedArgsRegexProvider().test(cmdPart)) {
-        return chalk.yellow(cmdPart);
-      } else if (dashArgsRegexProvider().test(cmdPart)) {
-        return chalk.blue(cmdPart);
-      } else if (controlOperators.includes(cmdPart)) {
-        return `${EOL}${chalk.cyanBright(cmdPart)}`;
-      } else {
-        return cmdPart;
       }
+
+      if (cmdPart.includes('${cwd}')) {
+        return chalk.blue(cmdPart);
+      }
+
+      if (positionalArgsRegexProvider().test(cmdPart)) {
+        return chalk.yellow(cmdPart);
+      }
+
+      if (namedArgsRegexProvider().test(cmdPart)) {
+        return chalk.yellow(cmdPart);
+      }
+
+      if (dashArgsRegexProvider().test(cmdPart)) {
+        return chalk.blue(cmdPart);
+      }
+
+      return controlOperators.has(cmdPart)
+        ? `${EOL}${chalk.cyanBright(cmdPart)}`
+        : cmdPart;
     })
     .join(' ');
 };

@@ -1,18 +1,20 @@
-import { IProcessOptions, IProcessRunOptions, Process } from './Process';
-import * as execa from 'execa';
-import { ProcessesBase } from './ProcessesBase';
+import type execa from 'execa';
+import {
+  type IProcessOptions,
+  type IProcessRunOptions,
+  Process,
+} from './Process.ts';
+import {ProcessesBase} from './ProcessesBase.ts';
 
 export class ParallelProcesses extends ProcessesBase {
-  protected readonly processes: ReadonlyArray<Process>;
+  protected readonly processes: readonly Process[];
 
   constructor(private readonly processOptions: IProcessOptions[]) {
     super();
     this.processes = this.processOptions.map((options) => new Process(options));
   }
 
-  async run(
-    options: IProcessRunOptions
-  ): Promise<execa.ExecaReturnValue<string>[]> {
+  async run(options: IProcessRunOptions): Promise<execa.ExecaReturnValue[]> {
     const results: execa.ExecaReturnValue[] = [];
 
     const instances = this.processes.map(async (process) => {

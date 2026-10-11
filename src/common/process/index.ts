@@ -1,3 +1,3 @@
-export * from './ParallelProcesses';
-export * from './Process';
-export * from './SequentialProcesses';
+export * from './ParallelProcesses.ts';
+export * from './Process.ts';
+export * from './SequentialProcesses.ts';

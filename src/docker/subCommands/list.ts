@@ -1,12 +1,12 @@
-import { ConsoleInterface } from '../../common';
-import { getContainers, containerStatusColoring } from '../utils';
+import {ConsoleInterface} from '../../common/index.ts';
+import {getContainers, containerStatusColoring} from '../utils/index.ts';
 
-export interface IListCommandParams {
+export type IListCommandParams = {
   onlyShowRunning: boolean;
-}
+};
 
 export const listCommand = async ({
-  onlyShowRunning
+  onlyShowRunning,
 }: IListCommandParams): Promise<void> => {
   const processes = await getContainers(onlyShowRunning);
 
@@ -18,14 +18,14 @@ export const listCommand = async ({
       process.image,
       process.status,
       process.ports || '',
-      process.containerId
+      process.containerId,
     ];
 
-    return row.map((text) => color(text) as string);
+    return row.map((text) => color(text));
   });
 
   ConsoleInterface.printTable(
     ['Name', 'Image', 'Status', 'Ports', 'Container Id'],
-    rows
+    rows,
   );
 };

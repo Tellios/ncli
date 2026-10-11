@@ -1,61 +1,61 @@
-import { commandBase, yargsWrapper } from '../common';
-import { addAll, commit, getStatus } from './utils';
+import {commandBase, yargsWrapper} from '../common/index.ts';
+import {addAll, commit, getStatus} from './utils/index.ts';
 
-commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
+commandBase<'ncommit'>(async ({workingDirectory, settings}) => {
   const args = yargsWrapper()
     .epilogue('ncommit makes doing git commit less tedious')
     .option('addAll', {
       alias: 'a',
       describe: 'Stage all git changes (git add .) before commit',
       type: 'boolean',
-      default: settings.addAll ?? false
+      default: settings.addAll ?? false,
     })
     .option('message', {
       alias: 'm',
       describe:
         'Commit message. If you are using edit, message is optional. Not supplying a message will automatically supply --no-edit to the git commit command.',
       type: 'string',
-      demandOption: false
+      demandOption: false,
     })
     .option('push', {
       alias: 'p',
       describe: 'Push to remote after commiting',
       type: 'boolean',
-      default: settings.push ?? false
+      default: settings.push ?? false,
     })
     .option('force', {
       alias: 'f',
       describe: 'If --force should be used when pushing to remote',
       type: 'boolean',
-      default: settings.force ?? false
+      default: settings.force ?? false,
     })
     .option('noVerify', {
       alias: 'n',
       describe: 'Add --no-verify to git commit and push commands',
       type: 'boolean',
-      default: settings.noVerify ?? false
+      default: settings.noVerify ?? false,
     })
     .option('tags', {
       alias: 't',
       describe: 'Also push all tags',
       type: 'boolean',
-      default: settings.tags ?? false
+      default: settings.tags ?? false,
     })
     .option('edit', {
       alias: 'e',
       describe: 'Edit the previous commit (git commit --amend)',
       type: 'boolean',
-      default: false
+      default: false,
     })
     .option('sign', {
       alias: 's',
       describe: 'Sign the commit',
       type: 'boolean',
-      default: settings.sign ?? false
+      default: settings.sign ?? false,
     }).argv;
 
   if (!args.edit && !args.message) {
-    throw new Error(`'message' is required when 'edit' is not used`);
+    throw new Error("'message' is required when 'edit' is not used");
   }
 
   const status = await getStatus(workingDirectory);
@@ -73,7 +73,7 @@ commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
       args.tags,
       args.edit,
       args.force,
-      args.sign
+      args.sign,
     );
   } else {
     throw new Error('Nothing to commit');

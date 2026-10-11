@@ -1,5 +1,5 @@
 module.exports = {
   preset: 'ts-jest',
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
-  collectCoverageFrom: ['src/**/*.ts']
+  collectCoverageFrom: ['src/**/*.ts'],
 };

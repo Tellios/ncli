@@ -1,33 +1,33 @@
-import * as process from 'process';
-import * as path from 'path';
-import { ConsoleInterface, Type, CmdError } from '../console';
+import process from 'node:process';
+import path from 'node:path';
+import {ConsoleInterface, Type, CmdError} from '../console/index.ts';
 import {
   getSettings,
   getAggregatedCommandSettings,
-  NcliCommand,
-  ISettingsFor,
-  IAvailableSettings,
+  type NcliCommand,
+  type ISettingsFor,
+  type IAvailableSettings,
   updateSetting,
-  SettingValue
-} from '../settings';
+  type SettingValue,
+} from '../settings/index.ts';
 
-export interface IExecutorParams<T extends NcliCommand> {
+export type IExecutorParams<T extends NcliCommand> = {
   workingDirectory: string;
   settings: ISettingsFor<T>;
   setSetting: <TKey extends keyof IAvailableSettings[T]>(
     key: keyof IAvailableSettings[T],
     value: NonNullable<ISettingsFor<T>[TKey]>,
-    directory?: string
+    directory?: string,
   ) => Promise<void>;
   getSettings: (directory?: string) => Promise<ISettingsFor<T>>;
-}
+};
 
 export type Executor<T extends NcliCommand> = (
-  params: IExecutorParams<T>
+  parameters: IExecutorParams<T>,
 ) => Promise<void>;
 
 export async function commandBase<T extends NcliCommand = any>(
-  executor: Executor<T>
+  executor: Executor<T>,
 ): Promise<void> {
   const workingDirectory = process.cwd();
   const commandExecuted = path.parse(process.argv[1]).name as NcliCommand;
@@ -36,13 +36,13 @@ export async function commandBase<T extends NcliCommand = any>(
     const settings = await getSettings();
     const commandSettings = await getAggregatedCommandSettings(
       commandExecuted,
-      settings
+      settings,
     );
 
     await executor({
       workingDirectory,
       settings: commandSettings as ISettingsFor<T>,
-      setSetting: async (key, value, directory) => {
+      async setSetting(key, value, directory) {
         await updateSetting(commandExecuted, {
           key: key as string,
           // The types for the function will protect from sending in
@@ -51,24 +51,24 @@ export async function commandBase<T extends NcliCommand = any>(
           // cast it here.
           value: value as SettingValue,
           scope: 'workingDirectory',
-          workingDirectory: directory ?? workingDirectory
+          workingDirectory: directory ?? workingDirectory,
         });
       },
-      getSettings: async (directory) => {
+      async getSettings(directory) {
         const retrievedSettings = await getAggregatedCommandSettings(
           commandExecuted,
           settings,
-          directory
+          directory,
         );
 
         return retrievedSettings as ISettingsFor<T>;
-      }
+      },
     });
-  } catch (err) {
-    if (err instanceof CmdError) {
-      ConsoleInterface.printLine(err.processMessage, Type.error);
+  } catch (error) {
+    if (error instanceof CmdError) {
+      ConsoleInterface.printLine(error.processMessage, Type.error);
     } else {
-      ConsoleInterface.printLine((err as any).toString(), Type.error);
+      ConsoleInterface.printLine((error as any).toString(), Type.error);
     }
 
     process.exit(1);

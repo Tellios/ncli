@@ -1,9 +1,9 @@
-import { selectItems, ConsoleInterface, Type } from '../../common';
+import {selectItems, ConsoleInterface, Type} from '../../common/index.ts';
 import {
   getContainers,
   stopContainer,
-  getDockerContainersStatusRows
-} from '../utils';
+  getDockerContainersStatusRows,
+} from '../utils/index.ts';
 
 export const stopCommand = async (): Promise<void> => {
   const containers = await getContainers();
@@ -11,13 +11,13 @@ export const stopCommand = async (): Promise<void> => {
     (process) =>
       process.properties.State.Running ||
       process.properties.State.Restarting ||
-      process.properties.State.Paused
+      process.properties.State.Paused,
   );
 
   if (runningContainers.length === 0) {
     ConsoleInterface.printLine(
       'No containers with the states [Running], [Restarting] or [Paused] found',
-      Type.warn
+      Type.warn,
     );
     return;
   }
@@ -25,10 +25,10 @@ export const stopCommand = async (): Promise<void> => {
   const rows = getDockerContainersStatusRows(runningContainers);
   const selectedIndexes = await selectItems({
     items: rows,
-    message: 'Select container to stop'
+    message: 'Select container to stop',
   });
   const processesToStop = selectedIndexes.map(
-    (index) => runningContainers[index]
+    (index) => runningContainers[index],
   );
 
   for (const process of processesToStop) {

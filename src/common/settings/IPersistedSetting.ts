@@ -1,9 +1,9 @@
-import { SettingScope } from './SettingScope';
-import { SettingValue } from './SettingValue';
+import {type SettingScope} from './SettingScope.ts';
+import {type SettingValue} from './SettingValue.ts';
 
-export interface IPersistedSetting {
+export type IPersistedSetting = {
   key: string;
   scope: SettingScope;
   workingDirectory?: string;
   value: SettingValue;
-}
+};

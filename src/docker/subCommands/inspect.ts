@@ -1,16 +1,16 @@
-import { selectItem } from '../../common';
+import {selectItem} from '../../common/index.ts';
 import {
   getContainers,
   getDockerContainersStatusRows,
-  inspectResource
-} from '../utils';
+  inspectResource,
+} from '../utils/index.ts';
 
-export interface IInspectCommandParams {
+export type IInspectCommandParams = {
   onlyShowRunning: boolean;
-}
+};
 
 export const inspectCommand = async ({
-  onlyShowRunning
+  onlyShowRunning,
 }: IInspectCommandParams): Promise<void> => {
   const containers = await getContainers(onlyShowRunning);
   const rows: string[] = getDockerContainersStatusRows(containers);

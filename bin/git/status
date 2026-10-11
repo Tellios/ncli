@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../../dist/git/status.js');
+import '../../dist/git/status.js';

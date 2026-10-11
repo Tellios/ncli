@@ -1,10 +1,10 @@
-import { camelCase } from 'lodash';
+import {camelCase} from 'lodash';
 
 const delimiterRegex = /\s{2,100}/g;
 const splitDelimiter = '[________]';
 
 function getRowColumns(row: string): string[] {
-  return row.replace(delimiterRegex, splitDelimiter).split(splitDelimiter);
+  return row.replaceAll(delimiterRegex, splitDelimiter).split(splitDelimiter);
 }
 
 export const parseCliTable = <T>(processRows: string[]): T[] => {
@@ -23,9 +23,9 @@ export const parseCliTable = <T>(processRows: string[]): T[] => {
 
   const parsedRows: T[] = [];
 
-  dataRows.forEach((row) => {
+  for (const row of dataRows) {
     if (row.length === 0) {
-      return;
+      continue;
     }
 
     const dataColumns = getRowColumns(row);
@@ -34,7 +34,7 @@ export const parseCliTable = <T>(processRows: string[]): T[] => {
       (
         process: Record<string, string | undefined>,
         columnName: string,
-        columnIndex: number
+        columnIndex: number,
       ) => {
         if (dataColumns.length < columnIndex) {
           process[columnName] = undefined;
@@ -46,11 +46,11 @@ export const parseCliTable = <T>(processRows: string[]): T[] => {
 
         return process;
       },
-      {}
+      {},
     );
 
     parsedRows.push(parsedRow as unknown as T);
-  });
+  }
 
   return parsedRows;
 };

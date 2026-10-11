@@ -1,11 +1,11 @@
-import { positionalArgsRegexProvider } from '../../common';
+import {positionalArgsRegexProvider} from '../../common/index.ts';
 import {
-  ExecutionPlan,
-  IAlias,
-  IAliasTask,
-  ICommand,
-  isAliasTask
-} from '../alias.interfaces';
+  type ExecutionPlan,
+  type IAlias,
+  type IAliasTask,
+  type ICommand,
+  isAliasTask,
+} from '../alias.interfaces.ts';
 
 export const parseCommand = (alias: IAlias): ExecutionPlan => {
   if (Array.isArray(alias.cmd)) {
@@ -17,7 +17,7 @@ export const parseCommand = (alias: IAlias): ExecutionPlan => {
         interactive: task.interactive ?? alias.interactive,
         commands: Array.isArray(task.cmd)
           ? task.cmd.map(parseCommandText)
-          : [parseCommandText(task.cmd)]
+          : [parseCommandText(task.cmd)],
       }));
     }
 
@@ -25,26 +25,28 @@ export const parseCommand = (alias: IAlias): ExecutionPlan => {
       {
         type: alias.type ?? 'sequential',
         interactive: alias.interactive,
-        commands: (alias.cmd as string[]).map(parseCommandText)
-      }
-    ];
-  } else if (alias.cmd === '') {
-    throw new Error('Command text is an empty string');
-  } else {
-    return [
-      {
-        type: alias.type ?? 'sequential',
-        interactive: alias.interactive,
-        commands: [parseCommandText(alias.cmd)]
-      }
+        commands: (alias.cmd as string[]).map(parseCommandText),
+      },
     ];
   }
+
+  if (alias.cmd === '') {
+    throw new Error('Command text is an empty string');
+  }
+
+  return [
+    {
+      type: alias.type ?? 'sequential',
+      interactive: alias.interactive,
+      commands: [parseCommandText(alias.cmd)],
+    },
+  ];
 };
 
 const parseCommandText = (commandText: string): ICommand => {
   const positionalArgsRegex = positionalArgsRegexProvider();
   const positionalArguments = new Set<string>();
-  let matches: string[] | null;
+  let matches: string[] | undefined;
 
   while ((matches = positionalArgsRegex.exec(commandText)) !== null) {
     positionalArguments.add(matches[0]);
@@ -52,6 +54,6 @@ const parseCommandText = (commandText: string): ICommand => {
 
   return {
     commandText,
-    positionalArguments: [...positionalArguments.values()]
+    positionalArguments: [...positionalArguments],
   };
 };

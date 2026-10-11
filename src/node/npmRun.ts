@@ -1,53 +1,53 @@
-import { yargsWrapper, commandBase } from '../common';
+import {yargsWrapper, commandBase} from '../common/index.ts';
 import {
   parsePackageJson,
   executePackageJsonScript,
   selectScript,
   selectWorkspace,
-  Workspace
-} from './utils';
+  type Workspace,
+} from './utils/index.ts';
 import {
   listPackageJsonScripts,
   addPackageJsonScript,
   deletePackageJsonScript,
   editPackageJsonScript,
   runScripts,
-  selectScripts
-} from './subCommands';
+  selectScripts,
+} from './subCommands/index.ts';
 
 const args = yargsWrapper()
   .option('list', {
     alias: 'l',
     describe: 'Lists the available NPM scripts',
-    type: 'boolean'
+    type: 'boolean',
   })
   .option('add', {
     alias: 'a',
     describe: 'Add a new NPM script',
-    type: 'boolean'
+    type: 'boolean',
   })
   .option('async', {
-    describe: 'Select multiple NPM scripts to run concurrently'
+    describe: 'Select multiple NPM scripts to run concurrently',
   })
   .option('edit', {
     alias: 'e',
     describe: 'Edit an existing NPM script',
-    type: 'boolean'
+    type: 'boolean',
   })
   .option('delete', {
     alias: 'd',
     describe: 'Delete an existing NPM script',
-    type: 'boolean'
+    type: 'boolean',
   })
   .option('workspace', {
     alias: 'w',
     describe:
       'If the script should be executed inside a workspace project instead',
-    type: 'boolean'
+    type: 'boolean',
   }).argv;
 
 commandBase<'nr'>(
-  async ({ workingDirectory, settings, setSetting, getSettings }) => {
+  async ({workingDirectory, settings, setSetting, getSettings}) => {
     let packageJson = await parsePackageJson(workingDirectory);
     let workspace: Workspace | undefined;
 
@@ -55,7 +55,7 @@ commandBase<'nr'>(
       workspace = await selectWorkspace(
         workingDirectory,
         packageJson,
-        settings.lastSelectedWorkspace
+        settings.lastSelectedWorkspace,
       );
 
       packageJson = await parsePackageJson(workspace.absolutePath);
@@ -78,24 +78,24 @@ commandBase<'nr'>(
       await runScripts(
         args._.map((a) => a.toString()),
         packageJson,
-        workingDirectory
+        workingDirectory,
       );
     } else {
       const selectedScript = await selectScript(
         packageJson.scripts,
-        settings.lastExecutedScript
+        settings.lastExecutedScript,
       );
       await setSetting(
         'lastExecutedScript',
         selectedScript,
-        workspace?.absolutePath
+        workspace?.absolutePath,
       );
 
       await executePackageJsonScript(
         selectedScript,
         packageJson.scripts,
-        workingDirectory
+        workingDirectory,
       );
     }
-  }
+  },
 );

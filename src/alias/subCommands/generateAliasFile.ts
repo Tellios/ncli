@@ -1,5 +1,5 @@
-import { ConsoleInterface } from '../../common';
-import { aliasFile } from '../utils';
+import {ConsoleInterface} from '../../common/index.ts';
+import {aliasFile} from '../utils/index.ts';
 
 export const generateAliasFile = async (): Promise<void> => {
   if (await aliasFile.exists()) {

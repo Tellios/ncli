@@ -1,8 +1,8 @@
-import { shellQuote } from './shellQuote';
+import {shellQuote} from './shellQuote.ts';
 import {
   buildInteractiveShellCommand,
-  getInteractiveSpawn
-} from './runInteractiveCommand';
+  getInteractiveSpawn,
+} from './runInteractiveCommand.ts';
 
 describe('shellQuote', () => {
   it('should leave simple tokens unquoted', () => {
@@ -18,19 +18,19 @@ describe('shellQuote', () => {
 describe('runInteractiveCommand', () => {
   it('should wrap command with working directory cd', () => {
     expect(
-      buildInteractiveShellCommand('yarn test -- --watch', '/tmp/work')
+      buildInteractiveShellCommand('yarn test -- --watch', '/tmp/work'),
     ).toBe('cd /tmp/work && yarn test -- --watch');
   });
 
   it('should build script spawn args on linux', () => {
-    const platform = process.platform;
-    Object.defineProperty(process, 'platform', { value: 'linux' });
+    const {platform} = process;
+    Object.defineProperty(process, 'platform', {value: 'linux'});
 
     expect(getInteractiveSpawn('yarn test', '/tmp/work')).toEqual({
       file: 'script',
-      args: ['-q', '-c', 'cd /tmp/work && yarn test', '/dev/null']
+      args: ['-q', '-c', 'cd /tmp/work && yarn test', '/dev/null'],
     });
 
-    Object.defineProperty(process, 'platform', { value: platform });
+    Object.defineProperty(process, 'platform', {value: platform});
   });
 });

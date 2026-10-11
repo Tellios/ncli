@@ -1,5 +1,5 @@
-import { ConsoleInterface, selectItem, Type } from '../../common';
-import { getAvailableContexts, useContext } from '../utils';
+import {ConsoleInterface, selectItem, Type} from '../../common/index.ts';
+import {getAvailableContexts, useContext} from '../utils/index.ts';
 
 export async function contextCommand(): Promise<void> {
   const contexts = await getAvailableContexts();
@@ -7,8 +7,8 @@ export async function contextCommand(): Promise<void> {
 
   if (contexts.length === 0) {
     ConsoleInterface.printLine(
-      `No contexts available, add some contexts to the kubectl config to use this command`,
-      Type.warn
+      'No contexts available, add some contexts to the kubectl config to use this command',
+      Type.warn,
     );
     return;
   }

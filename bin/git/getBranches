@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../../dist/git/getBranches.js');
+import '../../dist/git/getBranches.js';

@@ -1,8 +1,8 @@
-export interface IUserArguments {
+export type IUserArguments = {
   positional: string[];
   named: Record<string, string>;
   appended: string[];
-}
+};
 
 export class UserArgumentParseError extends Error {
   public constructor(message: string) {
@@ -15,21 +15,21 @@ export function parseUserArguments(userArgs: string[]): IUserArguments {
   const parsedUserArgs: IUserArguments = {
     positional: [],
     named: {},
-    appended: []
+    appended: [],
   };
-  let appendArgs = false;
+  let isAppendArgs = false;
 
-  userArgs.forEach((arg) => {
+  for (const arg of userArgs) {
     if (arg === '--') {
-      appendArgs = true;
-    } else if (appendArgs) {
+      isAppendArgs = true;
+    } else if (isAppendArgs) {
       parsedUserArgs.appended.push(arg);
     } else if (arg.startsWith('--')) {
-      const [key, value] = arg.substring(2).split('=');
+      const [key, value] = arg.slice(2).split('=', 2);
 
       if (value === undefined) {
         throw new UserArgumentParseError(
-          `'${key}' argument provided incorrectly. Named arguments must be supplied using the format '--key=value'.`
+          `'${key}' argument provided incorrectly. Named arguments must be supplied using the format '--key=value'.`,
         );
       }
 
@@ -37,7 +37,7 @@ export function parseUserArguments(userArgs: string[]): IUserArguments {
     } else {
       parsedUserArgs.positional.push(arg);
     }
-  });
+  }
 
   return parsedUserArgs;
 }

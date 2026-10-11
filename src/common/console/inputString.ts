@@ -1,16 +1,16 @@
-import * as inquirer from 'inquirer';
+import inquirer from 'inquirer';
 
 export async function inputString(
   message: string,
   validateFn?: (input: string) => boolean | string,
-  prefill?: string
+  prefill?: string,
 ): Promise<string> {
   const prompt = inquirer.prompt({
     message,
     name: 'input',
     type: 'input',
     default: prefill,
-    validate: validateFn
+    validate: validateFn,
   });
 
   if (prefill) {

@@ -1,13 +1,10 @@
-import * as chalk from 'chalk';
-import { IPersistedSetting } from '../../common';
+import chalk from 'chalk';
+import {type IPersistedSetting} from '../../common/index.ts';
 
-export const getPrintableSettings = (
-  settings: IPersistedSetting[]
-): string[] => {
-  return settings.map(({ key, value, workingDirectory }) => {
+export const getPrintableSettings = (settings: IPersistedSetting[]): string[] =>
+  settings.map(({key, value, workingDirectory}) => {
     const keyToPrint = chalk.cyanBright(key);
     const valueToPrint = chalk.greenBright(value);
 
     return `${keyToPrint} (${workingDirectory ?? 'Global'}): ${valueToPrint}`;
   });
-};

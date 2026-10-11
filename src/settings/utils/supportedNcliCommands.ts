@@ -1,20 +1,14 @@
 import {
   availableSettings,
-  NcliCommand,
-  ISettingDescription,
-  SettingType
-} from '../../common';
+  type NcliCommand,
+  type ISettingDescription,
+  type SettingType,
+} from '../../common/index.ts';
 
 export const supportedNcliCommands: NcliCommand[] = Object.entries(
-  availableSettings
+  availableSettings,
 )
-  .filter(([_, settings]) => {
-    return (
-      Object.entries(settings).filter(
-        ([_, description]: [string, ISettingDescription<SettingType>]) => {
-          return !description.hidden;
-        }
-      ).length > 0
-    );
-  })
+  .filter(([_, settings]) =>
+    Object.values(settings).some((description) => !description.hidden),
+  )
   .map(([key, _]) => key) as NcliCommand[];

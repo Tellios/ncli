@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../dist/docker/docker.js');
+import '../dist/docker/docker.js';

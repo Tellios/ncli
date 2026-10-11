@@ -1,12 +1,12 @@
-import * as os from 'os';
-import * as path from 'path';
-import * as fs from 'fs-extra';
+import os from 'node:os';
+import path from 'node:path';
+import fs from 'fs-extra';
 import {
   buildExecArgs,
   listBinaries,
   parseBinaryArgs,
-  splitArguments
-} from './executeBinary';
+  splitArguments,
+} from './executeBinary.ts';
 
 describe('buildExecArgs', () => {
   it('should use exec for pnpm', () => {
@@ -14,7 +14,7 @@ describe('buildExecArgs', () => {
       'exec',
       'eslint',
       '--fix',
-      '.'
+      '.',
     ]);
   });
 
@@ -23,7 +23,7 @@ describe('buildExecArgs', () => {
       'exec',
       '--',
       'eslint',
-      '--fix'
+      '--fix',
     ]);
   });
 
@@ -33,7 +33,7 @@ describe('buildExecArgs', () => {
       '--no',
       '--',
       'eslint',
-      '--fix'
+      '--fix',
     ]);
   });
 });
@@ -66,7 +66,7 @@ describe('listBinaries', () => {
 
 describe('splitArguments', () => {
   it('should return no arguments for empty input', () => {
-    expect(splitArguments('   ')).toEqual([]);
+    expect(splitArguments(' '.repeat(3))).toEqual([]);
   });
 
   it('should split on whitespace', () => {
@@ -74,13 +74,9 @@ describe('splitArguments', () => {
   });
 
   it('should keep quoted text together', () => {
-    expect(splitArguments(`--grep "foo bar" --name='a b' "" it\\'s`)).toEqual([
-      '--grep',
-      'foo bar',
-      '--name=a b',
-      '',
-      "it's"
-    ]);
+    expect(
+      splitArguments(String.raw`--grep "foo bar" --name='a b' "" it\'s`),
+    ).toEqual(['--grep', 'foo bar', '--name=a b', '', "it's"]);
   });
 
   it('should throw on unterminated quotes', () => {
@@ -92,7 +88,7 @@ describe('parseBinaryArgs', () => {
   it('should parse the arguments per binary', () => {
     expect(parseBinaryArgs('{"tsc":"--noEmit","jest":"--watch"}')).toEqual({
       tsc: '--noEmit',
-      jest: '--watch'
+      jest: '--watch',
     });
   });
 
@@ -101,7 +97,7 @@ describe('parseBinaryArgs', () => {
     expect(parseBinaryArgs('--noEmit')).toEqual({});
     expect(parseBinaryArgs('["--noEmit"]')).toEqual({});
     expect(parseBinaryArgs('{"tsc":"--noEmit","jest":1}')).toEqual({
-      tsc: '--noEmit'
+      tsc: '--noEmit',
     });
   });
 });

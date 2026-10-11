@@ -1,5 +1,4 @@
-import { runCmdInConsole } from '../../common';
+import {runCmdInConsole} from '../../common/index.ts';
 
-export const checkout = (reference: string): Promise<void> => {
-  return runCmdInConsole('git', ['checkout', reference]);
-};
+export const checkout = async (reference: string): Promise<void> =>
+  runCmdInConsole('git', ['checkout', reference]);

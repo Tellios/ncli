@@ -1,50 +1,55 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { runCmdInConsole } from '../../common';
+import path from 'node:path';
+import fs from 'fs-extra';
+import {runCmdInConsole} from '../../common/index.ts';
 import {
   detectPackageManagerOrUseDefault,
-  PackageManager
-} from './detectPackageManager';
+  type PackageManager,
+} from './detectPackageManager.ts';
 
 /**
- * Builds the arguments for executing a locally installed binary
- * with the given package manager. npm is passed --no to prevent it
- * from downloading missing packages, matching the behavior of pnpm.
- * Yarn 1 parses flags after the binary name as its own unless they
- * are separated with --.
+ Builds the arguments for executing a locally installed binary
+ with the given package manager. npm is passed --no to prevent it
+ from downloading missing packages, matching the behavior of pnpm.
+ Yarn 1 parses flags after the binary name as its own unless they
+ are separated with --.
  */
 export function buildExecArgs(
   packageManager: PackageManager,
   cmd: string,
-  args: string[]
+  args: string[],
 ): string[] {
   switch (packageManager) {
-    case 'pnpm':
+    case 'pnpm': {
       return ['exec', cmd, ...args];
-    case 'yarn':
+    }
+
+    case 'yarn': {
       return ['exec', '--', cmd, ...args];
-    case 'npm':
+    }
+
+    case 'npm': {
       return ['exec', '--no', '--', cmd, ...args];
+    }
   }
 }
 
 export async function executeBinary(
   cmd: string,
   args: string[],
-  directory: string
+  directory: string,
 ): Promise<void> {
   const packageManager = await detectPackageManagerOrUseDefault(directory);
   await runCmdInConsole(
     packageManager,
     buildExecArgs(packageManager, cmd, args),
     true,
-    directory
+    directory,
   );
 }
 
 /**
- * Lists the binaries installed in node_modules/.bin, excluding
- * the Windows shims generated next to each binary.
+ Lists the binaries installed in node_modules/.bin, excluding
+ the Windows shims generated next to each binary.
  */
 export async function listBinaries(directory: string): Promise<string[]> {
   const binDirectory = path.join(directory, 'node_modules', '.bin');
@@ -62,13 +67,13 @@ export async function listBinaries(directory: string): Promise<string[]> {
 }
 
 /**
- * Splits a command line string into arguments the way a shell
- * would, keeping quoted text together and honoring backslash escapes.
+ Splits a command line string into arguments the way a shell
+ would, keeping quoted text together and honoring backslash escapes.
  */
 export function splitArguments(input: string): string[] {
   const args: string[] = [];
   let current = '';
-  let inArgument = false;
+  let isInArgument = false;
   let quote: '"' | "'" | undefined;
 
   for (let i = 0; i < input.length; i++) {
@@ -82,7 +87,7 @@ export function splitArguments(input: string): string[] {
       }
     } else if (char === '\\' && i + 1 < input.length) {
       current += input[++i];
-      inArgument = true;
+      isInArgument = true;
     } else if (quote === '"') {
       if (char === '"') {
         quote = undefined;
@@ -91,24 +96,24 @@ export function splitArguments(input: string): string[] {
       }
     } else if (char === '"' || char === "'") {
       quote = char;
-      inArgument = true;
+      isInArgument = true;
     } else if (/\s/.test(char)) {
-      if (inArgument) {
+      if (isInArgument) {
         args.push(current);
         current = '';
-        inArgument = false;
+        isInArgument = false;
       }
     } else {
       current += char;
-      inArgument = true;
+      isInArgument = true;
     }
   }
 
   if (quote !== undefined) {
-    throw Error(`Unterminated ${quote} quote in arguments`);
+    throw new Error(`Unterminated ${quote} quote in arguments`);
   }
 
-  if (inArgument) {
+  if (isInArgument) {
     args.push(current);
   }
 
@@ -116,8 +121,8 @@ export function splitArguments(input: string): string[] {
 }
 
 /**
- * Parses the remembered arguments per binary. The settings only
- * support string values, so the map is persisted as JSON.
+ Parses the remembered arguments per binary. The settings only
+ support string values, so the map is persisted as JSON.
  */
 export function parseBinaryArgs(json?: string): Record<string, string> {
   if (!json) {
@@ -136,7 +141,7 @@ export function parseBinaryArgs(json?: string): Record<string, string> {
     }
 
     return Object.fromEntries(
-      Object.entries(parsed).filter(([, args]) => typeof args === 'string')
+      Object.entries(parsed).filter(([, args]) => typeof args === 'string'),
     ) as Record<string, string>;
   } catch {
     return {};

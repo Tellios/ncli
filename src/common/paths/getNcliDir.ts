@@ -1,6 +1,4 @@
-import * as path from 'path';
-import * as os from 'os';
+import path from 'node:path';
+import os from 'node:os';
 
-export const getNcliDir = (): string => {
-  return path.join(os.homedir(), '.ncli');
-};
+export const getNcliDir = (): string => path.join(os.homedir(), '.ncli');

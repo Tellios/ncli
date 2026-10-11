@@ -1,19 +1,19 @@
-import { runCmdInConsole, CmdError, confirm } from '../../common';
-import { getCurrentBranch } from './getCurrentBranch';
-import { setUpstream } from './setUpstream';
-import { appendNoVerifyIfEnabled } from './appendNoVerifyIfEnabled';
+import {runCmdInConsole, CmdError, confirm} from '../../common/index.ts';
+import {getCurrentBranch} from './getCurrentBranch.ts';
+import {setUpstream} from './setUpstream.ts';
+import {appendNoVerifyIfEnabled} from './appendNoVerifyIfEnabled.ts';
 
 export async function push(
   workingDirectory: string,
   useNoVerify: boolean,
   alsoPushTags: boolean,
-  force: boolean
+  force: boolean,
 ): Promise<void> {
   try {
     if (
       force &&
       !(await confirm(
-        'WARNING: Force push will be performed, are you sure you want to continue?'
+        'WARNING: Force push will be performed, are you sure you want to continue?',
       ))
     ) {
       throw new Error('Push aborted');
@@ -33,7 +33,7 @@ export async function push(
       if (error.exitCode === 128) {
         if (
           await confirm(
-            'Push failed, upstream may be missing, do you want to set it?'
+            'Push failed, upstream may be missing, do you want to set it?',
           )
         ) {
           const currentBranch = await getCurrentBranch(workingDirectory);

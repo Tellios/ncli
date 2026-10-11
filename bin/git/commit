@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../../dist/git/commit.js');
+import '../../dist/git/commit.js';

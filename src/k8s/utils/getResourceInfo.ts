@@ -1,16 +1,16 @@
-import { getCmdResult } from '../../common';
-import { ResourceType } from './ResourceType';
+import {getCmdResult} from '../../common/index.ts';
+import {type ResourceType} from './ResourceType.ts';
 
 export const getResourceInfo = async (
   type: ResourceType,
-  resourceName: string
+  resourceName: string,
 ): Promise<any> => {
   const data = await getCmdResult('kubectl', [
     'get',
     type,
     '-o',
     'json',
-    resourceName
+    resourceName,
   ]);
 
   return JSON.parse(data);

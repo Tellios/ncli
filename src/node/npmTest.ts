@@ -1,33 +1,33 @@
-import { yargsWrapper, ConsoleInterface, commandBase } from '../common';
+import {yargsWrapper, ConsoleInterface, commandBase} from '../common/index.ts';
 import {
   parsePackageJson,
   searchScripts,
   selectScript,
   selectWorkspace,
-  executePackageJsonScript
-} from './utils';
+  executePackageJsonScript,
+} from './utils/index.ts';
 
 const args = yargsWrapper()
   .option('watch', {
     alias: 'W',
     describe: 'Use test task with watcher instead of single-run',
-    type: 'boolean'
+    type: 'boolean',
   })
   .option('workspace', {
     alias: 'w',
     describe:
       'If the test should be executed inside a workspace project instead',
-    type: 'boolean'
+    type: 'boolean',
   }).argv;
 
-commandBase<'nt'>(async ({ workingDirectory, settings, setSetting }) => {
+commandBase<'nt'>(async ({workingDirectory, settings, setSetting}) => {
   let packageJson = await parsePackageJson(workingDirectory);
 
   if (args.workspace) {
     const workspace = await selectWorkspace(
       workingDirectory,
       packageJson,
-      settings.lastSelectedWorkspace
+      settings.lastSelectedWorkspace,
     );
 
     await setSetting('lastSelectedWorkspace', workspace.relativePath);
@@ -35,25 +35,23 @@ commandBase<'nt'>(async ({ workingDirectory, settings, setSetting }) => {
     packageJson = await parsePackageJson(workingDirectory);
   }
 
-  const { scripts } = packageJson;
+  const {scripts} = packageJson;
 
   let testScripts;
 
-  if (args.watch) {
-    testScripts = searchScripts(/test:watch|test-watch|test_watch$/i, scripts);
-  } else {
-    testScripts = searchScripts(/test$/i, scripts);
-  }
+  testScripts = args.watch
+    ? searchScripts(/test:watch|test-watch|test_watch$/i, scripts)
+    : searchScripts(/test$/i, scripts);
 
   const testScriptKeys = Object.keys(testScripts);
 
   if (testScriptKeys.length === 0) {
-    ConsoleInterface.printLine(`No test scripts found`);
+    ConsoleInterface.printLine('No test scripts found');
   } else if (testScriptKeys.length === 1) {
     await executePackageJsonScript(
       testScriptKeys[0],
       testScripts,
-      workingDirectory
+      workingDirectory,
     );
   } else {
     const scriptToRun = await selectScript(testScripts);

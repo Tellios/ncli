@@ -4,16 +4,19 @@ import {
   ConsoleInterface,
   Type,
   selectItems,
-  NcliCommand
-} from '../../common';
-import { selectCommandToConfigure, getPrintableSettings } from '../utils';
+  type NcliCommand,
+} from '../../common/index.ts';
+import {
+  selectCommandToConfigure,
+  getPrintableSettings,
+} from '../utils/index.ts';
 
 export const deleteCommand = async (): Promise<void> => {
   const settings = await getSettings();
   const commandsWithSettings = Object.keys(settings) as NcliCommand[];
 
   if (commandsWithSettings.length === 0) {
-    ConsoleInterface.printLine(`Settings file is empty`, Type.warn);
+    ConsoleInterface.printLine('Settings file is empty', Type.warn);
     return;
   }
 
@@ -21,14 +24,14 @@ export const deleteCommand = async (): Promise<void> => {
   const commandSettings = settings[command];
 
   if (commandSettings === undefined) {
-    ConsoleInterface.printLine(`No settings made for command`);
+    ConsoleInterface.printLine('No settings made for command');
     return;
   }
 
   const selectables = getPrintableSettings(commandSettings);
   const indexes = await selectItems({
     items: selectables,
-    message: 'Select items to delete'
+    message: 'Select items to delete',
   });
   const selectedSettings = indexes.map((index) => commandSettings[index]);
 

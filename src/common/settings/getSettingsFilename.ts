@@ -1,6 +1,5 @@
-import * as path from 'path';
-import { getNcliDir } from '../paths';
+import path from 'node:path';
+import {getNcliDir} from '../paths/index.ts';
 
-export const getSettingsFilename = (): string => {
-  return path.join(getNcliDir(), '.settings.json');
-};
+export const getSettingsFilename = (): string =>
+  path.join(getNcliDir(), '.settings.json');

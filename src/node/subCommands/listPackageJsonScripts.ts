@@ -1,12 +1,11 @@
-import { ConsoleInterface, colorizeCommand } from '../../common';
+import {ConsoleInterface, colorizeCommand} from '../../common/index.ts';
 
 export function listPackageJsonScripts(
-  availableScripts: NcliNode.Scripts
+  availableScripts: NcliNode.Scripts,
 ): void {
-  const scriptsTable = Object.keys(availableScripts).map((script) => [
-    script,
-    colorizeCommand(availableScripts[script])
-  ]);
+  const scriptsTable = Object.entries(availableScripts).map(
+    ([script, value]) => [script, colorizeCommand(value)],
+  );
 
   ConsoleInterface.printTable(['Script', 'Command'], scriptsTable);
 }

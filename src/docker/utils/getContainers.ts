@@ -1,28 +1,26 @@
-import { getCmdResult } from '../../common';
-import { IDockerContainer, parseContainerRows } from '../utils';
+import {getCmdResult} from '../../common/index.ts';
+import {type IDockerContainer, parseContainerRows} from './index.ts';
 
-export const getContainers = (
-  onlyRunning = false
-): Promise<IDockerContainer[]> => {
-  return getCmdResult('docker', ['ps', onlyRunning ? '' : '-a']).then(
-    (result) => {
+export const getContainers = async (
+  onlyRunning = false,
+): Promise<IDockerContainer[]> =>
+  getCmdResult('docker', ['ps', onlyRunning ? '' : '-a']).then(
+    async (result) => {
       const containers = parseContainerRows(result.split('\n'));
 
       return Promise.all(
-        containers.map((container) => {
-          return getCmdResult('docker', [
-            'inspect',
-            container.containerId
-          ]).then((containerInfoData: string) => {
-            const containerInfo = JSON.parse(containerInfoData)[0];
+        containers.map(async (container) =>
+          getCmdResult('docker', ['inspect', container.containerId]).then(
+            (containerInfoData: string) => {
+              const containerInfo = JSON.parse(containerInfoData)[0];
 
-            return {
-              ...container,
-              properties: containerInfo
-            };
-          });
-        })
+              return {
+                ...container,
+                properties: containerInfo,
+              };
+            },
+          ),
+        ),
       );
-    }
+    },
   );
-};

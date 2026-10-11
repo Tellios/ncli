@@ -1,24 +1,23 @@
-import * as cp from 'child_process';
+import cp from 'node:child_process';
 
-export const getCmdResult = (
+export const getCmdResult = async (
   cmd: string,
   args: string[],
-  cwd?: string
-): Promise<string> => {
-  return new Promise((resolve, reject) => {
+  cwd?: string,
+): Promise<string> =>
+  new Promise((resolve, reject) => {
     cp.exec(
       [cmd, ...args].join(' '),
       {
-        cwd
+        cwd,
       },
-      (error: cp.ExecException | null, stdout: string) => {
+      (error: cp.ExecException | undefined, stdout: string) => {
         if (error) {
           reject(error);
           return;
         }
 
         resolve(stdout);
-      }
+      },
     );
   });
-};

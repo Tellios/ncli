@@ -1,26 +1,26 @@
-import { ConsoleInterface, Type } from '../../common';
+import {ConsoleInterface, Type} from '../../common/index.ts';
 import {
   selectResource,
   getResources,
   deleteResource,
   resolveResourceType,
-  IResolveResourceTypeParams
-} from '../utils';
+  type IResolveResourceTypeParams,
+} from '../utils/index.ts';
 
-export interface IDeleteScriptParams {
+export type IDeleteScriptParams = {
   type: IResolveResourceTypeParams;
-}
+};
 
 export async function deleteCommand(
-  params: IDeleteScriptParams
+  parameters: IDeleteScriptParams,
 ): Promise<void> {
-  const type = await resolveResourceType(params.type);
+  const type = await resolveResourceType(parameters.type);
   const resources = await getResources(type);
 
   if (resources.length === 0) {
     ConsoleInterface.printLine(
       `No resources of type ${type} was found using current context`,
-      Type.warn
+      Type.warn,
     );
     return;
   }

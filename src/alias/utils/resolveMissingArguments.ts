@@ -1,36 +1,36 @@
-import { cloneDeep } from 'lodash';
-import { inputString } from '../../common';
-import { IUserArguments } from './parseUserArguments';
-import { builtInArguments } from './builtInArguments';
-import { ExecutionPlan } from '../alias.interfaces';
+import {cloneDeep} from 'lodash';
+import {inputString} from '../../common/index.ts';
+import {type ExecutionPlan} from '../alias.interfaces.ts';
+import {type IUserArguments} from './parseUserArguments.ts';
+import {builtInArguments} from './builtInArguments.ts';
 
 export const resolveMissingArguments = async (
   plan: ExecutionPlan,
-  userArguments: IUserArguments
+  userArguments: IUserArguments,
 ): Promise<IUserArguments> => {
   const newUserArguments = cloneDeep(userArguments);
 
-  const commands = plan
-    .map((step) => step.commands.map((c) => c.commandText))
-    .flat();
+  const commands = plan.flatMap((step) =>
+    step.commands.map((c) => c.commandText),
+  );
 
   const requestedPositionalArguments = await getMissingPositionalArguments(
     commands,
-    userArguments
+    userArguments,
   );
 
   const requestedNamedArguments = await getMissingNamedArguments(
     commands,
-    userArguments
+    userArguments,
   );
 
   newUserArguments.named = {
     ...newUserArguments.named,
-    ...requestedNamedArguments
+    ...requestedNamedArguments,
   };
   newUserArguments.positional = [
     ...newUserArguments.positional,
-    ...requestedPositionalArguments
+    ...requestedPositionalArguments,
   ];
 
   return newUserArguments;
@@ -38,48 +38,46 @@ export const resolveMissingArguments = async (
 
 const getMissingNamedArguments = async (
   commands: string[],
-  userArguments: IUserArguments
+  userArguments: IUserArguments,
 ): Promise<Record<string, string>> => {
   const namedArguments = getNamedArgumentsFromCommands(commands);
   const missingNamedArguments = getNamedArgumentsMissingInUserArguments(
     userArguments,
-    namedArguments
+    namedArguments,
   );
-  return await requestMissingNamedArguments(missingNamedArguments);
+  return requestMissingNamedArguments(missingNamedArguments);
 };
 
 const getMissingPositionalArguments = async (
   commands: string[],
-  userArguments: IUserArguments
+  userArguments: IUserArguments,
 ): Promise<string[]> => {
   const positionalArguments = getPositionalArgumentsFromCommands(commands);
   const missingPositionalArguments =
     getPositionalArgumentsMissingInUserArguments(
       userArguments,
-      positionalArguments
+      positionalArguments,
     );
 
-  return await requestMissingPositionalArguments(missingPositionalArguments);
+  return requestMissingPositionalArguments(missingPositionalArguments);
 };
 
-const getNamedArgumentsFromCommands = (commands: string[]): string[] => {
-  return commands
-    .map((c) => c.match(/\${([a-z])*}/gi))
+const getNamedArgumentsFromCommands = (commands: string[]): string[] =>
+  commands
+    .map((c) => c.match(/\$\{([a-z])*\}/gi))
     .reduce(appendArgumentIfUnique, [])
     .map(extractArgumentName);
-};
 
-const getPositionalArgumentsFromCommands = (commands: string[]): string[] => {
-  return commands
-    .map((c) => c.match(/\$\d+/gi))
+const getPositionalArgumentsFromCommands = (commands: string[]): string[] =>
+  commands
+    .map((c) => c.match(/\$\d+/g))
     .reduce(appendArgumentIfUnique, [])
-    .map((a) => a.substring(1))
+    .map((a) => a.slice(1))
     .sort();
-};
 
 const appendArgumentIfUnique = (
   acc: string[],
-  current: RegExpMatchArray | null
+  current: RegExpMatchArray | undefined,
 ): string[] => {
   current?.forEach((match) => {
     if (!acc.includes(match)) {
@@ -95,69 +93,59 @@ const extractArgumentName = (argument: string): string =>
 
 const getNamedArgumentsMissingInUserArguments = (
   userArguments: IUserArguments,
-  expectedArguments: string[]
-): string[] => {
-  return expectedArguments.filter((commandArgument) => {
-    return (
+  expectedArguments: string[],
+): string[] =>
+  expectedArguments.filter(
+    (commandArgument) =>
       !(commandArgument in userArguments.named) &&
-      !builtInArguments.includes(commandArgument)
-    );
-  });
-};
+      !builtInArguments.includes(commandArgument),
+  );
 
 const getPositionalArgumentsMissingInUserArguments = (
   userArguments: IUserArguments,
-  expectedArguments: string[]
+  expectedArguments: string[],
 ): string[] => {
   const missingArgumentCount = Math.abs(
-    userArguments.positional.length - expectedArguments.length
+    userArguments.positional.length - expectedArguments.length,
   );
 
   return expectedArguments.slice(
-    expectedArguments.length - missingArgumentCount
+    expectedArguments.length - missingArgumentCount,
   );
 };
 
 const requestMissingNamedArguments = async (
-  missingArguments: string[]
+  missingArguments: string[],
 ): Promise<Record<string, string>> => {
   const requestedArguments: Record<string, string> = {};
 
   for (const missingArgument of missingArguments) {
-    requestedArguments[missingArgument] = await requestArgumentUsingConsole(
-      missingArgument
-    );
+    requestedArguments[missingArgument] =
+      await requestArgumentUsingConsole(missingArgument);
   }
 
   return requestedArguments;
 };
 
 const requestMissingPositionalArguments = async (
-  missingPositionalArguments: string[]
+  missingPositionalArguments: string[],
 ): Promise<string[]> => {
   const requestedArguments: string[] = [];
 
   for (const positionalArgument of missingPositionalArguments) {
     requestedArguments.push(
-      await requestArgumentUsingConsole(`Positional ${positionalArgument}`)
+      await requestArgumentUsingConsole(`Positional ${positionalArgument}`),
     );
   }
 
   return requestedArguments;
 };
 
-const requestArgumentUsingConsole = async (
-  argument: string
-): Promise<string> => {
-  return await inputString(argument, (input) => {
-    if (/\s/g.test(input)) {
+const requestArgumentUsingConsole = async (argument: string): Promise<string> =>
+  inputString(argument, (input) => {
+    if (/\s/.test(input)) {
       return "Parameter can't contain whitespace";
     }
 
-    if (input.length === 0) {
-      return "Parameter can't be empty";
-    }
-
-    return true;
+    return input.length === 0 ? "Parameter can't be empty" : true;
   });
-};

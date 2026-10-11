@@ -1,12 +1,12 @@
-import { confirm, ConsoleInterface } from '../../common';
-import { IAlias } from '../alias.interfaces';
-import { validateAliases } from './validateAliases';
-import { aliasFile } from './aliasFile';
+import {confirm, ConsoleInterface} from '../../common/index.ts';
+import {type IAlias} from '../alias.interfaces.ts';
+import {validateAliases} from './validateAliases.ts';
+import {aliasFile} from './aliasFile.ts';
 
 export const getAliases = async (): Promise<IAlias[]> => {
-  const exists = await aliasFile.exists();
+  const isExists = await aliasFile.exists();
 
-  if (!exists) {
+  if (!isExists) {
     if (await confirm('No alias file found, do you want to create it?')) {
       await aliasFile.create();
       ConsoleInterface.printLine(`File created at ${aliasFile.getPath()}`);
@@ -14,16 +14,16 @@ export const getAliases = async (): Promise<IAlias[]> => {
       process.exit(0);
     }
 
-    throw Error(`No alias file found at: ${aliasFile.getPath()}`);
+    throw new Error(`No alias file found at: ${aliasFile.getPath()}`);
   }
 
   const doc = await aliasFile.read();
 
   if (!doc) {
-    throw Error(
-      'Failed to load yaml config, expected object but got undefined'
+    throw new Error(
+      'Failed to load yaml config, expected object but got undefined',
     );
   }
 
-  return await validateAliases(doc.aliases);
+  return validateAliases(doc.aliases);
 };

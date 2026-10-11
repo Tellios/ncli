@@ -1,12 +1,12 @@
-import { runCmdInConsole } from '../../common';
+import {runCmdInConsole} from '../../common/index.ts';
 
-export const deleteBranch = (
+export const deleteBranch = async (
   branchName: string,
   {
     alsoDeleteRemote = false,
     noVerify = false,
-    force = false
-  }: { alsoDeleteRemote: boolean; noVerify: boolean; force: boolean }
+    force = false,
+  }: {alsoDeleteRemote: boolean; noVerify: boolean; force: boolean},
 ): Promise<void> => {
   const args = ['branch', '-d', branchName];
 
@@ -14,17 +14,15 @@ export const deleteBranch = (
     args[1] = '-D';
   }
 
-  return runCmdInConsole('git', args).then(() => {
+  return runCmdInConsole('git', args).then(async () => {
     if (alsoDeleteRemote) {
       return runCmdInConsole('git', [
         'push',
         'origin',
         '--delete',
         branchName,
-        noVerify ? '--no-verify' : ''
+        noVerify ? '--no-verify' : '',
       ]);
     }
-
-    return Promise.resolve();
   });
 };

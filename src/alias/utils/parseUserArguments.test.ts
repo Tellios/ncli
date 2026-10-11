@@ -1,7 +1,7 @@
 import {
   parseUserArguments,
-  UserArgumentParseError
-} from './parseUserArguments';
+  UserArgumentParseError,
+} from './parseUserArguments.ts';
 
 describe('parseUserArguments', () => {
   it('should return no-name args as positional args', () => {
@@ -9,7 +9,7 @@ describe('parseUserArguments', () => {
     expect(parsedUserArgs).toEqual({
       positional: ['foo', 'bar'],
       named: {},
-      appended: []
+      appended: [],
     });
   });
 
@@ -17,8 +17,8 @@ describe('parseUserArguments', () => {
     const parsedUserArgs = parseUserArguments(['--foo=bar', '--pew=dew']);
     expect(parsedUserArgs).toEqual({
       positional: [],
-      named: { foo: 'bar', pew: 'dew' },
-      appended: []
+      named: {foo: 'bar', pew: 'dew'},
+      appended: [],
     });
   });
 
@@ -26,8 +26,8 @@ describe('parseUserArguments', () => {
     const parsedUserArgs = parseUserArguments(['--foo=bar', 'dew']);
     expect(parsedUserArgs).toEqual({
       positional: ['dew'],
-      named: { foo: 'bar' },
-      appended: []
+      named: {foo: 'bar'},
+      appended: [],
     });
   });
 
@@ -37,12 +37,12 @@ describe('parseUserArguments', () => {
       'dew',
       '--',
       'install',
-      'test'
+      'test',
     ]);
     expect(parsedUserArgs).toEqual({
       positional: ['dew'],
-      named: { foo: 'bar' },
-      appended: ['install', 'test']
+      named: {foo: 'bar'},
+      appended: ['install', 'test'],
     });
   });
 
@@ -51,21 +51,21 @@ describe('parseUserArguments', () => {
     expect(parsedUserArgs).toEqual({
       positional: [],
       named: {},
-      appended: []
+      appended: [],
     });
   });
 
   it('should throw an error if a named argument is missing its value', () => {
     expect(() => parseUserArguments(['--test'])).toThrowError(
-      UserArgumentParseError
+      UserArgumentParseError,
     );
 
     expect(() => parseUserArguments(['--test', 'foo'])).toThrowError(
-      UserArgumentParseError
+      UserArgumentParseError,
     );
 
     expect(() => parseUserArguments(['--test', '=foo'])).toThrowError(
-      UserArgumentParseError
+      UserArgumentParseError,
     );
   });
 });

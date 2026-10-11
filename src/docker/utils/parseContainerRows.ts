@@ -1,25 +1,25 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 const delimiterRegex = /\s{2,100}/g;
 const splitDelimiter = '[________]';
 
 function getRowColumns(row: string): string[] {
-  return row.replace(delimiterRegex, splitDelimiter).split(splitDelimiter);
+  return row.replaceAll(delimiterRegex, splitDelimiter).split(splitDelimiter);
 }
 
 function hasPortColumn(dataColumns: string[]): boolean {
   return dataColumns.length === 7;
 }
 
-export interface IContainerRow {
+export type IContainerRow = {
   containerId: string;
   names: string;
   image: string;
   command: string;
   created: string;
   status: string;
-  ports: string | null;
-}
+  ports: string | undefined;
+};
 
 export const parseContainerRows = (processRows: string[]): IContainerRow[] => {
   if (
@@ -34,21 +34,21 @@ export const parseContainerRows = (processRows: string[]): IContainerRow[] => {
   const dataRows = processRows.slice(1);
 
   const columnNames = getRowColumns(columnRow).map((column) =>
-    _.camelCase(column)
+    _.camelCase(column),
   );
 
   const processes: IContainerRow[] = [];
 
-  dataRows.forEach((row) => {
+  for (const row of dataRows) {
     if (row.length === 0) {
-      return;
+      continue;
     }
 
     const dataColumns = getRowColumns(row);
     let currentDataColumn = 0;
 
     const process = columnNames.reduce(
-      (process: Record<string, string | null>, columnName: string) => {
+      (process: Record<string, string | undefined>, columnName: string) => {
         if (columnName === 'ports' && !hasPortColumn(dataColumns)) {
           process[columnName] = null;
           return process;
@@ -61,11 +61,11 @@ export const parseContainerRows = (processRows: string[]): IContainerRow[] => {
 
         return process;
       },
-      {}
+      {},
     );
 
     processes.push(process as unknown as IContainerRow);
-  });
+  }
 
   return processes;
 };

@@ -1,8 +1,8 @@
-import { runCmdInConsole } from '../../common';
+import {runCmdInConsole} from '../../common/index.ts';
 
 export const logContainer = async (
   containerId: string,
-  follow: boolean
+  follow: boolean,
 ): Promise<void> => {
   const args = ['logs'];
   follow && args.push('-f');

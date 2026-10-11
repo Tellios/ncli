@@ -1,6 +1,5 @@
-import * as execa from 'execa';
-import { ExecaError } from 'execa';
-import { CmdError } from './CmdError';
+import execa, {type ExecaError} from 'execa';
+import {CmdError} from './CmdError.ts';
 
 function isExecaError(error: any): error is ExecaError {
   return error.exitCode != null;
@@ -10,12 +9,12 @@ export async function runCmdInConsole(
   cmd: string,
   args: string[],
   inheritStdio = true,
-  cwd: string | undefined = undefined
+  cwd: string | undefined = undefined,
 ): Promise<void> {
   try {
     await execa(cmd, args, {
       stdio: inheritStdio ? 'inherit' : undefined,
-      cwd
+      cwd,
     });
   } catch (error) {
     if (isExecaError(error)) {
@@ -23,7 +22,7 @@ export async function runCmdInConsole(
         error.exitCode,
         error.message,
         error.stdout,
-        'Command failed'
+        'Command failed',
       );
     }
 

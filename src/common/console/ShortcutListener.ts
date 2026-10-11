@@ -1,15 +1,15 @@
-import { stdin } from 'process';
+import {stdin} from 'node:process';
 
 export type ShortcutCallback = () => void;
 
 export const CommonShortcuts = {
-  Ctrl_C: '\u0003',
-  Ctrl_D: '\u0004',
-  Ctrl_L: '\u000C'
+  Ctrl_C: '\u{3}',
+  Ctrl_D: '\u{4}',
+  Ctrl_L: '\u{C}',
 };
 
 export class ShortcutListener {
-  private shortcuts: Map<string, ShortcutCallback> = new Map();
+  private readonly shortcuts = new Map<string, ShortcutCallback>();
 
   start(): void {
     stdin.on('data', this.onStdinData);
@@ -26,7 +26,7 @@ export class ShortcutListener {
     this.shortcuts.set(shortcut, callback);
   }
 
-  private onStdinData = (data: Buffer) => {
+  private readonly onStdinData = (data: Buffer) => {
     const input = data.toString();
 
     const callback = this.shortcuts.get(input);

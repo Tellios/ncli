@@ -1,15 +1,15 @@
-import * as inquirer from 'inquirer';
+import inquirer from 'inquirer';
 
-export interface ISelectItemsParams {
+export type ISelectItemsParams = {
   items: string[];
   message?: string;
   searchString?: string;
-}
+};
 
 export async function selectItems({
   items,
   message = 'Select an item',
-  searchString
+  searchString,
 }: ISelectItemsParams): Promise<number[]> {
   if (items.length === 0) {
     throw 'Items must be an instantiated array with items';
@@ -20,7 +20,7 @@ export async function selectItems({
   if (searchString) {
     const loweredSearchString = searchString.toLowerCase();
     choices = choices.filter((choice) =>
-      choice.toLowerCase().includes(loweredSearchString)
+      choice.toLowerCase().includes(loweredSearchString),
     );
 
     if (choices.length === 0) {
@@ -34,8 +34,8 @@ export async function selectItems({
       name: 'item',
       pageSize: 10,
       message,
-      choices
-    }
+      choices,
+    },
   ]);
 
   return choice.item.map((item: string) => items.indexOf(item));

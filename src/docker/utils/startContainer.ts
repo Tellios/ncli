@@ -1,5 +1,4 @@
-import { runCmdInConsole } from '../../common';
+import {runCmdInConsole} from '../../common/index.ts';
 
-export const startContainer = (containerId: string): Promise<void> => {
-  return runCmdInConsole('docker', ['start', containerId]);
-};
+export const startContainer = async (containerId: string): Promise<void> =>
+  runCmdInConsole('docker', ['start', containerId]);

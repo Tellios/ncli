@@ -1,14 +1,11 @@
-import * as chalk from 'chalk';
-import { IBranch } from './IBranch';
+import chalk from 'chalk';
+import {type IBranch} from './IBranch.ts';
 
-export const branchNameColoring = (branches: IBranch[]): string[] => {
-  return branches.map((branch) => {
-    if (branch.isCurrent === true) {
+export const branchNameColoring = (branches: IBranch[]): string[] =>
+  branches.map((branch) => {
+    if (branch.isCurrent) {
       return chalk.green(branch.name);
-    } else if (branch.isRemote === false) {
-      return chalk.blue(branch.name);
-    } else {
-      return chalk.cyan(branch.name);
     }
+
+    return branch.isRemote ? chalk.cyan(branch.name) : chalk.blue(branch.name);
   });
-};

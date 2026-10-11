@@ -1,1 +1,1 @@
-export const dashArgsRegexProvider = (): RegExp => /-+[a-zA-Z]+/g;
+export const dashArgsRegexProvider = (): RegExp => /-+[a-z]+/gi;

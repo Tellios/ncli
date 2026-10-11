@@ -1,29 +1,40 @@
-import * as chalk from 'chalk';
-import { Chalk } from 'chalk';
-import { IDockerContainer } from './IDockerContainer';
+import chalk, {type Chalk} from 'chalk';
+import {type IDockerContainer} from './IDockerContainer.ts';
 
 export const containerStatusColoring = (container: IDockerContainer): Chalk => {
   const state = container.properties.State;
 
   switch (state.Status) {
-    case 'created':
+    case 'created': {
       return chalk.gray;
-    case 'restarting':
+    }
+
+    case 'restarting': {
       return chalk.yellow;
-    case 'running':
+    }
+
+    case 'running': {
       return chalk.green;
-    case 'removing':
+    }
+
+    case 'removing': {
       return chalk.red;
-    case 'paused':
+    }
+
+    case 'paused': {
       return chalk.cyan;
-    case 'exited':
-      if (state.ExitCode === 0) {
-        return chalk.blue;
-      }
+    }
+
+    case 'exited': {
+      return state.ExitCode === 0 ? chalk.blue : chalk.red;
+    }
+
+    case 'dead': {
       return chalk.red;
-    case 'dead':
-      return chalk.red;
-    default:
+    }
+
+    default: {
       throw new Error(`Unknown state: ${state.Status}`);
+    }
   }
 };

@@ -3,7 +3,7 @@ export class CmdError extends Error {
     public exitCode: number,
     public processMessage: string,
     public stdout: string,
-    message: string
+    message: string,
   ) {
     super(message);
     Object.setPrototypeOf(this, new.target.prototype);

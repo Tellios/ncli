@@ -1,20 +1,20 @@
-import { yargsWrapper, ConsoleInterface, commandBase } from '../common';
-import { branchNameColoring, getBranches } from './utils';
+import {yargsWrapper, ConsoleInterface, commandBase} from '../common/index.ts';
+import {branchNameColoring, getBranches} from './utils/index.ts';
 
 const args = yargsWrapper()
   .option('remote', {
     alias: 'r',
     describe: 'Include remote branches',
     type: 'boolean',
-    default: false
+    default: false,
   })
   .option('filter', {
     alias: 'f',
     describe: 'Branch name filter',
-    type: 'string'
+    type: 'string',
   }).argv;
 
-commandBase(async ({ workingDirectory }) => {
+commandBase(async ({workingDirectory}) => {
   const branches = await getBranches(workingDirectory, args.remote);
   ConsoleInterface.printLines(branchNameColoring(branches));
 });

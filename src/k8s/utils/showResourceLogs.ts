@@ -1,15 +1,13 @@
-import { runCmdInConsole } from '../../common';
+import {runCmdInConsole} from '../../common/index.ts';
 
 export const showResourceLogs = async (
   follow: boolean,
   resourceName: string,
-  containerName: string
+  containerName: string,
 ): Promise<void> => {
   const args = ['logs'];
   follow && args.push('-f');
-  args.push(resourceName);
-  args.push('--container');
-  args.push(containerName);
+  args.push(resourceName, '--container', containerName);
 
   await runCmdInConsole('kubectl', args);
 };

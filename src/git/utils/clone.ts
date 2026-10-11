@@ -1,28 +1,30 @@
-import { runCmdInConsole } from '../../common';
+import {runCmdInConsole} from '../../common/index.ts';
 
 const GIT_URL_SUFFIX = '.git';
 
 function getDirectoryNameFromUrl(url: string): string {
-  const directoryName = url.substr(url.lastIndexOf('/') + 1);
+  const directoryName = url.slice(url.lastIndexOf('/') + 1);
 
   return directoryName.endsWith(GIT_URL_SUFFIX)
-    ? directoryName.substring(0, directoryName.length - GIT_URL_SUFFIX.length)
+    ? directoryName.slice(
+        0,
+        Math.max(0, directoryName.length - GIT_URL_SUFFIX.length),
+      )
     : directoryName;
 }
 
-export const clone = (
+export const clone = async (
   cloneUrl: string,
-  directoryName?: string
+  directoryName?: string,
 ): Promise<string> => {
   let checkoutDir: string;
 
-  if (!directoryName || directoryName.length === 0) {
-    checkoutDir = getDirectoryNameFromUrl(cloneUrl);
-  } else {
-    checkoutDir = directoryName;
-  }
+  checkoutDir =
+    !directoryName || directoryName.length === 0
+      ? getDirectoryNameFromUrl(cloneUrl)
+      : directoryName;
 
-  return runCmdInConsole('git', ['clone', cloneUrl, checkoutDir]).then(() => {
-    return checkoutDir;
-  });
+  return runCmdInConsole('git', ['clone', cloneUrl, checkoutDir]).then(
+    () => checkoutDir,
+  );
 };

@@ -1,12 +1,12 @@
-import * as inquirer from 'inquirer';
-import * as autocomplete from 'inquirer-autocomplete-prompt';
+import inquirer from 'inquirer';
+import autocomplete from 'inquirer-autocomplete-prompt';
 
 inquirer.registerPrompt('autocomplete', autocomplete);
 
 export async function selectItem(
   items: string[],
   message?: string,
-  preSelectedItem?: string
+  preSelectedItem?: string,
 ): Promise<number> {
   if (items.length === 0) {
     throw 'Items must be an instantiated array with items';
@@ -24,9 +24,9 @@ export async function selectItem(
       name: 'item',
       pageSize: 10,
       message,
-      source: (_: any, input?: string): Promise<string[]> =>
-        Promise.resolve(selectableItems.filter((i) => i.includes(input ?? '')))
-    }
+      source: async (_: any, input?: string): Promise<string[]> =>
+        selectableItems.filter((i) => i.includes(input ?? '')),
+    },
   ]);
 
   return items.indexOf(choice.item);
@@ -34,7 +34,7 @@ export async function selectItem(
 
 function getSelectableItems(
   items: string[],
-  preSelectedItem?: string
+  preSelectedItem?: string,
 ): string[] {
   const preSelectedIndex = getPreSelectedIndex(items, preSelectedItem);
 
@@ -43,15 +43,15 @@ function getSelectableItems(
   }
 
   const partOne = items.slice(0, preSelectedIndex);
-  const partTwo = items.slice(preSelectedIndex, items.length);
+  const partTwo = items.slice(preSelectedIndex);
 
   return [...partTwo, ...partOne];
 }
 
 function getPreSelectedIndex(
   items: string[],
-  preSelectedItem?: string
+  preSelectedItem?: string,
 ): number | undefined {
-  const preSelectedIndex = items.findIndex((s) => s === preSelectedItem);
-  return preSelectedIndex < 0 ? undefined : preSelectedIndex;
+  const preSelectedIndex = items.indexOf(preSelectedItem);
+  return preSelectedIndex === -1 ? undefined : preSelectedIndex;
 }

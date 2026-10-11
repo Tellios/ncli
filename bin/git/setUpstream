@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../../dist/git/setUpstream.js');
+import '../../dist/git/setUpstream.js';

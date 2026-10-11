@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../../dist/git/log.js');
+import '../../dist/git/log.js';

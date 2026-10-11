@@ -1,7 +1,7 @@
-import { ISettingDescription } from './ISettingDescription';
-import { NcliCommand } from './NcliCommand';
-import { IAvailableSettings } from './availableSettings';
-import { SettingType } from './SettingType';
+import {type ISettingDescription} from './ISettingDescription.ts';
+import {type NcliCommand} from './NcliCommand.ts';
+import {type IAvailableSettings} from './availableSettings.ts';
+import {type SettingType} from './SettingType.ts';
 
 type InferredSettingsValue<S extends ISettingDescription<SettingType>> =
   S extends {
@@ -9,14 +9,14 @@ type InferredSettingsValue<S extends ISettingDescription<SettingType>> =
   }
     ? boolean
     : S extends {
-        type: 'string';
-      }
-    ? string
-    : unknown;
+          type: 'string';
+        }
+      ? string
+      : unknown;
 
 type InferredSettingsValues<
-  S extends { [key: string]: ISettingDescription<SettingType> }
-> = { [key in keyof S]: InferredSettingsValue<S[key]> };
+  S extends Record<string, ISettingDescription<SettingType>>,
+> = {[key in keyof S]: InferredSettingsValue<S[key]>};
 
 export type ISettingsFor<TCommand extends NcliCommand> = Partial<
   InferredSettingsValues<IAvailableSettings[TCommand]>

@@ -1,16 +1,20 @@
-import { ExecaReturnValue } from 'execa';
-import { IProcessOptions, ParallelProcesses, SequentialProcesses } from '.';
-import { UnreachableCaseError } from '..';
-import { IProcessRunOptions } from './Process';
-import { ProcessesBase } from './ProcessesBase';
+import {type ExecaReturnValue} from 'execa';
+import {UnreachableCaseError} from '../errors/index.ts';
+import {
+  type IProcessOptions,
+  ParallelProcesses,
+  SequentialProcesses,
+} from './index.ts';
+import {type IProcessRunOptions} from './Process.ts';
+import {ProcessesBase} from './ProcessesBase.ts';
 
-export interface IProcessingTask {
+export type IProcessingTask = {
   type: 'sequential' | 'parallel';
   options: IProcessOptions[];
-}
+};
 
 export class TaskProcesses extends ProcessesBase {
-  protected readonly tasks: ReadonlyArray<ProcessesBase>;
+  protected readonly tasks: readonly ProcessesBase[];
   private isExited = false;
 
   constructor(tasks: IProcessingTask[]) {
@@ -19,16 +23,18 @@ export class TaskProcesses extends ProcessesBase {
     this.tasks = tasks.map((task) => {
       if (task.type === 'sequential') {
         return new SequentialProcesses(task.options);
-      } else if (task.type === 'parallel') {
-        return new ParallelProcesses(task.options);
-      } else {
-        throw new UnreachableCaseError(task.type);
       }
+
+      if (task.type === 'parallel') {
+        return new ParallelProcesses(task.options);
+      }
+
+      throw new UnreachableCaseError(task.type);
     });
   }
 
-  async run(options: IProcessRunOptions): Promise<ExecaReturnValue<string>[]> {
-    const results: ExecaReturnValue<string>[] = [];
+  async run(options: IProcessRunOptions): Promise<ExecaReturnValue[]> {
+    const results: ExecaReturnValue[] = [];
 
     for await (const task of this.tasks) {
       if (this.isExited) {
@@ -42,7 +48,7 @@ export class TaskProcesses extends ProcessesBase {
     return results;
   }
 
-  exit(): Promise<void> {
+  async exit(): Promise<void> {
     this.isExited = true;
     return super.exit();
   }

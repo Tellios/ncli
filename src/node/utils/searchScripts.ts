@@ -1,6 +1,6 @@
 export function searchScripts(
   pattern: RegExp,
-  scripts: NcliNode.Scripts
+  scripts: NcliNode.Scripts,
 ): NcliNode.Scripts {
   const result: NcliNode.Scripts = {};
 

@@ -1,6 +1,6 @@
-import * as jsYaml from 'js-yaml';
-import { getCmdResult } from '../../common';
-import { IContext } from './IContext';
+import jsYaml from 'js-yaml';
+import {getCmdResult} from '../../common/index.ts';
+import {type IContext} from './IContext.ts';
 
 export const getAvailableContexts = async (): Promise<IContext[]> => {
   const yaml = await getCmdResult('kubectl', ['config', 'view']);

@@ -1,29 +1,29 @@
-import { ConsoleInterface } from '../../common';
+import {ConsoleInterface} from '../../common/index.ts';
 import {
   getResources,
   resolveResourceType,
-  IResolveResourceTypeParams
-} from '../utils';
+  type IResolveResourceTypeParams,
+} from '../utils/index.ts';
 
-export interface IListScriptParams {
+export type IListScriptParams = {
   type: IResolveResourceTypeParams;
-}
+};
 
-export async function listCommand(params: IListScriptParams): Promise<void> {
-  const type = await resolveResourceType(params.type);
+export async function listCommand(
+  parameters: IListScriptParams,
+): Promise<void> {
+  const type = await resolveResourceType(parameters.type);
   const resources = await getResources(type);
 
   if (resources.length === 0) {
     ConsoleInterface.printLine(
-      `No ${type} resources available in current context`
+      `No ${type} resources available in current context`,
     );
     return;
   }
 
   const columns = Object.keys(resources[0]);
-  const rows = resources.map((r) =>
-    Object.entries(r).map(([_, value]) => value)
-  );
+  const rows = resources.map((r) => Object.values(r).map((value) => value));
 
   ConsoleInterface.printTable(columns, rows);
 }

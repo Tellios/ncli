@@ -1,50 +1,49 @@
-import { exit, stdout } from 'process';
-import { PassThrough } from 'stream';
-import { IProcessOptions, ParallelProcesses } from '../../common/process';
+import {exit, stdout} from 'node:process';
+import {PassThrough} from 'node:stream';
 import {
+  type IProcessOptions,
+  ParallelProcesses,
   selectItems,
   ShortcutListener,
-  CommonShortcuts
-} from '../../common/console';
-import { detectPackageManagerOrUseDefault } from './detectPackageManager';
+  CommonShortcuts,
+} from '../../common/index.ts';
+import {detectPackageManagerOrUseDefault} from './detectPackageManager.ts';
 
 export async function executeParallellPackageJsonScripts(
   scripts: string[],
   packageJsonScripts: NcliNode.Scripts,
-  directory: string
+  directory: string,
 ): Promise<void> {
   const invalidScripts = scripts
     .filter((script) => !(script in packageJsonScripts))
     .join(', ');
 
   if (invalidScripts.length > 0) {
-    throw Error(`Scripts not found: ${invalidScripts}`);
+    throw new Error(`Scripts not found: ${invalidScripts}`);
   }
 
   const packageManager = await detectPackageManagerOrUseDefault(directory);
 
-  const processOptions = scripts.map(
-    (script): IProcessOptions => ({
-      name: script,
-      executable: packageManager,
-      args: ['run', script],
-      workingDirectory: directory
-    })
-  );
+  const processOptions = scripts.map((script): IProcessOptions => ({
+    name: script,
+    executable: packageManager,
+    args: ['run', script],
+    workingDirectory: directory,
+  }));
 
   const pp = new ParallelProcesses(processOptions);
 
-  let enableTerminalOutput = true;
+  let isEnableTerminalOutput = true;
 
   const terminalPassthrough = new PassThrough();
   terminalPassthrough.on('data', (data) => {
-    if (enableTerminalOutput) {
+    if (isEnableTerminalOutput) {
       stdout.write(data);
     }
   });
 
   const runPromise = pp.run({
-    stdout: terminalPassthrough
+    stdout: terminalPassthrough,
   });
 
   const shortcutListener = new ShortcutListener();
@@ -55,13 +54,13 @@ export async function executeParallellPackageJsonScripts(
   };
 
   const filterOutput = async () => {
-    enableTerminalOutput = false;
+    isEnableTerminalOutput = false;
 
     shortcutListener.stop();
 
     const indices = await selectItems({
       items: scripts,
-      message: 'Select streams to follow'
+      message: 'Select streams to follow',
     });
 
     shortcutListener.start();
@@ -70,7 +69,7 @@ export async function executeParallellPackageJsonScripts(
 
     pp.filterStreams(selectedScripts);
 
-    enableTerminalOutput = true;
+    isEnableTerminalOutput = true;
   };
 
   shortcutListener.registerShortcut(CommonShortcuts.Ctrl_C, stopProcesses);

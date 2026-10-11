@@ -1,1 +1,1 @@
-export * from './commandBase';
+export * from './commandBase.ts';

@@ -1,9 +1,9 @@
-import { runCmdInConsole } from '../../common';
-import { appendNoVerifyIfEnabled } from './appendNoVerifyIfEnabled';
+import {runCmdInConsole} from '../../common/index.ts';
+import {appendNoVerifyIfEnabled} from './appendNoVerifyIfEnabled.ts';
 
 export async function setUpstream(
   branchName: string,
-  useNoVerify: boolean
+  useNoVerify: boolean,
 ): Promise<void> {
   let upstreamArgs = ['push', '--set-upstream', 'origin', branchName];
   upstreamArgs = appendNoVerifyIfEnabled(useNoVerify, upstreamArgs);

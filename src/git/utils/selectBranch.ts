@@ -1,14 +1,14 @@
-import { selectItem } from '../../common';
-import { getBranches } from './getBranches';
-import { IBranch } from './IBranch';
-import { filterBranches } from './filterBranches';
-import { branchNameColoring } from './branchNameColoring';
+import {selectItem} from '../../common/index.ts';
+import {getBranches} from './getBranches.ts';
+import {type IBranch} from './IBranch.ts';
+import {filterBranches} from './filterBranches.ts';
+import {branchNameColoring} from './branchNameColoring.ts';
 
 export async function selectBranch(
   workingDirectory: string,
   includeRemote: boolean,
   message = 'Select branch',
-  filter?: string | null
+  filter?: string,
 ): Promise<IBranch> {
   let branches = await getBranches(workingDirectory, includeRemote);
   branches = branches.filter((branch) => !branch.isCurrent);

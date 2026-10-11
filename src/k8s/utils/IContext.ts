@@ -1,3 +1,3 @@
-export interface IContext {
+export type IContext = {
   name: string;
-}
+};

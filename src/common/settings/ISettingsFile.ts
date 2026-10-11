@@ -1,6 +1,6 @@
-import { IPersistedSettings } from './IPersistedSettings';
+import {type IPersistedSettings} from './IPersistedSettings.ts';
 
-export interface ISettingsFile {
+export type ISettingsFile = {
   version: number;
   settings: IPersistedSettings;
-}
+};

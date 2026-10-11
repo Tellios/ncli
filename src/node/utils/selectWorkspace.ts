@@ -1,10 +1,10 @@
-import { selectItem } from '../../common';
-import { getWorkspacePaths, Workspace } from './getWorkspacePaths';
+import {selectItem} from '../../common/index.ts';
+import {getWorkspacePaths, type Workspace} from './getWorkspacePaths.ts';
 
 export const selectWorkspace = async (
   workingDirectory: string,
   packageJson: NcliNode.IPackageJson,
-  lastSelectedWorkspaceRelativePath: string | undefined
+  lastSelectedWorkspaceRelativePath: string | undefined,
 ): Promise<Workspace> => {
   const workspaces = await getWorkspacePaths(workingDirectory, packageJson);
 
@@ -16,7 +16,7 @@ export const selectWorkspace = async (
     await selectItem(
       workspaces.map((p) => p.relativePath),
       'Select workspace',
-      lastSelectedWorkspaceRelativePath
+      lastSelectedWorkspaceRelativePath,
     )
   ];
 };

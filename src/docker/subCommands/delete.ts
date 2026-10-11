@@ -1,18 +1,18 @@
-import { selectItems, ConsoleInterface, Type } from '../../common';
+import {selectItems, ConsoleInterface, Type} from '../../common/index.ts';
 import {
   getContainers,
   deleteContainer,
-  getDockerContainersStatusRows
-} from '../utils';
+  getDockerContainersStatusRows,
+} from '../utils/index.ts';
 
-export interface IDeleteCommandParams {
+export type IDeleteCommandParams = {
   onlyShowRunning: boolean;
   forcefullyDelete: boolean;
-}
+};
 
 export const deleteCommand = async ({
   onlyShowRunning,
-  forcefullyDelete
+  forcefullyDelete,
 }: IDeleteCommandParams): Promise<void> => {
   const containers = await getContainers(onlyShowRunning);
 
@@ -24,7 +24,7 @@ export const deleteCommand = async ({
   const rows = getDockerContainersStatusRows(containers);
   const selectedIndexes = await selectItems({
     items: rows,
-    message: 'Select containers to remove'
+    message: 'Select containers to remove',
   });
 
   const processesToRemove = selectedIndexes.map((index) => containers[index]);

@@ -1,5 +1,4 @@
-import { runCmdInConsole } from '../../common';
+import {runCmdInConsole} from '../../common/index.ts';
 
-export const addAll = (repositoryPath: string): Promise<void> => {
-  return runCmdInConsole('git', ['add', '.'], true, repositoryPath);
-};
+export const addAll = async (repositoryPath: string): Promise<void> =>
+  runCmdInConsole('git', ['add', '.'], true, repositoryPath);

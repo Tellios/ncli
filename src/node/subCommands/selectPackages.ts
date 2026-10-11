@@ -1,9 +1,9 @@
-import * as chalk from 'chalk';
-import { selectItems } from '../../common';
+import chalk from 'chalk';
+import {selectItems} from '../../common/index.ts';
 
 export async function selectPackages(
   packageJson: NcliNode.IPackageJson,
-  searchString?: string
+  searchString?: string,
 ): Promise<NcliNode.IPackage[]> {
   const packages: NcliNode.IPackage[] = [
     ...Object.keys(packageJson.dependencies || {}).map(
@@ -15,9 +15,9 @@ export async function selectPackages(
           dev: false,
           name,
           version,
-          label
+          label,
         };
-      }
+      },
     ),
     ...Object.keys(packageJson.devDependencies || {}).map(
       (name): NcliNode.IPackage => {
@@ -28,16 +28,16 @@ export async function selectPackages(
           dev: true,
           name,
           version,
-          label
+          label,
         };
-      }
-    )
+      },
+    ),
   ];
 
   const selectedPackages = await selectItems({
     items: packages.map((dep) => dep.label),
     message: 'Select the packages',
-    searchString
+    searchString,
   });
 
   return selectedPackages.map((index) => packages[index]);

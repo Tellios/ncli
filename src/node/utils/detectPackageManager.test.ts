@@ -1,10 +1,10 @@
-import * as os from 'os';
-import * as path from 'path';
-import * as fs from 'fs-extra';
+import os from 'node:os';
+import path from 'node:path';
+import fs from 'fs-extra';
 import {
   detectPackageManagerOrUseDefault,
-  detectPackageManager
-} from './detectPackageManager';
+  detectPackageManager,
+} from './detectPackageManager.ts';
 
 describe('detectPackageManager', () => {
   let root: string;
@@ -37,7 +37,7 @@ describe('detectPackageManager', () => {
     const workspace = path.join(root, 'hub', 'client');
     await fs.ensureDir(path.join(root, '.git'));
     await fs.writeJson(path.join(root, 'package.json'), {
-      packageManager: 'pnpm@9.0.0+sha512.abc'
+      packageManager: 'pnpm@9.0.0+sha512.abc',
     });
     await fs.ensureFile(path.join(root, 'pnpm-lock.yaml'));
     await fs.ensureFile(path.join(root, 'child', 'yarn.lock'));
@@ -48,7 +48,7 @@ describe('detectPackageManager', () => {
 
   it('should ignore an unknown packageManager field', async () => {
     await fs.writeJson(path.join(root, 'package.json'), {
-      packageManager: 'bun@1.0.0'
+      packageManager: 'bun@1.0.0',
     });
     await fs.ensureFile(path.join(root, 'yarn.lock'));
 

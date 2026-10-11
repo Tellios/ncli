@@ -1,4 +1,4 @@
-import { commandBase } from '../common';
-import { pull } from './utils';
+import {commandBase} from '../common/index.ts';
+import {pull} from './utils/index.ts';
 
-commandBase(() => pull());
+commandBase(async () => pull());

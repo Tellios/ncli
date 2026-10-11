@@ -1,18 +1,18 @@
-import * as path from 'path';
-import * as glob from 'glob';
-import * as fs from 'fs-extra';
-import * as jsYaml from 'js-yaml';
-import { parsePackageJson } from './packageJsonParser';
+import path from 'node:path';
+import glob from 'glob';
+import fs from 'fs-extra';
+import jsYaml from 'js-yaml';
+import {parsePackageJson} from './packageJsonParser.ts';
 
-export interface Workspace {
+export type Workspace = {
   name: string;
   relativePath: string;
   absolutePath: string;
-}
+};
 
 async function getWorkspacePatterns(
   packageJsonDirectory: string,
-  packageJson: NcliNode.IPackageJson
+  packageJson: NcliNode.IPackageJson,
 ): Promise<string[]> {
   if (packageJson.workspaces && packageJson.workspaces.length > 0) {
     return packageJson.workspaces;
@@ -20,13 +20,13 @@ async function getWorkspacePatterns(
 
   const pnpmWorkspaceFile = path.join(
     packageJsonDirectory,
-    'pnpm-workspace.yaml'
+    'pnpm-workspace.yaml',
   );
 
   if (await fs.pathExists(pnpmWorkspaceFile)) {
     const pnpmWorkspace = jsYaml.safeLoad(
-      await fs.readFile(pnpmWorkspaceFile, 'utf8')
-    ) as { packages?: string[] } | undefined;
+      await fs.readFile(pnpmWorkspaceFile, 'utf8'),
+    ) as {packages?: string[]} | undefined;
 
     return pnpmWorkspace?.packages ?? [];
   }
@@ -36,11 +36,11 @@ async function getWorkspacePatterns(
 
 export async function getWorkspacePaths(
   packageJsonDirectory: string,
-  packageJson: NcliNode.IPackageJson
+  packageJson: NcliNode.IPackageJson,
 ): Promise<Workspace[]> {
   const patterns = await getWorkspacePatterns(
     packageJsonDirectory,
-    packageJson
+    packageJson,
   );
   const includePatterns = patterns.filter((p) => !p.startsWith('!'));
   const ignorePatterns = patterns
@@ -55,27 +55,28 @@ export async function getWorkspacePaths(
         path.join(workspace, 'package.json'),
         {
           cwd: packageJsonDirectory,
-          ignore: ['**/node_modules/**', ...ignorePatterns]
+          ignore: ['**/node_modules/**', ...ignorePatterns],
         },
-        (err, matches) => {
-          if (err) {
-            return reject(err);
+        (error, matches) => {
+          if (error) {
+            reject(error);
+            return;
           }
 
-          return resolve(matches);
-        }
+          resolve(matches);
+        },
       );
     });
 
     for (const match of workspaceMatches) {
       const relativePath = path.dirname(match);
       const absolutePath = path.resolve(packageJsonDirectory, relativePath);
-      const { name } = await parsePackageJson(absolutePath);
+      const {name} = await parsePackageJson(absolutePath);
 
       workspaces.push({
         name: name ?? relativePath,
         relativePath,
-        absolutePath
+        absolutePath,
       });
     }
   }

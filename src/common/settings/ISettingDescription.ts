@@ -1,7 +1,7 @@
-import { SettingType } from './SettingType';
+import {type SettingType} from './SettingType.ts';
 
-export interface ISettingDescription<TSettingType extends SettingType> {
+export type ISettingDescription<TSettingType extends SettingType> = {
   description: string;
   type: TSettingType;
   hidden?: boolean;
-}
+};

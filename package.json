@@ -2,14 +2,10 @@
   "name": "tellios-ncli",
   "version": "0.0.1",
   "description": "Helper scripts for easing workflow",
-  "main": "index.js",
-  "engines": {
-    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
-  },
-  "allowScripts": {
-    "husky": true,
-    "node-pty": true
-  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "./index.js",
   "bin": {
     "na": "./bin/alias",
     "ncode64": "./bin/ncode64",
@@ -36,6 +32,9 @@
     "nk": "./bin/nk",
     "nsettings": "./bin/nsettings"
   },
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+  },
   "scripts": {
     "prettier": "prettier --check --write \"{lib,src}/**/*.ts\"",
     "prettier:ci": "prettier -l \"{lib,src}/**/*.ts\"",
@@ -45,12 +44,10 @@
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "build:watch": "tsc --watch -p tsconfig.build.json",
     "setup": "sh -c \"unset npm_config_allow_scripts NPM_CONFIG_ALLOW_SCRIPTS; npm ci && npm run prettier && npm run test && npm run build && npm link\"",
-    "lint": "npm run script:eslint -- --cache --fix",
-    "lint:ci": "npm run script:eslint",
-    "script:eslint": "eslint . --ext .ts,.tsx --max-warnings=0"
+    "lint": "npm run script:lint -- --fix",
+    "lint:ci": "npm run script:lint",
+    "script:lint": "xo . --max-warnings=0 --space --prettier"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "chalk": "^4.1.0",
     "cli-table3": "^0.6.0",
@@ -63,7 +60,7 @@
     "joi": "^17.6.0",
     "js-yaml": "^3.14.0",
     "lodash": "^4.17.20",
-    "node-pty": "^1.0.0",
+    "node-pty": "^1.1.0",
     "readline-sync": "^1.4.10",
     "tree-kill": "^1.2.2",
     "yargs": "^16.1.0"
@@ -81,17 +78,18 @@
     "@types/node": "^14.14.6",
     "@types/readline-sync": "^1.4.3",
     "@types/yargs": "^15.0.9",
-    "@typescript-eslint/eslint-plugin": "^5.27.0",
-    "@typescript-eslint/parser": "^5.27.0",
-    "eslint": "^8.17.0",
-    "eslint-config-prettier": "^8.5.0",
     "husky": "^4.3.0",
     "jest": "^28.1.0",
     "lint-staged": "^10.5.1",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
     "ts-jest": "^28.0.4",
-    "typescript": "^4.7.3"
+    "typescript": "^7.0.2",
+    "xo": "^5.0.1"
+  },
+  "allowScripts": {
+    "husky": true,
+    "node-pty": true
   },
   "husky": {
     "hooks": {
@@ -100,6 +98,6 @@
   },
   "lint-staged": {
     "*.{ts,md}": "prettier --write",
-    "*.{ts}": "eslint --check --max-warnings 0 --fix"
+    "*.{ts}": "xo --prettier --max-warnings 0 --fix"
   }
 }

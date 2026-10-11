@@ -1,33 +1,33 @@
-import { yargsWrapper, ConsoleInterface, commandBase } from '../common';
+import {yargsWrapper, ConsoleInterface, commandBase} from '../common/index.ts';
 import {
   parsePackageJson,
   searchScripts,
   selectScript,
   selectWorkspace,
-  executePackageJsonScript
-} from './utils';
+  executePackageJsonScript,
+} from './utils/index.ts';
 
 const args = yargsWrapper()
   .option('watch', {
     alias: 'W',
     describe: 'Use build task with watcher instead of single-run',
-    type: 'boolean'
+    type: 'boolean',
   })
   .option('workspace', {
     alias: 'w',
     describe:
       'If the build should be executed inside a workspace project instead',
-    type: 'boolean'
+    type: 'boolean',
   }).argv;
 
-commandBase<'nb'>(async ({ workingDirectory, settings, setSetting }) => {
+commandBase<'nb'>(async ({workingDirectory, settings, setSetting}) => {
   let packageJson = await parsePackageJson(workingDirectory);
 
   if (args.workspace) {
     const workspace = await selectWorkspace(
       workingDirectory,
       packageJson,
-      settings.lastSelectedWorkspace
+      settings.lastSelectedWorkspace,
     );
 
     await setSetting('lastSelectedWorkspace', workspace.relativePath);
@@ -35,14 +35,14 @@ commandBase<'nb'>(async ({ workingDirectory, settings, setSetting }) => {
     packageJson = await parsePackageJson(workingDirectory);
   }
 
-  const { scripts } = packageJson;
+  const {scripts} = packageJson;
 
   let buildScripts;
 
   if (args.watch) {
     buildScripts = searchScripts(
       /build:watch|build-watch|build_watch$/i,
-      scripts
+      scripts,
     );
   } else {
     buildScripts = searchScripts(/build$/i, scripts);
@@ -51,12 +51,12 @@ commandBase<'nb'>(async ({ workingDirectory, settings, setSetting }) => {
   const buildScriptKeys = Object.keys(buildScripts);
 
   if (buildScriptKeys.length === 0) {
-    ConsoleInterface.printLine(`No build scripts found`);
+    ConsoleInterface.printLine('No build scripts found');
   } else if (buildScriptKeys.length === 1) {
     await executePackageJsonScript(
       buildScriptKeys[0],
       buildScripts,
-      workingDirectory
+      workingDirectory,
     );
   } else {
     const scriptToRun = await selectScript(buildScripts);

@@ -1,5 +1,3 @@
-import { runCmdInConsole } from '../../common';
+import {runCmdInConsole} from '../../common/index.ts';
 
-export const pull = (): Promise<void> => {
-  return runCmdInConsole('git', ['pull']);
-};
+export const pull = async (): Promise<void> => runCmdInConsole('git', ['pull']);

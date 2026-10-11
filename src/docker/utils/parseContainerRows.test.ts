@@ -1,4 +1,4 @@
-import { parseContainerRows } from './parseContainerRows';
+import {parseContainerRows} from './parseContainerRows.ts';
 
 describe('parse docker containers', () => {
   const processes = [
@@ -6,16 +6,16 @@ describe('parse docker containers', () => {
     '15902284efe8        nginx:1.13.1-alpine   "nginx -g \'daemon ..."   33 minutes ago      Up 33 minutes               80/tcp              agitated_leakey',
     'f661f948bb0f        nginx:1.13.1-alpine   "nginx -g \'daemon ..."   33 minutes ago      Up 33 minutes               80/tcp              silly_hypatia',
     '4240de87919a        nginx:1.13.1-alpine   "nginx -g \'daemon ..."   36 minutes ago      Exited (0) 33 minutes ago                       sleepy_hugle',
-    ''
+    '',
   ];
 
   const onlyColumns = [
-    'CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS                      PORTS               NAMES'
+    'CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS                      PORTS               NAMES',
   ];
 
   const onlyColumnsAndEmptyRow = [
     'CONTAINER ID        IMAGE                 COMMAND                  CREATED             STATUS                      PORTS               NAMES',
-    ''
+    '',
   ];
 
   it('can parse container rows', () => {

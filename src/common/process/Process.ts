@@ -1,35 +1,37 @@
-import { Stream, Writable } from 'stream';
-import * as execa from 'execa';
-import * as treeKill from 'tree-kill';
-import { green } from 'chalk';
-import * as pty from 'node-pty';
-import { startInteractivePty } from './runInteractivePty';
+import {type Stream, type Writable} from 'node:stream';
+import execa from 'execa';
+import treeKill from 'tree-kill';
+import {green} from 'chalk';
+import type pty from 'node-pty';
+import {startInteractivePty} from './runInteractivePty.ts';
 
-export interface IProcessOptions {
+export type IProcessOptions = {
   name: string;
   executable: string;
   args: string[];
   workingDirectory?: string;
   interactive?: boolean;
-  /** Full command line for interactive PTY/shell spawn (yarn, jest, etc.) */
+  /**
+	Full command line for interactive PTY/shell spawn (yarn, jest, etc.)
+	*/
   shellCommand?: string;
-}
+};
 
-export interface IProcessRunOptions {
+export type IProcessRunOptions = {
   stdin?: Stream;
   stdout?: Writable;
-}
+};
 
-export interface IProcessResult {
-  exitCode: number | null;
+export type IProcessResult = {
+  exitCode: number | undefined;
   failed: boolean;
   canceled: boolean;
-}
+};
 
 export class Process {
   public readonly options: Required<IProcessOptions>;
-  private instance: execa.ExecaChildProcess | null = null;
-  private ptyProcess: pty.IPty | null = null;
+  private instance: execa.ExecaChildProcess | undefined = null;
+  private ptyProcess: pty.IPty | undefined = null;
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onData: (data: Buffer) => void = () => {};
   private isExiting = false;
@@ -40,25 +42,25 @@ export class Process {
       interactive: false,
       shellCommand: '',
       ...options,
-      workingDirectory: options.workingDirectory ?? process.cwd()
+      workingDirectory: options.workingDirectory ?? process.cwd(),
     };
   }
 
-  async run({ stdout }: IProcessRunOptions): Promise<execa.ExecaReturnValue> {
+  async run({stdout}: IProcessRunOptions): Promise<execa.ExecaReturnValue> {
     if (this.instance) {
-      throw Error(`Process '${this.options.name}' is already running`);
+      throw new Error(`Process '${this.options.name}' is already running`);
     }
 
     this.isExiting = false;
 
-    const { executable, args, workingDirectory, interactive, shellCommand } =
+    const {executable, args, workingDirectory, interactive, shellCommand} =
       this.options;
 
     const env: NodeJS.ProcessEnv = {
       ...process.env,
       // If the process uses colors we want to make sure to propagate
       // those as well
-      FORCE_COLOR: 'true'
+      FORCE_COLOR: 'true',
     };
 
     if (interactive) {
@@ -66,10 +68,10 @@ export class Process {
     }
 
     if (interactive && shellCommand) {
-      const { term, completed } = startInteractivePty(
+      const {term, completed} = startInteractivePty(
         shellCommand,
         workingDirectory,
-        env
+        env,
       );
 
       this.ptyProcess = term;
@@ -77,18 +79,20 @@ export class Process {
       return completed.finally(() => {
         this.ptyProcess = null;
       });
-    } else if (interactive) {
+    }
+
+    if (interactive) {
       this.instance = execa(executable, args, {
         cwd: workingDirectory,
         stdio: 'inherit',
         env,
-        detached: process.platform !== 'win32'
+        detached: process.platform !== 'win32',
       });
     } else {
       this.instance = execa(executable, args, {
         cwd: workingDirectory,
         stdin: 'ignore',
-        env
+        env,
       });
     }
 
@@ -106,7 +110,7 @@ export class Process {
     }
 
     this.onData = (data: Buffer) => {
-      this.isOutputEnabled && stdout && stdout.write(data);
+      this.isOutputEnabled && stdout?.write(data);
     };
 
     if (!interactive && stdout) {
@@ -114,11 +118,12 @@ export class Process {
       this.instance.stdout?.on('data', this.onData);
     }
 
-    return await this.instance
+    return this.instance
       .then((result) => {
         if (!interactive && stdout) {
-          stdout.write(green(`Process finished successfully\n`));
+          stdout.write(green('Process finished successfully\n'));
         }
+
         return result;
       })
       .catch((error) => {
@@ -150,7 +155,7 @@ export class Process {
     this.isOutputEnabled = false;
   }
 
-  exit(): Promise<void> {
+  async exit(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.ptyProcess) {
         this.isExiting = true;
@@ -174,9 +179,10 @@ export class Process {
           if (error) {
             console.error(
               `Failed to kill process: ${this.options.name}`,
-              error
+              error,
             );
-            return reject(error);
+            reject(error);
+            return;
           }
 
           resolve();

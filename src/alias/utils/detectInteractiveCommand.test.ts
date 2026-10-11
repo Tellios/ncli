@@ -1,7 +1,7 @@
 import {
   detectInteractiveCommand,
-  resolveStepInteractive
-} from './detectInteractiveCommand';
+  resolveStepInteractive,
+} from './detectInteractiveCommand.ts';
 
 describe('detectInteractiveCommand', () => {
   it('should detect jest watch flags', () => {
@@ -26,7 +26,7 @@ describe('resolveStepInteractive', () => {
 
   it('should auto-detect when not configured', () => {
     expect(resolveStepInteractive('yarn test -- --watch', undefined)).toBe(
-      true
+      true,
     );
   });
 });

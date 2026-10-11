@@ -1,20 +1,20 @@
-import { ConsoleInterface, Type, selectItem } from '../../common';
+import {ConsoleInterface, Type, selectItem} from '../../common/index.ts';
 import {
   getResources,
   selectResource,
   showResourceLogs,
-  getResourceInfo
-} from '../utils';
+  getResourceInfo,
+} from '../utils/index.ts';
 
-export interface ILogScriptParams {
+export type ILogScriptParams = {
   follow: boolean;
-}
+};
 
-export async function logCommand(params: ILogScriptParams): Promise<void> {
+export async function logCommand(parameters: ILogScriptParams): Promise<void> {
   const resources = await getResources('pod');
 
   if (resources.length === 0) {
-    ConsoleInterface.printLine(`No pods available`, Type.warn);
+    ConsoleInterface.printLine('No pods available', Type.warn);
     return;
   }
 
@@ -24,7 +24,7 @@ export async function logCommand(params: ILogScriptParams): Promise<void> {
   const containerNames = info.spec.containers.map((c: any) => c.name);
   const containerName = await getContainerName(containerNames);
 
-  await showResourceLogs(params.follow, resource.name, containerName);
+  await showResourceLogs(parameters.follow, resource.name, containerName);
 }
 
 async function getContainerName(containerNames: string[]): Promise<string> {
@@ -34,7 +34,7 @@ async function getContainerName(containerNames: string[]): Promise<string> {
 
   const index = await selectItem(
     containerNames,
-    'Select container to view logs for'
+    'Select container to view logs for',
   );
   return containerNames[index];
 }

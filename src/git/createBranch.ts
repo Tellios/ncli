@@ -1,24 +1,24 @@
-import { yargsWrapper, commandBase } from '../common';
-import { createBranch } from './utils';
+import {yargsWrapper, commandBase} from '../common/index.ts';
+import {createBranch} from './utils/index.ts';
 
 const args = yargsWrapper()
   .option('branch', {
     alias: 'b',
     describe: 'Branch name',
     type: 'string',
-    demandOption: true
+    demandOption: true,
   })
   .option('push', {
     alias: 'p',
     describe: 'If the branch should be pushed to the remote',
     type: 'boolean',
-    default: false
+    default: false,
   })
   .option('noVerify', {
     alias: 'n',
     describe: 'Add --no-verify to git push command',
     type: 'boolean',
-    default: false
+    default: false,
   }).argv;
 
-commandBase(() => createBranch(args.branch, args.push, args.noVerify));
+commandBase(async () => createBranch(args.branch, args.push, args.noVerify));

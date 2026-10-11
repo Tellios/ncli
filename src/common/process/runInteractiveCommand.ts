@@ -1,41 +1,39 @@
-import * as execa from 'execa';
-import { shellQuote } from './shellQuote';
+import execa from 'execa';
+import {shellQuote} from './shellQuote.ts';
 
-export interface IInteractiveSpawn {
+export type IInteractiveSpawn = {
   file: string;
   args: readonly string[];
-}
+};
 
 export const buildInteractiveShellCommand = (
   shellCommand: string,
-  workingDirectory: string
-): string => {
-  return `cd ${shellQuote(workingDirectory)} && ${shellCommand}`;
-};
+  workingDirectory: string,
+): string => `cd ${shellQuote(workingDirectory)} && ${shellCommand}`;
 
 export const getInteractiveSpawn = (
   shellCommand: string,
-  workingDirectory: string
+  workingDirectory: string,
 ): IInteractiveSpawn => {
   const command = buildInteractiveShellCommand(shellCommand, workingDirectory);
 
   if (process.platform === 'darwin') {
     return {
       file: 'script',
-      args: ['-q', '/dev/null', 'sh', '-ec', command]
+      args: ['-q', '/dev/null', 'sh', '-ec', command],
     };
   }
 
   if (process.platform === 'linux') {
     return {
       file: 'script',
-      args: ['-q', '-c', command, '/dev/null']
+      args: ['-q', '-c', command, '/dev/null'],
     };
   }
 
   return {
     file: 'sh',
-    args: ['-ec', command]
+    args: ['-ec', command],
   };
 };
 
