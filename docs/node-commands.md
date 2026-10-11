@@ -95,6 +95,32 @@ Run test scripts inside a workspace project selected from a list:
 nt -w
 ```
 
+## nex
+
+Executes a binary installed in the project's `node_modules/.bin`, using `pnpm exec`, `yarn exec` or `npm exec` depending on the package manager detected from the lock file. Unlike `npx`, missing packages are never downloaded. All arguments after the binary name are passed through to the binary.
+
+| Argument  | Alias | Description                                   |
+| --------- | ----- | --------------------------------------------- |
+| workspace | w     | Execute the binary inside a workspace project |
+
+Execute a binary with arguments:
+
+```bash
+nex eslint --fix .
+```
+
+Select a binary from a list to execute:
+
+```bash
+nex
+```
+
+Execute a binary inside a workspace project selected from a list:
+
+```bash
+nex -w tsc --noEmit
+```
+
 ## ni
 
 Executes commands that manages NPM, Yarn or PNPM dependencies. Auto-detects the usage of NPM, Yarn or PNPM, based on the presence of their respective lock files, defaulting to NPM when none is found. Workspaces are read from `package.json` or, for PNPM, `pnpm-workspace.yaml`.

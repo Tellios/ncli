@@ -17,6 +17,7 @@
     "nr": "./bin/node/nr",
     "nb": "./bin/node/nb",
     "nt": "./bin/node/nt",
+    "nex": "./bin/node/nex",
     "nclone": "./bin/git/clone",
     "ncommit": "./bin/git/commit",
     "nlog": "./bin/git/log",

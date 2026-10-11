@@ -91,6 +91,23 @@ export const availableSettings = {
       hidden: true
     })
     .getSettings(),
+  nex: new Builder()
+    .add('lastExecutedBinary', {
+      description: 'Last binary executed in working directory',
+      type: 'string',
+      hidden: true
+    })
+    .add('binaryArgs', {
+      description: 'Last arguments used per binary in working directory',
+      type: 'string',
+      hidden: true
+    })
+    .add('lastSelectedWorkspace', {
+      description: 'Last selected workspace',
+      type: 'string',
+      hidden: true
+    })
+    .getSettings(),
   na: new Builder()
     .add('lastExecutedAlias', {
       description: 'Last alias executed in working directory',

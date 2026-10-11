@@ -1,4 +1,5 @@
 export * from './detectPackageManager';
+export * from './executeBinary';
 export * from './executePackageJsonScript';
 export * from './executeParallellPackageJsonScripts';
 export * from './getWorkspacePaths';
