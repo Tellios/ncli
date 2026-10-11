@@ -2,15 +2,16 @@
 
 ## nr
 
-Executes and manages NPM package.json scripts.
+Executes and manages NPM package.json scripts. Scripts are executed using the package manager (NPM, Yarn or PNPM) detected from the project's lock file. The lock file is searched for in the current directory and its parent directories up to the git repository root, so commands run inside a workspace package use the package manager of the monorepo.
 
-| Argument | Alias | Description                                     |
-| -------- | ----- | ----------------------------------------------- |
-| list     | l     | Lists the available NPM scripts                 |
-| add      | a     | Add a new NPM script                            |
-| async    |       | Select multiple NPM scripts to run concurrently |
-| edit     | e     | Edit an existing NPM script                     |
-| delete   | d     | Delete an existing NPM script                   |
+| Argument  | Alias | Description                                     |
+| --------- | ----- | ----------------------------------------------- |
+| list      | l     | Lists the available NPM scripts                 |
+| add       | a     | Add a new NPM script                            |
+| async     |       | Select multiple NPM scripts to run concurrently |
+| edit      | e     | Edit an existing NPM script                     |
+| delete    | d     | Delete an existing NPM script                   |
+| workspace | w     | Execute the script inside a workspace project   |
 
 Run a package.json script:
 
@@ -43,9 +44,10 @@ nr --async
 Executes build scripts located in an NPM package.json file. If multiple test tasks matches `nb`s internal filters you will be able
 to select the script to use.
 
-| Argument | Alias | Description                                     |
-| -------- | ----- | ----------------------------------------------- |
-| watch    | w     | Run build scripts that rely on watchers instead |
+| Argument  | Alias | Description                                     |
+| --------- | ----- | ----------------------------------------------- |
+| watch     | W     | Run build scripts that rely on watchers instead |
+| workspace | w     | Run build scripts inside a workspace project    |
 
 Run builds in a package.json file:
 
@@ -56,6 +58,12 @@ nb
 Run build scripts that rely on watchers:
 
 ```bash
+nb -W
+```
+
+Run build scripts inside a workspace project selected from a list:
+
+```bash
 nb -w
 ```
 
@@ -64,9 +72,10 @@ nb -w
 Executes test scripts located in an NPM package.json file. If multiple test tasks matches `nt`s internal filters you will be able
 to select the script to use.
 
-| Argument | Alias | Description                                    |
-| -------- | ----- | ---------------------------------------------- |
-| watch    | w     | Run test scripts that rely on watchers instead |
+| Argument  | Alias | Description                                    |
+| --------- | ----- | ---------------------------------------------- |
+| watch     | W     | Run test scripts that rely on watchers instead |
+| workspace | w     | Run test scripts inside a workspace project    |
 
 Run tests in a package.json file:
 
@@ -77,12 +86,18 @@ nt
 Run test scripts that rely on watchers:
 
 ```bash
+nt -W
+```
+
+Run test scripts inside a workspace project selected from a list:
+
+```bash
 nt -w
 ```
 
 ## ni
 
-Executes commands that manages NPM or Yarn dependencies. Auto-detects the usage of NPM or Yarn, based on the presence of their respective lock files.
+Executes commands that manages NPM, Yarn or PNPM dependencies. Auto-detects the usage of NPM, Yarn or PNPM, based on the presence of their respective lock files, defaulting to NPM when none is found. Workspaces are read from `package.json` or, for PNPM, `pnpm-workspace.yaml`.
 
 ### ni add
 

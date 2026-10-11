@@ -126,14 +126,14 @@ commandBase<'ni'>(
         devPackagesToInstall,
         typingsMode,
         flags.saveExact,
-        workspace?.relativePath
+        workspace
       );
     } else if (args._[0] === 'del') {
       return await uninstallPackages(
         workingDirectory,
         packageJson,
         args._[1]?.toString(),
-        workspace?.relativePath
+        workspace
       );
     } else if (args._[0] === 'update') {
       return await updatePackages(
@@ -141,7 +141,7 @@ commandBase<'ni'>(
         packageJson,
         flags.saveExact,
         args._[1]?.toString(),
-        workspace?.relativePath
+        workspace
       );
     } else if (args._.length > 0) {
       ConsoleInterface.printLine('Unknown command');

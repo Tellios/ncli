@@ -1,16 +1,47 @@
-import { runCmdInConsole, ConsoleInterface } from '../../common';
-import { containsPackageLockFile, containsYarnLockFile } from '../utils';
+import { runCmdInConsole, selectItem } from '../../common';
+import { detectPackageManager, PackageManager } from '../utils';
 
 export async function installAllPackagesUsingLockFile(
   workingDirectory: string
 ): Promise<void> {
-  if (await containsYarnLockFile(workingDirectory)) {
-    await runCmdInConsole('yarn', [], true, workingDirectory);
-  } else if (await containsPackageLockFile(workingDirectory)) {
-    await runCmdInConsole('npm', ['ci'], true, workingDirectory);
-  } else {
-    ConsoleInterface.printLine(
-      'No lock file found, create one first using npm or yarn'
-    );
+  switch (await detectPackageManager(workingDirectory)) {
+    case 'pnpm':
+      await runCmdInConsole(
+        'pnpm',
+        ['install', '--frozen-lockfile'],
+        true,
+        workingDirectory
+      );
+      break;
+    case 'yarn':
+      await runCmdInConsole('yarn', [], true, workingDirectory);
+      break;
+    case 'npm':
+      await runCmdInConsole('npm', ['ci'], true, workingDirectory);
+      break;
+    default: {
+      const options: [string, PackageManager | undefined][] = [
+        ['NPM', 'npm'],
+        ['Yarn', 'yarn'],
+        ['PNPM', 'pnpm'],
+        ['Do nothing', undefined]
+      ];
+      const [, packageManager] =
+        options[
+          await selectItem(
+            options.map(([label]) => label),
+            'No lock file found. Install packages using'
+          )
+        ];
+
+      if (packageManager) {
+        await runCmdInConsole(
+          packageManager,
+          ['install'],
+          true,
+          workingDirectory
+        );
+      }
+    }
   }
 }

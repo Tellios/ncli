@@ -1,5 +1,6 @@
 declare namespace NcliNode {
   interface IPackageJson {
+    name?: string;
     workspaces?: string[];
     scripts: Scripts;
     dependencies: Dependencies;

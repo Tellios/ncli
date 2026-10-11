@@ -1,4 +1,5 @@
 import { runCmdInConsole } from '../../common';
+import { detectPackageManagerOrUseDefault } from './detectPackageManager';
 
 export async function executePackageJsonScript(
   script: string,
@@ -6,7 +7,8 @@ export async function executePackageJsonScript(
   directory: string
 ): Promise<void> {
   if (script in availableScripts) {
-    await runCmdInConsole('npm', ['run', script], true, directory);
+    const packageManager = await detectPackageManagerOrUseDefault(directory);
+    await runCmdInConsole(packageManager, ['run', script], true, directory);
   } else {
     throw Error(`Script '${script}' not found in package.json`);
   }

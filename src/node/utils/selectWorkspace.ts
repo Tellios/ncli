@@ -6,20 +6,17 @@ export const selectWorkspace = async (
   packageJson: NcliNode.IPackageJson,
   lastSelectedWorkspaceRelativePath: string | undefined
 ): Promise<Workspace> => {
-  if (packageJson.workspaces && packageJson.workspaces.length > 0) {
-    const workspaces = await getWorkspacePaths(workingDirectory, packageJson);
+  const workspaces = await getWorkspacePaths(workingDirectory, packageJson);
 
-    const workspace =
-      workspaces[
-        await selectItem(
-          workspaces.map((p) => p.relativePath),
-          'Select workspace',
-          lastSelectedWorkspaceRelativePath
-        )
-      ];
-
-    return workspace;
-  } else {
+  if (workspaces.length === 0) {
     throw new Error('Workspaces are not configured for this project');
   }
+
+  return workspaces[
+    await selectItem(
+      workspaces.map((p) => p.relativePath),
+      'Select workspace',
+      lastSelectedWorkspaceRelativePath
+    )
+  ];
 };

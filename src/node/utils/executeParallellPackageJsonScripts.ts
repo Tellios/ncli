@@ -6,6 +6,7 @@ import {
   ShortcutListener,
   CommonShortcuts
 } from '../../common/console';
+import { detectPackageManagerOrUseDefault } from './detectPackageManager';
 
 export async function executeParallellPackageJsonScripts(
   scripts: string[],
@@ -20,10 +21,12 @@ export async function executeParallellPackageJsonScripts(
     throw Error(`Scripts not found: ${invalidScripts}`);
   }
 
+  const packageManager = await detectPackageManagerOrUseDefault(directory);
+
   const processOptions = scripts.map(
     (script): IProcessOptions => ({
       name: script,
-      executable: 'npm',
+      executable: packageManager,
       args: ['run', script],
       workingDirectory: directory
     })

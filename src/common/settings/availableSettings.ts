@@ -77,6 +77,20 @@ export const availableSettings = {
       hidden: true
     })
     .getSettings(),
+  nb: new Builder()
+    .add('lastSelectedWorkspace', {
+      description: 'Last selected workspace',
+      type: 'string',
+      hidden: true
+    })
+    .getSettings(),
+  nt: new Builder()
+    .add('lastSelectedWorkspace', {
+      description: 'Last selected workspace',
+      type: 'string',
+      hidden: true
+    })
+    .getSettings(),
   na: new Builder()
     .add('lastExecutedAlias', {
       description: 'Last alias executed in working directory',

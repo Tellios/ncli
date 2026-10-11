@@ -1,5 +1,5 @@
-import { runCmdInConsole, ConsoleInterface } from '../../common';
-import { containsYarnLockFile, containsPackageLockFile } from '../utils';
+import { runCmdInConsole } from '../../common';
+import { detectPackageManagerOrUseDefault, Workspace } from '../utils';
 
 export type AutoInstallTypingsMode = 'ignore' | 'installAsDev' | 'install';
 
@@ -9,38 +9,81 @@ export async function installPackages(
   devPackagesToInstall: string[],
   autoInstallTypings: AutoInstallTypingsMode,
   saveExact: boolean,
-  workspace: string | undefined
+  workspace: Workspace | undefined
 ): Promise<void> {
-  if (await containsYarnLockFile(workingDirectory)) {
-    const args: string[] = ['add'];
-    saveExact && args.push('--exact');
+  switch (await detectPackageManagerOrUseDefault(workingDirectory)) {
+    case 'pnpm': {
+      const args: string[] = ['add'];
+      saveExact && args.push('--save-exact');
+      workspace && args.push('--filter', `./${workspace.relativePath}`);
 
-    if (packagesToInstall.length > 0) {
-      await runCmdInConsole('yarn', [...args, ...packagesToInstall]);
-    }
+      if (packagesToInstall.length > 0) {
+        await runCmdInConsole(
+          'pnpm',
+          [...args, ...packagesToInstall],
+          true,
+          workingDirectory
+        );
+      }
 
-    if (devPackagesToInstall.length > 0) {
-      await runCmdInConsole('yarn', [
-        ...args,
-        '--dev',
-        ...devPackagesToInstall
-      ]);
+      if (devPackagesToInstall.length > 0) {
+        await runCmdInConsole(
+          'pnpm',
+          [...args, '-D', ...devPackagesToInstall],
+          true,
+          workingDirectory
+        );
+      }
+      break;
     }
-  } else if (await containsPackageLockFile(workingDirectory)) {
-    const args: string[] = ['i'];
-    saveExact && args.push('--save-exact');
-    workspace && args.push('--workspace', workspace);
+    case 'yarn': {
+      const args: string[] = workspace ? ['workspace', workspace.name] : [];
+      args.push('add');
+      saveExact && args.push('--exact');
 
-    if (packagesToInstall.length > 0) {
-      await runCmdInConsole('npm', [...args, ...packagesToInstall]);
-    }
+      if (packagesToInstall.length > 0) {
+        await runCmdInConsole(
+          'yarn',
+          [...args, ...packagesToInstall],
+          true,
+          workingDirectory
+        );
+      }
 
-    if (devPackagesToInstall.length > 0) {
-      await runCmdInConsole('npm', [...args, '-D', ...devPackagesToInstall]);
+      if (devPackagesToInstall.length > 0) {
+        await runCmdInConsole(
+          'yarn',
+          [...args, '--dev', ...devPackagesToInstall],
+          true,
+          workingDirectory
+        );
+      }
+      break;
     }
-  } else {
-    ConsoleInterface.printLine('No yarn or npm lock file found');
-    return;
+    case 'npm': {
+      const args: string[] = ['i'];
+      saveExact && args.push('--save-exact');
+      workspace && args.push('--workspace', workspace.relativePath);
+
+      if (packagesToInstall.length > 0) {
+        await runCmdInConsole(
+          'npm',
+          [...args, ...packagesToInstall],
+          true,
+          workingDirectory
+        );
+      }
+
+      if (devPackagesToInstall.length > 0) {
+        await runCmdInConsole(
+          'npm',
+          [...args, '-D', ...devPackagesToInstall],
+          true,
+          workingDirectory
+        );
+      }
+      break;
+    }
   }
 
   const addTypesPrefix = (p: string): string => `@types/${p}`;

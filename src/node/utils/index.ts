@@ -1,5 +1,4 @@
-export * from './containsPackageLockFile';
-export * from './containsYarnLockFile';
+export * from './detectPackageManager';
 export * from './executePackageJsonScript';
 export * from './executeParallellPackageJsonScripts';
 export * from './getWorkspacePaths';

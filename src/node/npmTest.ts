@@ -3,16 +3,39 @@ import {
   parsePackageJson,
   searchScripts,
   selectScript,
+  selectWorkspace,
   executePackageJsonScript
 } from './utils';
 
-const args = yargsWrapper().option('watch', {
-  alias: 'w',
-  describe: 'Use test task with watcher instead of single-run'
-}).argv;
+const args = yargsWrapper()
+  .option('watch', {
+    alias: 'W',
+    describe: 'Use test task with watcher instead of single-run',
+    type: 'boolean'
+  })
+  .option('workspace', {
+    alias: 'w',
+    describe:
+      'If the test should be executed inside a workspace project instead',
+    type: 'boolean'
+  }).argv;
 
-commandBase(async ({ workingDirectory }) => {
-  const { scripts } = await parsePackageJson(workingDirectory);
+commandBase<'nt'>(async ({ workingDirectory, settings, setSetting }) => {
+  let packageJson = await parsePackageJson(workingDirectory);
+
+  if (args.workspace) {
+    const workspace = await selectWorkspace(
+      workingDirectory,
+      packageJson,
+      settings.lastSelectedWorkspace
+    );
+
+    await setSetting('lastSelectedWorkspace', workspace.relativePath);
+    workingDirectory = workspace.absolutePath;
+    packageJson = await parsePackageJson(workingDirectory);
+  }
+
+  const { scripts } = packageJson;
 
   let testScripts;
 

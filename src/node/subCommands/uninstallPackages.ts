@@ -1,25 +1,39 @@
-import { ConsoleInterface, runCmdInConsole } from '../../common';
+import { runCmdInConsole } from '../../common';
 import { selectPackages } from './selectPackages';
-import { containsPackageLockFile, containsYarnLockFile } from '../utils';
+import { detectPackageManagerOrUseDefault, Workspace } from '../utils';
 
 export async function uninstallPackages(
   workingDirectory: string,
   packageJson: NcliNode.IPackageJson,
   searchString: string | undefined,
-  workspace: string | undefined
+  workspace: Workspace | undefined
 ): Promise<void> {
   const packages = await selectPackages(packageJson, searchString);
   const packageNames = packages.map((p) => p.name);
 
-  if (await containsYarnLockFile(workingDirectory)) {
-    await runCmdInConsole('yarn', ['remove', ...packageNames]);
-  } else if (await containsPackageLockFile(workingDirectory)) {
-    const args = ['uninstall'];
-    workspace && args.push('--workspace', workspace);
-    args.push(...packageNames);
+  switch (await detectPackageManagerOrUseDefault(workingDirectory)) {
+    case 'pnpm': {
+      const args = ['remove'];
+      workspace && args.push('--filter', `./${workspace.relativePath}`);
+      args.push(...packageNames);
 
-    await runCmdInConsole('npm', args);
-  } else {
-    ConsoleInterface.printLine('No yarn or npm lock file found');
+      await runCmdInConsole('pnpm', args, true, workingDirectory);
+      break;
+    }
+    case 'yarn': {
+      const args = workspace ? ['workspace', workspace.name] : [];
+      args.push('remove', ...packageNames);
+
+      await runCmdInConsole('yarn', args, true, workingDirectory);
+      break;
+    }
+    case 'npm': {
+      const args = ['uninstall'];
+      workspace && args.push('--workspace', workspace.relativePath);
+      args.push(...packageNames);
+
+      await runCmdInConsole('npm', args, true, workingDirectory);
+      break;
+    }
   }
 }
