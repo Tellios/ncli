@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-import '../../dist/node/npmExec.js';
+import '../../dist/node/npm-exec.js';

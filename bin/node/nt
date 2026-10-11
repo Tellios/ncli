@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-import '../../dist/node/npmTest.js';
+import '../../dist/node/npm-test.js';

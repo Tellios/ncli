@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-import '../../dist/node/npmRun.js';
+import '../../dist/node/npm-run.js';

@@ -1,7 +1,7 @@
 import {type Options} from 'yargs';
 import {yargsWrapper, selectItem, commandBase} from '../common/index.ts';
 import {
-  type IResolveResourceTypeParams,
+  type ResolveResourceTypeParams,
   type ResourceType,
 } from './utils/index.ts';
 import {
@@ -10,7 +10,7 @@ import {
   deleteCommand,
   logCommand,
   contextCommand,
-} from './subCommands/index.ts';
+} from './sub-commands/index.ts';
 
 const selectResourceArgs: Record<ResourceType, Options> = {
   deployment: {
@@ -58,7 +58,7 @@ for (const [cmd, config] of Object.entries(commands)) {
 
 const args = yargs.argv;
 
-const type: IResolveResourceTypeParams = {
+const type: ResolveResourceTypeParams = {
   deployment: args.deployment === true,
   pod: args.pod === true,
   service: args.service === true,

@@ -10,7 +10,7 @@ import {
   installPackages,
   type AutoInstallTypingsMode,
   updatePackages,
-} from './subCommands/index.ts';
+} from './sub-commands/index.ts';
 
 commandBase<'ni'>(
   async ({workingDirectory, settings, setSetting, getSettings}) => {

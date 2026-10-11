@@ -1,5 +1,5 @@
 import {runCmdInConsole} from '../../common/index.ts';
-import {appendNoVerifyIfEnabled} from './appendNoVerifyIfEnabled.ts';
+import {appendNoVerifyIfEnabled} from './append-no-verify-if-enabled.ts';
 import {push} from './push.ts';
 
 /*

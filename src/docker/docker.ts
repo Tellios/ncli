@@ -7,7 +7,7 @@ import {
   startCommand,
   stopCommand,
   inspectCommand,
-} from './subCommands/index.ts';
+} from './sub-commands/index.ts';
 
 const commands: Record<
   string,

@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import {yargsWrapper, ConsoleInterface, commandBase} from '../common/index.ts';
-import {getStatus, type IGitStatus} from './utils/index.ts';
+import {getStatus, type GitStatus} from './utils/index.ts';
 
 const args = yargsWrapper()
   .option('new', {
@@ -25,7 +25,7 @@ const args = yargsWrapper()
 const getOrIgnore = (ignore: boolean, files: string[]): string[] =>
   ignore ? [] : files;
 
-const getStatusOutput = (status: IGitStatus): string[] => [
+const getStatusOutput = (status: GitStatus): string[] => [
   ...getOrIgnore(
     args.modified || args.deleted,
     status.newFiles.map((file: string) => chalk.green(`+ ${file}`)),

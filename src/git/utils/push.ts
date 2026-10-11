@@ -1,7 +1,7 @@
 import {runCmdInConsole, CmdError, confirm} from '../../common/index.ts';
-import {getCurrentBranch} from './getCurrentBranch.ts';
-import {setUpstream} from './setUpstream.ts';
-import {appendNoVerifyIfEnabled} from './appendNoVerifyIfEnabled.ts';
+import {getCurrentBranch} from './get-current-branch.ts';
+import {setUpstream} from './set-upstream.ts';
+import {appendNoVerifyIfEnabled} from './append-no-verify-if-enabled.ts';
 
 export async function push(
   workingDirectory: string,

@@ -1,1 +1,1 @@
-export * from './UnreachableCaseError.ts';
+export * from './unreachable-case-error.ts';

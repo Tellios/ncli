@@ -1,6 +1,6 @@
 import {type Options} from 'yargs';
 import {yargsWrapper, selectItem, commandBase} from '../common/index.ts';
-import {deleteCommand, listCommand, setCommand} from './subCommands/index.ts';
+import {deleteCommand, listCommand, setCommand} from './sub-commands/index.ts';
 
 const commands: Record<
   string,

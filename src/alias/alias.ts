@@ -5,7 +5,7 @@ import {
   generateAliasFile,
   listAliases,
   selectAliasAndExecute,
-} from './subCommands/index.ts';
+} from './sub-commands/index.ts';
 
 const [command, ...args] = process.argv.slice(2);
 
