@@ -116,7 +116,7 @@ describe('parseCommand', () => {
   });
 
   it('should throw if command text is empty', () => {
-    expect(() => parseCommand({ name: 'mock', cmd: '' })).toThrowError();
+    expect(() => parseCommand({ name: 'mock', cmd: '' })).toThrow();
   });
 
   it('should propagate interactive flag on top-level alias', () => {

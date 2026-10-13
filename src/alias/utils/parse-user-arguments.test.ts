@@ -56,15 +56,15 @@ describe('parseUserArguments', () => {
   });
 
   it('should throw an error if a named argument is missing its value', () => {
-    expect(() => parseUserArguments(['--test'])).toThrowError(
+    expect(() => parseUserArguments(['--test'])).toThrow(
       UserArgumentParseError
     );
 
-    expect(() => parseUserArguments(['--test', 'foo'])).toThrowError(
+    expect(() => parseUserArguments(['--test', 'foo'])).toThrow(
       UserArgumentParseError
     );
 
-    expect(() => parseUserArguments(['--test', '=foo'])).toThrowError(
+    expect(() => parseUserArguments(['--test', '=foo'])).toThrow(
       UserArgumentParseError
     );
   });

@@ -38,14 +38,15 @@
   "scripts": {
     "prettier": "prettier --check --write \"{lib,src}/**/*.ts\"",
     "prettier:ci": "prettier -l \"{lib,src}/**/*.ts\"",
+    "prepare": "husky",
     "pretest": "pnpm run lint",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "build:watch": "tsc --watch -p tsconfig.build.json",
-    "setup": "pnpm install --frozen-lockfile && pnpm run prettier && pnpm run test && pnpm run build && pnpm link",
-    "lint": "pnpm run script:lint -- --fix",
-    "lint:ci": "pnpm run script:lint",
+    "setup": "pnpm install --frozen-lockfile && pnpm run lint && pnpm run test && pnpm run build && pnpm add --global link:.",
+    "lint": "pnpm run prettier && pnpm run script:lint -- --fix",
+    "lint:ci": "pnpm run prettier:ci && pnpm run script:lint",
     "script:lint": "xo . --max-warnings=0"
   },
   "files": [
@@ -90,5 +91,8 @@
   "lint-staged": {
     "*.{ts,md}": "prettier --write",
     "*.{ts}": "xo --max-warnings 0 --fix"
+  },
+  "allowScripts": {
+    "file:.pnpm/husky@9.1.7/node_modules/husky": true
   }
 }

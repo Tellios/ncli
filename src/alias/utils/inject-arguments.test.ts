@@ -13,7 +13,7 @@ describe('injectArguments', () => {
         { positional: [], named: {}, appended: [] },
         '/opt'
       )
-    ).toThrowError();
+    ).toThrow();
 
     expect(() =>
       injectArguments(
@@ -26,7 +26,7 @@ describe('injectArguments', () => {
         { positional: ['1'], named: {}, appended: [] },
         '/opt'
       )
-    ).toThrowError();
+    ).toThrow();
   });
 
   it('should return command text without arguments if no arguments are specified in command text', () => {
