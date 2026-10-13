@@ -1,0 +1,37 @@
+import process from 'node:process';
+import { shellQuote } from './shell-quote.ts';
+import {
+  buildInteractiveShellCommand,
+  getInteractiveSpawn
+} from './run-interactive-command.ts';
+
+describe('shellQuote', () => {
+  it('should leave simple tokens unquoted', () => {
+    expect(shellQuote('yarn')).toBe('yarn');
+    expect(shellQuote('test-hub')).toBe('test-hub');
+  });
+
+  it('should quote values with spaces', () => {
+    expect(shellQuote('foo bar')).toBe("'foo bar'");
+  });
+});
+
+describe('runInteractiveCommand', () => {
+  it('should wrap command with working directory cd', () => {
+    expect(
+      buildInteractiveShellCommand('yarn test -- --watch', '/tmp/work')
+    ).toBe('cd /tmp/work && yarn test -- --watch');
+  });
+
+  it('should build script spawn args on linux', () => {
+    const { platform } = process;
+    Object.defineProperty(process, 'platform', { value: 'linux' });
+
+    expect(getInteractiveSpawn('yarn test', '/tmp/work')).toEqual({
+      file: 'script',
+      args: ['-q', '-c', 'cd /tmp/work && yarn test', '/dev/null']
+    });
+
+    Object.defineProperty(process, 'platform', { value: platform });
+  });
+});

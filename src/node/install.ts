@@ -1,14 +1,23 @@
-import { yargsWrapper, ConsoleInterface, commandBase } from '../common';
-import { parsePackageJson, selectWorkspace, Workspace } from './utils';
+import process from 'node:process';
+import {
+  yargsWrapper,
+  ConsoleInterface,
+  commandBase
+} from '../common/index.ts';
+import {
+  parsePackageJson,
+  selectWorkspace,
+  type Workspace
+} from './utils/index.ts';
 import {
   installAllPackagesUsingLockFile,
   uninstallPackages,
   installPackages,
-  AutoInstallTypingsMode,
+  type AutoInstallTypingsMode,
   updatePackages
-} from './subCommands';
+} from './sub-commands/index.ts';
 
-commandBase<'ni'>(
+await commandBase<'ni'>(
   async ({ workingDirectory, settings, setSetting, getSettings }) => {
     const args = yargsWrapper(false)
       .command('add', 'Install one or more packages', {
@@ -61,7 +70,8 @@ commandBase<'ni'>(
             desc: 'If the updates should be performed in a workspace package instead'
           }
         }
-      ).argv;
+      )
+      .parseSync();
 
     let packageJson = await parsePackageJson(workingDirectory);
 
@@ -85,42 +95,42 @@ commandBase<'ni'>(
     }
 
     if (args._[0] === 'add') {
-      const addArgs = process.argv.slice(3);
+      const argsForAdd = process.argv.slice(3);
       const packagesToInstall: string[] = [];
       const devPackagesToInstall: string[] = [];
-      let devFlag = false;
+      let isDevFlag = false;
       let typingsMode: AutoInstallTypingsMode = 'ignore';
 
-      addArgs.forEach((addArg) => {
-        if (addArg === '--dev' || addArg === '-d') {
-          devFlag = true;
-        } else if (addArg === '--auto-types' || addArg === '-a') {
-          typingsMode = devFlag ? 'installAsDev' : 'install';
-        } else if (addArg.startsWith('-')) {
-          if (addArg.startsWith('--')) {
-            return;
+      for (const argAdd of argsForAdd) {
+        if (argAdd === '--dev' || argAdd === '-d') {
+          isDevFlag = true;
+        } else if (argAdd === '--auto-types' || argAdd === '-a') {
+          typingsMode = isDevFlag ? 'installAsDev' : 'install';
+        } else if (argAdd.startsWith('-')) {
+          if (argAdd.startsWith('--')) {
+            continue;
           }
 
-          const autoTypesIndex = addArg.indexOf('a');
-          const devIndex = addArg.indexOf('d');
+          const autoTypesIndex = argAdd.indexOf('a');
+          const devIndex = argAdd.indexOf('d');
 
           if (devIndex < autoTypesIndex) {
             // -da
-            devFlag = true;
+            isDevFlag = true;
             typingsMode = 'installAsDev';
           } else if (autoTypesIndex < devIndex) {
             // -ad
-            devFlag = true;
+            isDevFlag = true;
             typingsMode = 'install';
           }
-        } else if (devFlag) {
-          devPackagesToInstall.push(addArg);
+        } else if (isDevFlag) {
+          devPackagesToInstall.push(argAdd);
         } else {
-          packagesToInstall.push(addArg);
+          packagesToInstall.push(argAdd);
         }
-      });
+      }
 
-      return await installPackages(
+      return installPackages(
         workingDirectory,
         packagesToInstall,
         devPackagesToInstall,
@@ -128,22 +138,28 @@ commandBase<'ni'>(
         flags.saveExact,
         workspace
       );
-    } else if (args._[0] === 'del') {
-      return await uninstallPackages(
+    }
+
+    if (args._[0] === 'del') {
+      return uninstallPackages(
         workingDirectory,
         packageJson,
         args._[1]?.toString(),
         workspace
       );
-    } else if (args._[0] === 'update') {
-      return await updatePackages(
+    }
+
+    if (args._[0] === 'update') {
+      return updatePackages(
         workingDirectory,
         packageJson,
         flags.saveExact,
         args._[1]?.toString(),
         workspace
       );
-    } else if (args._.length > 0) {
+    }
+
+    if (args._.length > 0) {
       ConsoleInterface.printLine('Unknown command');
     } else {
       await installAllPackagesUsingLockFile(workingDirectory);

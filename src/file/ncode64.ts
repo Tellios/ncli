@@ -1,10 +1,10 @@
-import { createReadStream, createWriteStream } from 'fs-extra';
-import { yargsWrapper, commandBase } from '../common';
+import { createReadStream, createWriteStream } from 'node:fs';
+import { yargsWrapper, commandBase } from '../common/index.ts';
 
 // https://github.com/nodejs/node/blob/master/lib/buffer.js
 const supportedEncodings: BufferEncoding[] = [
   'utf8',
-  'utf-8',
+  'utf-8', // eslint-disable-line unicorn/text-encoding-identifier-case
   'base64',
   'ucs2',
   'ucs-2',
@@ -45,26 +45,22 @@ const yargs = yargsWrapper()
     choices: supportedEncodings
   });
 
-const args = yargs.argv;
+const args = yargs.parseSync();
 
-commandBase(async (): Promise<void> => {
+await commandBase(async (): Promise<void> => {
   const readStream = createReadStream(args.input, {
     encoding: args.inputContainer ?? (args.from as BufferEncoding)
   });
-  const chunks: string[] = [];
-
-  for await (const chunk of readStream) {
-    chunks.push(chunk);
-  }
+  const chunks: string[] = await Array.fromAsync(readStream);
 
   const buffer = Buffer.from(
     chunks.join(''),
     args.inputContainer ? (args.from as BufferEncoding) : undefined
   );
 
-  const writeStream = args.outputContainer
-    ? createWriteStream(args.output, { encoding: args.outputContainer })
-    : createWriteStream(args.output, { encoding: args.to });
+  const writeStream = createWriteStream(args.output, {
+    encoding: args.outputContainer ?? args.to
+  });
   writeStream.write(
     buffer.toString(args.outputContainer ? args.to : undefined)
   );

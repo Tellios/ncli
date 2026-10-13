@@ -1,25 +1,41 @@
-import * as process from 'process';
-import { ConsoleInterface, Type } from '../common';
+import process from 'node:process';
+import { ConsoleInterface, Type } from '../common/index.ts';
 import {
   executeMatchingAlias,
   generateAliasFile,
   listAliases,
   selectAliasAndExecute
-} from './subCommands';
+} from './sub-commands/index.ts';
 
 const [command, ...args] = process.argv.slice(2);
 
 if (command === 'run' && args.length === 0) {
-  selectAliasAndExecute();
-} else if (command === 'run') {
-  executeMatchingAlias(args);
-} else if (command === 'list') {
-  listAliases();
-} else if (command === 'generate') {
-  generateAliasFile();
+  await selectAliasAndExecute();
 } else {
-  ConsoleInterface.printLine(
-    `No command specified, available commands: run, list, generate`,
-    Type.error
-  );
+  switch (command) {
+    case 'run': {
+      await executeMatchingAlias(args);
+
+      break;
+    }
+
+    case 'list': {
+      await listAliases();
+
+      break;
+    }
+
+    case 'generate': {
+      await generateAliasFile();
+
+      break;
+    }
+
+    default: {
+      ConsoleInterface.printLine(
+        'No command specified, available commands: run, list, generate',
+        Type.error
+      );
+    }
+  }
 }

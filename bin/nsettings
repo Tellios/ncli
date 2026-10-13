@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../dist/settings/settings.js');
+import '../dist/settings/settings.js';

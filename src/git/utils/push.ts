@@ -1,7 +1,7 @@
-import { runCmdInConsole, CmdError, confirm } from '../../common';
-import { getCurrentBranch } from './getCurrentBranch';
-import { setUpstream } from './setUpstream';
-import { appendNoVerifyIfEnabled } from './appendNoVerifyIfEnabled';
+import { runCmdInConsole, CmdError, confirm } from '../../common/index.ts';
+import { getCurrentBranch } from './get-current-branch.ts';
+import { setUpstream } from './set-upstream.ts';
+import { appendNoVerifyIfEnabled } from './append-no-verify-if-enabled.ts';
 
 export async function push(
   workingDirectory: string,
@@ -21,7 +21,10 @@ export async function push(
 
     let pushArgs = ['push'];
     pushArgs = appendNoVerifyIfEnabled(useNoVerify, pushArgs);
-    force && pushArgs.push('--force');
+
+    if (force) {
+      pushArgs.push('--force');
+    }
 
     await runCmdInConsole('git', pushArgs);
 
@@ -47,7 +50,7 @@ export async function push(
           return;
         }
       } else {
-        throw new Error(error.processMessage);
+        throw new Error(error.processMessage, { cause: error });
       }
     }
 

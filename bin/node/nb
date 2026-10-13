@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../../dist/node/npmBuild.js');
+import '../../dist/node/npm-build.js';

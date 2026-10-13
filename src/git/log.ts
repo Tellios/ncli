@@ -1,31 +1,33 @@
-import * as chalk from 'chalk';
+import { styleText } from 'node:util';
 import {
   ConsoleInterface,
   Type,
   commandBase,
   selectItem,
   yargsWrapper
-} from '../common';
-import { getLog, showCommit } from './utils';
+} from '../common/index.ts';
+import { getLog, showCommit } from './utils/index.ts';
 
-const args = yargsWrapper().option({
-  maxCommits: {
-    alias: 'm',
-    describe: 'Maximum number of commits to include, by default this is 100',
-    type: 'number',
-    default: 100
-  }
-}).argv;
+const args = yargsWrapper()
+  .option({
+    maxCommits: {
+      alias: 'm',
+      describe: 'Maximum number of commits to include, by default this is 100',
+      type: 'number',
+      default: 100
+    }
+  })
+  .parseSync();
 
-commandBase(async ({ workingDirectory }) => {
+await commandBase(async ({ workingDirectory }) => {
   ConsoleInterface.printLine('Fetching log entries...');
   const entries = await getLog(workingDirectory, args.maxCommits);
 
   const entriesAsSelectables = entries.map(
     (entry, index) =>
-      `${chalk.yellow(entry.shortId)}${
-        index === 0 ? chalk.greenBright(' (latest)') : ''
-      }: ${entry.message} (${chalk.blueBright(entry.date)})`
+      `${styleText('yellow', entry.shortId)}${
+        index === 0 ? styleText('greenBright', ' (latest)') : ''
+      }: ${entry.message} (${styleText('blueBright', entry.date)})`
   );
 
   if (entries.length === 0) {
@@ -36,7 +38,7 @@ commandBase(async ({ workingDirectory }) => {
 
   // We want to have a CLI that allows viewing different commits and
   // not exit until the user decides to do so by pressing Ctrl+C.
-  // eslint-disable-next-line no-constant-condition
+
   while (true) {
     const selectedIndex = await selectItem(
       entriesAsSelectables,

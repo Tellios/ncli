@@ -1,7 +1,7 @@
-import { commandBase, yargsWrapper } from '../common';
-import { push } from './utils';
+import { commandBase, yargsWrapper } from '../common/index.ts';
+import { push } from './utils/index.ts';
 
-commandBase<'npush'>(async ({ workingDirectory, settings }) => {
+await commandBase<'npush'>(async ({ workingDirectory, settings }) => {
   const args = yargsWrapper()
     .option('noVerify', {
       alias: 'n',
@@ -20,7 +20,8 @@ commandBase<'npush'>(async ({ workingDirectory, settings }) => {
       describe: 'If --force should be used when pushing to remote',
       type: 'boolean',
       default: false
-    }).argv;
+    })
+    .parseSync();
 
   await push(workingDirectory, args.noVerify, args.tags, args.force);
 });

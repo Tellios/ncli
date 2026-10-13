@@ -4,12 +4,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v7
+      # Must run before setup-node so the pnpm cache can be located
+      - uses: pnpm/action-setup@v6
         with:
-          node-version: 16
-      - run: npm ci
-      - run: npm run prettier:ci
-      - run: npm run lint:ci
-      - run: npm run test
-      - run: npm run build
+          version: 12
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: pnpm
+      - run: pnpm ci
+      - run: pnpm run lint:ci
+      - run: pnpm run test
+      - run: pnpm run build

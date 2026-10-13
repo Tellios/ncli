@@ -1,14 +1,14 @@
 {
-    "compilerOptions": {
-        "strict": true,
-        "alwaysStrict": true,
-        "forceConsistentCasingInFileNames": true,
-        "lib": [
-            "ES2020"
-        ],
-        "target": "ES2020",
-        "sourceMap": true,
-        "module": "CommonJS",
-        "moduleResolution": "Node"
-    }
+  "compilerOptions": {
+    "strict": true,
+    "alwaysStrict": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["ES2025", "ESNext.Array"],
+    "target": "ES2025",
+    "sourceMap": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "rewriteRelativeImportExtensions": true,
+    "types": ["node", "vitest/globals"]
+  }
 }

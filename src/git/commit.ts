@@ -1,7 +1,7 @@
-import { commandBase, yargsWrapper } from '../common';
-import { addAll, commit, getStatus } from './utils';
+import { commandBase, yargsWrapper } from '../common/index.ts';
+import { addAll, commit, getStatus } from './utils/index.ts';
 
-commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
+await commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
   const args = yargsWrapper()
     .epilogue('ncommit makes doing git commit less tedious')
     .option('addAll', {
@@ -52,10 +52,11 @@ commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
       describe: 'Sign the commit',
       type: 'boolean',
       default: settings.sign ?? false
-    }).argv;
+    })
+    .parseSync();
 
-  if (!args.edit && !args.message) {
-    throw new Error(`'message' is required when 'edit' is not used`);
+  if (!args.edit && args.message === undefined) {
+    throw new Error("'message' is required when 'edit' is not used");
   }
 
   const status = await getStatus(workingDirectory);

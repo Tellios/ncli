@@ -1,6 +1,10 @@
-import { spawn } from 'child_process';
-import { yargsWrapper, ConsoleInterface, commandBase } from '../common';
-import { clone } from './utils';
+import { spawn } from 'node:child_process';
+import {
+  yargsWrapper,
+  ConsoleInterface,
+  commandBase
+} from '../common/index.ts';
+import { clone } from './utils/index.ts';
 
 const args = yargsWrapper()
   .option('url', {
@@ -20,10 +24,11 @@ const args = yargsWrapper()
       'If you want to start Visual Studio Code for the cloned repository',
     type: 'boolean',
     default: false
-  }).argv;
+  })
+  .parseSync();
 
-commandBase(({ workingDirectory }) =>
-  clone(args.url, args.directory).then((result: string) => {
+await commandBase(async ({ workingDirectory }) =>
+  clone(args.url, args.directory).then(async (result: string) => {
     ConsoleInterface.printLine('Repository cloned');
 
     return new Promise((resolve, reject) => {
@@ -38,8 +43,12 @@ commandBase(({ workingDirectory }) =>
         }
 
         resolve();
-      } catch (e) {
-        reject(e);
+      } catch (error) {
+        if (error instanceof Error) {
+          reject(error);
+        } else {
+          reject(new Error(String(error)));
+        }
       }
     });
   })

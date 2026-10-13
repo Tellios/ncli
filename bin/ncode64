@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../dist/file/ncode64.js');
+import '../dist/file/ncode64.js';

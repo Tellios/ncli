@@ -1,1 +1,1 @@
-export * from './getNcliDir';
+export * from './get-ncli-dir.ts';

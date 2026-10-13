@@ -1,40 +1,40 @@
-export interface IAliasesConfig {
-  aliases: IAlias[];
-}
+export type AliasesConfig = {
+  aliases: Alias[];
+};
 
 export type AliasType = 'parallel' | 'sequential';
 
-export interface IAlias {
+export type Alias = {
   name: string;
   type?: AliasType;
-  cmd: string | string[] | IAliasTask[];
+  cmd: string | string[] | AliasTask[];
   description?: string;
   workingDirectory?: string;
   interactive?: boolean;
-}
+};
 
-export interface IAliasTask {
+export type AliasTask = {
   type?: AliasType;
   name: string;
   cmd: string | string[];
   workingDirectory?: string;
   interactive?: boolean;
-}
+};
 
-export const isAliasTask = (cmd: unknown): cmd is IAliasTask =>
+export const isAliasTask = (cmd: unknown): cmd is AliasTask =>
   typeof cmd !== 'string';
 
-export interface ICommand {
+export type Command = {
   commandText: string;
   positionalArguments: string[];
-}
+};
 
-export type ExecutionPlan = IExecutionStep[];
+export type ExecutionPlan = ExecutionStep[];
 
-export interface IExecutionStep {
+export type ExecutionStep = {
   type: AliasType;
   name?: string;
-  commands: ICommand[];
+  commands: Command[];
   workingDirectory?: string;
   interactive?: boolean;
-}
+};

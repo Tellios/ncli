@@ -1,6 +1,10 @@
-import * as chalk from 'chalk';
-import { yargsWrapper, ConsoleInterface, commandBase } from '../common';
-import { getStatus, IGitStatus } from './utils';
+import { styleText } from 'node:util';
+import {
+  yargsWrapper,
+  ConsoleInterface,
+  commandBase
+} from '../common/index.ts';
+import { getStatus, type GitStatus } from './utils/index.ts';
 
 const args = yargsWrapper()
   .option('new', {
@@ -20,34 +24,28 @@ const args = yargsWrapper()
     describe: 'Only show deleted files',
     type: 'boolean',
     default: false
-  }).argv;
+  })
+  .parseSync();
 
-const getOrIgnore = (ignore: boolean, files: string[]): string[] => {
-  if (ignore) {
-    return [];
-  }
+const getOrIgnore = (ignore: boolean, files: string[]): string[] =>
+  ignore ? [] : files;
 
-  return files;
-};
+const getStatusOutput = (status: GitStatus): string[] => [
+  ...getOrIgnore(
+    args.modified || args.deleted,
+    status.newFiles.map((file: string) => styleText('green', `+ ${file}`))
+  ),
+  ...getOrIgnore(
+    args.new || args.deleted,
+    status.changedFiles.map((file: string) => styleText('yellow', `M ${file}`))
+  ),
+  ...getOrIgnore(
+    args.new || args.modified,
+    status.deletedFiles.map((file: string) => styleText('red', `- ${file}`))
+  )
+];
 
-const getStatusOutput = (status: IGitStatus): string[] => {
-  return [
-    ...getOrIgnore(
-      args.modified || args.deleted,
-      status.newFiles.map((file: string) => chalk.green(`+ ${file}`))
-    ),
-    ...getOrIgnore(
-      args.new || args.deleted,
-      status.changedFiles.map((file: string) => chalk.yellow(`M ${file}`))
-    ),
-    ...getOrIgnore(
-      args.new || args.modified,
-      status.deletedFiles.map((file: string) => chalk.red(`- ${file}`))
-    )
-  ];
-};
-
-commandBase(async ({ workingDirectory }) => {
+await commandBase(async ({ workingDirectory }) => {
   const status = await getStatus(workingDirectory);
 
   if (status.hasChanges) {

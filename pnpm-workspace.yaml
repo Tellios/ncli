@@ -1,0 +1,6 @@
+allowBuilds:
+  husky: true
+  node-pty: true
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - execa@10.1.1

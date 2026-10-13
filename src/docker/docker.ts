@@ -1,5 +1,5 @@
-import { Options } from 'yargs';
-import { yargsWrapper, selectItem, commandBase } from '../common';
+import { type Options } from 'yargs';
+import { yargsWrapper, selectItem, commandBase } from '../common/index.ts';
 import {
   deleteCommand,
   listCommand,
@@ -7,7 +7,7 @@ import {
   startCommand,
   stopCommand,
   inspectCommand
-} from './subCommands';
+} from './sub-commands/index.ts';
 
 const commands: Record<
   string,
@@ -74,46 +74,74 @@ const commands: Record<
 
 const yargs = yargsWrapper();
 
-Object.entries(commands).forEach(([cmd, config]) => {
+for (const [cmd, config] of Object.entries(commands)) {
   yargs.command(cmd, config.desc, config.options);
-});
+}
 
-const args = yargs.argv;
+const args = yargs.parseSync();
 
 const runCommandIfMatch = async (cmd: string): Promise<boolean> => {
-  if (cmd === 'inspect') {
-    await inspectCommand({ onlyShowRunning: args.running === true });
-  } else if (cmd === 'ls') {
-    await listCommand({ onlyShowRunning: args.running === true });
-  } else if (cmd === 'del') {
-    await deleteCommand({
-      onlyShowRunning: args.running === true,
-      forcefullyDelete: args.force === true
-    });
-  } else if (cmd === 'start') {
-    await startCommand();
-  } else if (cmd === 'stop') {
-    await stopCommand();
-  } else if (cmd === 'logs') {
-    await logCommand({
-      onlyShowRunning: args.running === true,
-      follow: args.follow === true
-    });
-  } else {
-    return false;
+  switch (cmd) {
+    case 'inspect': {
+      await inspectCommand({ onlyShowRunning: args.running === true });
+
+      break;
+    }
+
+    case 'ls': {
+      await listCommand({ onlyShowRunning: args.running === true });
+
+      break;
+    }
+
+    case 'del': {
+      await deleteCommand({
+        onlyShowRunning: args.running === true,
+        forcefullyDelete: args.force === true
+      });
+
+      break;
+    }
+
+    case 'start': {
+      await startCommand();
+
+      break;
+    }
+
+    case 'stop': {
+      await stopCommand();
+
+      break;
+    }
+
+    case 'logs': {
+      await logCommand({
+        onlyShowRunning: args.running === true,
+        follow: args.follow === true
+      });
+
+      break;
+    }
+
+    default: {
+      return false;
+    }
   }
 
   return true;
 };
 
-commandBase(async (): Promise<void> => {
-  if (!(await runCommandIfMatch(args._[0] as string))) {
-    const commandEntries = Object.entries(commands);
-    const commandTexts = commandEntries.map(
-      ([key, config]) => `${key} - ${config.desc}`
-    );
-    const index = await selectItem(commandTexts, 'Select command to execute');
-    const selectedCommand = commandEntries[index][0];
-    await runCommandIfMatch(selectedCommand);
+await commandBase(async (): Promise<void> => {
+  if (await runCommandIfMatch(args._[0] as string)) {
+    return;
   }
+
+  const commandEntries = Object.entries(commands);
+  const commandTexts = commandEntries.map(
+    ([key, config]) => `${key} - ${config.desc}`
+  );
+  const index = await selectItem(commandTexts, 'Select command to execute');
+  const selectedCommand = commandEntries[index][0];
+  await runCommandIfMatch(selectedCommand);
 });
