@@ -11,7 +11,8 @@ const args = yargsWrapper()
     alias: 'f',
     describe: 'Optional filter if no branch is specified',
     type: 'string'
-  }).argv;
+  })
+  .parseSync();
 
 async function getBranchToMergeFrom(workingDirectory: string): Promise<string> {
   if (args.branch && args.branch.length > 0) {

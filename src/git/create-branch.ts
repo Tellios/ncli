@@ -19,7 +19,8 @@ const args = yargsWrapper()
     describe: 'Add --no-verify to git push command',
     type: 'boolean',
     default: false
-  }).argv;
+  })
+  .parseSync();
 
 await commandBase(async () =>
   createBranch(args.branch, args.push, args.noVerify)

@@ -1,4 +1,5 @@
-import { ensureFile, readFile } from 'fs-extra';
+import { readFile } from 'node:fs/promises';
+import { ensureFile } from 'fs-extra/esm';
 import { getSettingsFilename } from './get-settings-filename.ts';
 import { type SettingsFile } from './settings-file.interface.ts';
 import { type PersistedSettings } from './persisted-settings.interface.ts';

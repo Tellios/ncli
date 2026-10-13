@@ -22,7 +22,8 @@ const args = yargsWrapper(false)
     describe:
       'If the binary should be executed inside a workspace project instead',
     type: 'boolean'
-  }).argv;
+  })
+  .parseSync();
 
 await commandBase<'nex'>(async ({ workingDirectory, settings, setSetting }) => {
   if (args.workspace) {

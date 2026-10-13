@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import { selectItems } from '../../common/index.ts';
 import type { Package, PackageJson } from '../types.ts';
 
@@ -9,7 +9,7 @@ export async function selectPackages(
   const packages: Package[] = [
     ...Object.keys(packageJson.dependencies || {}).map((name): Package => {
       const version = packageJson.dependencies[name];
-      const label = `${chalk.cyan(name)} - ${version}`;
+      const label = `${styleText('cyan', name)} - ${version}`;
 
       return {
         dev: false,
@@ -20,7 +20,7 @@ export async function selectPackages(
     }),
     ...Object.keys(packageJson.devDependencies || {}).map((name): Package => {
       const version = packageJson.devDependencies[name];
-      const label = `${chalk.yellow(name)} - ${version}`;
+      const label = `${styleText('yellow', name)} - ${version}`;
 
       return {
         dev: true,

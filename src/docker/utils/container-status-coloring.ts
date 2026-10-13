@@ -1,36 +1,45 @@
-import chalk, { type Chalk } from 'chalk';
+import { styleText } from 'node:util';
 import { type DockerContainer } from './docker-container.interface.ts';
 
-export const containerStatusColoring = (container: DockerContainer): Chalk => {
+type Colorizer = (text: string) => string;
+
+const color =
+  (format: Parameters<typeof styleText>[0]): Colorizer =>
+  (text) =>
+    styleText(format, text);
+
+export const containerStatusColoring = (
+  container: DockerContainer
+): Colorizer => {
   const state = container.properties.State;
 
   switch (state.Status) {
     case 'created': {
-      return chalk.gray;
+      return color('gray');
     }
 
     case 'restarting': {
-      return chalk.yellow;
+      return color('yellow');
     }
 
     case 'running': {
-      return chalk.green;
+      return color('green');
     }
 
     case 'removing': {
-      return chalk.red;
+      return color('red');
     }
 
     case 'paused': {
-      return chalk.cyan;
+      return color('cyan');
     }
 
     case 'exited': {
-      return state.ExitCode === 0 ? chalk.blue : chalk.red;
+      return color(state.ExitCode === 0 ? 'blue' : 'red');
     }
 
     case 'dead': {
-      return chalk.red;
+      return color('red');
     }
   }
 };

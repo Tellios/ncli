@@ -16,7 +16,8 @@ const args = yargsWrapper()
     alias: 'f',
     describe: 'Branch name filter',
     type: 'string'
-  }).argv;
+  })
+  .parseSync();
 
 await commandBase(async ({ workingDirectory }) => {
   const branches = await getBranches(workingDirectory, args.remote);

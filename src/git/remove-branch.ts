@@ -38,7 +38,8 @@ const args = yargsWrapper()
     describe: 'Allows force deleting a branch',
     type: 'boolean',
     default: false
-  }).argv;
+  })
+  .parseSync();
 
 async function getBranchToDelete(workingDirectory: string): Promise<string> {
   if (args.branch && args.branch.length > 0) {

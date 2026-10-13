@@ -1,11 +1,13 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import { type Branch } from './branch.interface.ts';
 
 export const branchNameColoring = (branches: Branch[]): string[] =>
   branches.map((branch) => {
-    if (branch.isCurrent) {
-      return chalk.green(branch.name);
-    }
+    const color = branch.isCurrent
+      ? 'green'
+      : branch.isRemote
+        ? 'cyan'
+        : 'blue';
 
-    return branch.isRemote ? chalk.cyan(branch.name) : chalk.blue(branch.name);
+    return styleText(color, branch.name);
   });

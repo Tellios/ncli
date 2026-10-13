@@ -17,7 +17,8 @@ const args = yargsWrapper()
     alias: 'f',
     describe: 'Branch name filter',
     type: 'string'
-  }).argv;
+  })
+  .parseSync();
 
 async function getBranchToSwitchTo(workingDirectory: string): Promise<string> {
   if (args.branch !== undefined && args.branch.length > 0) {

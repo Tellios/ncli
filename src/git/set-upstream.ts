@@ -5,12 +5,14 @@ import {
   setUpstream
 } from './utils/index.ts';
 
-const args = yargsWrapper().option('noVerify', {
-  alias: 'n',
-  describe: 'Add --no-verify to git push command',
-  type: 'boolean',
-  default: false
-}).argv;
+const args = yargsWrapper()
+  .option('noVerify', {
+    alias: 'n',
+    describe: 'Add --no-verify to git push command',
+    type: 'boolean',
+    default: false
+  })
+  .parseSync();
 
 await commandBase(async ({ workingDirectory }) => {
   const branch = await getCurrentBranch(workingDirectory);

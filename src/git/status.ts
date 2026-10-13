@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import {
   yargsWrapper,
   ConsoleInterface,
@@ -24,7 +24,8 @@ const args = yargsWrapper()
     describe: 'Only show deleted files',
     type: 'boolean',
     default: false
-  }).argv;
+  })
+  .parseSync();
 
 const getOrIgnore = (ignore: boolean, files: string[]): string[] =>
   ignore ? [] : files;
@@ -32,15 +33,15 @@ const getOrIgnore = (ignore: boolean, files: string[]): string[] =>
 const getStatusOutput = (status: GitStatus): string[] => [
   ...getOrIgnore(
     args.modified || args.deleted,
-    status.newFiles.map((file: string) => chalk.green(`+ ${file}`))
+    status.newFiles.map((file: string) => styleText('green', `+ ${file}`))
   ),
   ...getOrIgnore(
     args.new || args.deleted,
-    status.changedFiles.map((file: string) => chalk.yellow(`M ${file}`))
+    status.changedFiles.map((file: string) => styleText('yellow', `M ${file}`))
   ),
   ...getOrIgnore(
     args.new || args.modified,
-    status.deletedFiles.map((file: string) => chalk.red(`- ${file}`))
+    status.deletedFiles.map((file: string) => styleText('red', `- ${file}`))
   )
 ];
 

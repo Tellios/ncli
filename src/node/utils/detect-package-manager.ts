@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { pathExists, readJson } from 'fs-extra';
+import { pathExists, readJson } from 'fs-extra/esm';
 
 export type PackageManager = 'npm' | 'yarn' | 'pnpm';
 

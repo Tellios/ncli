@@ -1,5 +1,5 @@
 import { PassThrough } from 'node:stream';
-import { bold, cyan, yellow } from 'chalk';
+import { styleText } from 'node:util';
 import type { ExecaReturnValue, ExecaReturnBase } from 'execa';
 import { ConsoleInterface } from '../console/index.ts';
 import { type Process, type ProcessRunOptions } from './process.ts';
@@ -23,7 +23,8 @@ export abstract class ProcessesBase {
 
     for (const activeProcess of this.activeProcesses) {
       ConsoleInterface.printLine(
-        `${this.getProcessPrefix(activeProcess.process)} ${yellow(
+        `${this.getProcessPrefix(activeProcess.process)} ${styleText(
+          'yellow',
           'Stopping process'
         )}`
       );
@@ -105,9 +106,9 @@ export abstract class ProcessesBase {
 
   protected getProcessPrefix(process: Process): string {
     return [
-      bold(yellow('[')),
-      bold(cyan(process.options.name)),
-      bold(yellow(']'))
+      styleText(['bold', 'yellow'], '['),
+      styleText(['bold', 'cyan'], process.options.name),
+      styleText(['bold', 'yellow'], ']')
     ].join('');
   }
 }

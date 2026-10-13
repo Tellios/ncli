@@ -44,7 +44,8 @@ const args = yargsWrapper()
     describe:
       'If the script should be executed inside a workspace project instead',
     type: 'boolean'
-  }).argv;
+  })
+  .parseSync();
 
 await commandBase<'nr'>(
   async ({ workingDirectory, settings, setSetting, getSettings }) => {

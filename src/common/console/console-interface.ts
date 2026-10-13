@@ -1,5 +1,5 @@
+import { styleText } from 'node:util';
 import Table from 'cli-table3';
-import chalk from 'chalk';
 
 // Is enum-like
 
@@ -41,7 +41,7 @@ export class ConsoleInterface {
   }
 
   public static printTable(columns: string[], rows: string[][]): void {
-    columns = columns.map((column) => chalk.cyan(column));
+    columns = columns.map((column) => styleText('cyan', column));
 
     const table = new Table({
       head: columns

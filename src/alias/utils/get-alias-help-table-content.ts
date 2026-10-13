@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import { colorizeCommand } from '../../common/index.ts';
 import { type Alias } from '../alias.interfaces.ts';
 
@@ -23,7 +23,7 @@ export const getAliasHelpTableContent = (
         }
 
         return {
-          [key]: chalk.yellow('[task]')
+          [key]: styleText('yellow', '[task]')
         };
       })
     ];

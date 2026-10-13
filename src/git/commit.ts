@@ -52,7 +52,8 @@ await commandBase<'ncommit'>(async ({ workingDirectory, settings }) => {
       describe: 'Sign the commit',
       type: 'boolean',
       default: settings.sign ?? false
-    }).argv;
+    })
+    .parseSync();
 
   if (!args.edit && args.message === undefined) {
     throw new Error("'message' is required when 'edit' is not used");

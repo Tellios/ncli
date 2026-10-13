@@ -24,7 +24,8 @@ const args = yargsWrapper()
       'If you want to start Visual Studio Code for the cloned repository',
     type: 'boolean',
     default: false
-  }).argv;
+  })
+  .parseSync();
 
 await commandBase(async ({ workingDirectory }) =>
   clone(args.url, args.directory).then(async (result: string) => {

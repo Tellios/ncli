@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import {
   ConsoleInterface,
   Type,
@@ -8,14 +8,16 @@ import {
 } from '../common/index.ts';
 import { getLog, showCommit } from './utils/index.ts';
 
-const args = yargsWrapper().option({
-  maxCommits: {
-    alias: 'm',
-    describe: 'Maximum number of commits to include, by default this is 100',
-    type: 'number',
-    default: 100
-  }
-}).argv;
+const args = yargsWrapper()
+  .option({
+    maxCommits: {
+      alias: 'm',
+      describe: 'Maximum number of commits to include, by default this is 100',
+      type: 'number',
+      default: 100
+    }
+  })
+  .parseSync();
 
 await commandBase(async ({ workingDirectory }) => {
   ConsoleInterface.printLine('Fetching log entries...');
@@ -23,9 +25,9 @@ await commandBase(async ({ workingDirectory }) => {
 
   const entriesAsSelectables = entries.map(
     (entry, index) =>
-      `${chalk.yellow(entry.shortId)}${
-        index === 0 ? chalk.greenBright(' (latest)') : ''
-      }: ${entry.message} (${chalk.blueBright(entry.date)})`
+      `${styleText('yellow', entry.shortId)}${
+        index === 0 ? styleText('greenBright', ' (latest)') : ''
+      }: ${entry.message} (${styleText('blueBright', entry.date)})`
   );
 
   if (entries.length === 0) {

@@ -1,5 +1,5 @@
 import process from 'node:process';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import {
   ConsoleInterface,
   type ProcessOptions,
@@ -57,9 +57,9 @@ const printExecutionPlan = (
   ConsoleInterface.printLine(`Execution plan for ${alias.name}`);
 
   if (alias.type === undefined || alias.type === 'sequential') {
-    ConsoleInterface.printLine(chalk.greenBright('Sequential: ['));
+    ConsoleInterface.printLine(styleText('greenBright', 'Sequential: ['));
   } else {
-    ConsoleInterface.printLine(chalk.greenBright('Parallel: ['));
+    ConsoleInterface.printLine(styleText('greenBright', 'Parallel: ['));
   }
 
   for (const step of executionPlan) {
@@ -70,9 +70,9 @@ const printExecutionPlan = (
     );
 
     if (step.type === 'sequential') {
-      ConsoleInterface.printLine(chalk.cyanBright('  Sequential: ['));
+      ConsoleInterface.printLine(styleText('cyanBright', '  Sequential: ['));
     } else {
-      ConsoleInterface.printLine(chalk.magentaBright('  Parallel: ['));
+      ConsoleInterface.printLine(styleText('magentaBright', '  Parallel: ['));
     }
 
     for (const commandText of commandTexts) {
@@ -80,13 +80,13 @@ const printExecutionPlan = (
     }
 
     if (step.type === 'sequential') {
-      ConsoleInterface.printLine(chalk.cyanBright('  ]'));
+      ConsoleInterface.printLine(styleText('cyanBright', '  ]'));
     } else {
-      ConsoleInterface.printLine(chalk.magentaBright('  ]'));
+      ConsoleInterface.printLine(styleText('magentaBright', '  ]'));
     }
   }
 
-  ConsoleInterface.printLine(chalk.greenBright(']'));
+  ConsoleInterface.printLine(styleText('greenBright', ']'));
 };
 
 const executeSequentialPlan = async (

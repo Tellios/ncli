@@ -22,7 +22,8 @@ const args = yargsWrapper()
     describe:
       'If the test should be executed inside a workspace project instead',
     type: 'boolean'
-  }).argv;
+  })
+  .parseSync();
 
 await commandBase<'nt'>(async ({ workingDirectory, settings, setSetting }) => {
   let packageJson = await parsePackageJson(workingDirectory);

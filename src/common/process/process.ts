@@ -1,12 +1,12 @@
 import process from 'node:process';
 import { type Stream, type Writable } from 'node:stream';
+import { styleText } from 'node:util';
 import execa, {
   type ExecaReturnBase,
   type ExecaError,
   type ExecaReturnValue
 } from 'execa';
 import treeKill from 'tree-kill';
-import { green } from 'chalk';
 import type pty from 'node-pty';
 import { startInteractivePty } from './run-interactive-pty.ts';
 
@@ -129,7 +129,7 @@ export class Process {
     return this.instance
       .then((result) => {
         if (!interactive && stdout) {
-          stdout.write(green('Process finished successfully\n'));
+          stdout.write(styleText('green', 'Process finished successfully\n'));
         }
 
         return result;

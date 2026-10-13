@@ -56,7 +56,7 @@ for (const [cmd, config] of Object.entries(commands)) {
   yargs.command(cmd, config.desc, config.options);
 }
 
-const args = yargs.argv;
+const args = yargs.parseSync();
 
 const type: ResolveResourceTypeParameters = {
   deployment: args.deployment === true,

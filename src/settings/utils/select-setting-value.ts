@@ -1,4 +1,4 @@
-import { cyanBright } from 'chalk';
+import { styleText } from 'node:util';
 import {
   confirm,
   inputString,
@@ -10,7 +10,7 @@ export const selectSettingValue = async (
   settingKey: string,
   setting: SettingDescription<'boolean' | 'string'>
 ): Promise<boolean | string> => {
-  const key = cyanBright(settingKey);
+  const key = styleText('cyanBright', settingKey);
 
   switch (setting.type) {
     case 'boolean': {

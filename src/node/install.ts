@@ -70,7 +70,8 @@ await commandBase<'ni'>(
             desc: 'If the updates should be performed in a workspace package instead'
           }
         }
-      ).argv;
+      )
+      .parseSync();
 
     let packageJson = await parsePackageJson(workingDirectory);
 

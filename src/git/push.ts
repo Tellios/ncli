@@ -20,7 +20,8 @@ await commandBase<'npush'>(async ({ workingDirectory, settings }) => {
       describe: 'If --force should be used when pushing to remote',
       type: 'boolean',
       default: false
-    }).argv;
+    })
+    .parseSync();
 
   await push(workingDirectory, args.noVerify, args.tags, args.force);
 });

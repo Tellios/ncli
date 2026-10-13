@@ -1,4 +1,4 @@
-import { createReadStream, createWriteStream } from 'fs-extra';
+import { createReadStream, createWriteStream } from 'node:fs';
 import { yargsWrapper, commandBase } from '../common/index.ts';
 
 // https://github.com/nodejs/node/blob/master/lib/buffer.js
@@ -45,7 +45,7 @@ const yargs = yargsWrapper()
     choices: supportedEncodings
   });
 
-const args = yargs.argv;
+const args = yargs.parseSync();
 
 await commandBase(async (): Promise<void> => {
   const readStream = createReadStream(args.input, {
