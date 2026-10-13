@@ -1,17 +1,18 @@
-import {inputString} from '../../common/index.ts';
+import { inputString } from '../../common/index.ts';
 import {
   updatePackageJson,
   validateScript,
-  validateScriptName,
+  validateScriptName
 } from '../utils/index.ts';
+import type { PackageJson } from '../types.ts';
 
 export async function addPackageJsonScript(
   workingDirectory: string,
-  packageJson: NcliNode.PackageJson,
+  packageJson: PackageJson
 ): Promise<void> {
   const name = await inputString(
     'Script name:',
-    validateScriptName(packageJson.scripts),
+    validateScriptName(packageJson.scripts)
   );
   const script = await inputString('Script:', validateScript);
 

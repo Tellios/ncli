@@ -1,5 +1,5 @@
-import {type SettingScope} from './setting-scope.ts';
-import {type SettingValue} from './setting-value.ts';
+import { type SettingScope } from './setting-scope.ts';
+import { type SettingValue } from './setting-value.ts';
 
 export type PersistedSetting = {
   key: string;

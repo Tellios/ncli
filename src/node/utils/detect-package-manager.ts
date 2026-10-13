@@ -1,5 +1,5 @@
 import path from 'node:path';
-import {pathExists, readJson} from 'fs-extra';
+import { pathExists, readJson } from 'fs-extra';
 
 export type PackageManager = 'npm' | 'yarn' | 'pnpm';
 
@@ -8,7 +8,7 @@ const packageManagers: PackageManager[] = ['npm', 'yarn', 'pnpm'];
 const lockFiles: Array<[string, PackageManager]> = [
   ['pnpm-lock.yaml', 'pnpm'],
   ['yarn.lock', 'yarn'],
-  ['package-lock.json', 'npm'],
+  ['package-lock.json', 'npm']
 ];
 
 /**
@@ -17,7 +17,7 @@ const lockFiles: Array<[string, PackageManager]> = [
  */
 async function findUpwards<T>(
   directory: string,
-  visit: (directory: string) => Promise<T | undefined>,
+  visit: (directory: string) => Promise<T | undefined>
 ): Promise<T | undefined> {
   let currentDirectory = path.resolve(directory);
 
@@ -46,7 +46,7 @@ async function findUpwards<T>(
  package.json, e.g. "pnpm@9.0.0+sha512...".
  */
 async function readPackageManagerField(
-  directory: string,
+  directory: string
 ): Promise<PackageManager | undefined> {
   const packageJsonPath = path.join(directory, 'package.json');
 
@@ -55,7 +55,7 @@ async function readPackageManagerField(
   }
 
   try {
-    const {packageManager} = await readJson(packageJsonPath);
+    const { packageManager } = await readJson(packageJsonPath);
 
     if (typeof packageManager !== 'string') {
       return undefined;
@@ -69,7 +69,7 @@ async function readPackageManagerField(
 }
 
 async function findLockFile(
-  directory: string,
+  directory: string
 ): Promise<PackageManager | undefined> {
   for (const [lockFile, packageManager] of lockFiles) {
     if (await pathExists(path.join(directory, lockFile))) {
@@ -90,7 +90,7 @@ async function findLockFile(
  stops at the git repository root.
  */
 export async function detectPackageManager(
-  directory: string,
+  directory: string
 ): Promise<PackageManager | undefined> {
   return (
     (await findUpwards(directory, readPackageManagerField)) ??
@@ -103,7 +103,7 @@ export async function detectPackageManager(
  Defaults to npm when nothing is found.
  */
 export async function detectPackageManagerOrUseDefault(
-  directory: string,
+  directory: string
 ): Promise<PackageManager> {
   return (await detectPackageManager(directory)) ?? 'npm';
 }

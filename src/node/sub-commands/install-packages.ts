@@ -1,7 +1,7 @@
-import {runCmdInConsole} from '../../common/index.ts';
+import { runCmdInConsole } from '../../common/index.ts';
 import {
   detectPackageManagerOrUseDefault,
-  type Workspace,
+  type Workspace
 } from '../utils/index.ts';
 
 export type AutoInstallTypingsMode = 'ignore' | 'installAsDev' | 'install';
@@ -12,20 +12,22 @@ export async function installPackages(
   devPackagesToInstall: string[],
   autoInstallTypings: AutoInstallTypingsMode,
   saveExact: boolean,
-  workspace: Workspace | undefined,
+  workspace: Workspace | undefined
 ): Promise<void> {
   switch (await detectPackageManagerOrUseDefault(workingDirectory)) {
     case 'pnpm': {
-      const args: string[] = ['add'];
-      saveExact && args.push('--save-exact');
-      workspace && args.push('--filter', `./${workspace.relativePath}`);
+      const args: string[] = [
+        'add',
+        ...(saveExact ? ['--save-exact'] : []),
+        ...(workspace ? ['--filter', `./${workspace.relativePath}`] : [])
+      ];
 
       if (packagesToInstall.length > 0) {
         await runCmdInConsole(
           'pnpm',
           [...args, ...packagesToInstall],
           true,
-          workingDirectory,
+          workingDirectory
         );
       }
 
@@ -34,7 +36,7 @@ export async function installPackages(
           'pnpm',
           [...args, '-D', ...devPackagesToInstall],
           true,
-          workingDirectory,
+          workingDirectory
         );
       }
 
@@ -51,7 +53,7 @@ export async function installPackages(
           'yarn',
           [...args, ...packagesToInstall],
           true,
-          workingDirectory,
+          workingDirectory
         );
       }
 
@@ -60,7 +62,7 @@ export async function installPackages(
           'yarn',
           [...args, '--dev', ...devPackagesToInstall],
           true,
-          workingDirectory,
+          workingDirectory
         );
       }
 
@@ -68,16 +70,18 @@ export async function installPackages(
     }
 
     case 'npm': {
-      const args: string[] = ['i'];
-      saveExact && args.push('--save-exact');
-      workspace && args.push('--workspace', workspace.relativePath);
+      const args: string[] = [
+        'i',
+        ...(saveExact ? ['--save-exact'] : []),
+        ...(workspace ? ['--workspace', `./${workspace.relativePath}`] : [])
+      ];
 
       if (packagesToInstall.length > 0) {
         await runCmdInConsole(
           'npm',
           [...args, ...packagesToInstall],
           true,
-          workingDirectory,
+          workingDirectory
         );
       }
 
@@ -86,7 +90,7 @@ export async function installPackages(
           'npm',
           [...args, '-D', ...devPackagesToInstall],
           true,
-          workingDirectory,
+          workingDirectory
         );
       }
 
@@ -101,12 +105,12 @@ export async function installPackages(
       workingDirectory,
       [
         ...packagesToInstall.map(addTypesPrefix),
-        ...devPackagesToInstall.map(addTypesPrefix),
+        ...devPackagesToInstall.map(addTypesPrefix)
       ],
       [],
       'ignore',
       saveExact,
-      workspace,
+      workspace
     );
   } else if (autoInstallTypings === 'installAsDev') {
     await installPackages(
@@ -114,11 +118,11 @@ export async function installPackages(
       [],
       [
         ...packagesToInstall.map(addTypesPrefix),
-        ...devPackagesToInstall.map(addTypesPrefix),
+        ...devPackagesToInstall.map(addTypesPrefix)
       ],
       'ignore',
       saveExact,
-      workspace,
+      workspace
     );
   }
 }

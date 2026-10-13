@@ -1,33 +1,37 @@
-import {yargsWrapper, ConsoleInterface, commandBase} from '../common/index.ts';
+import {
+  yargsWrapper,
+  ConsoleInterface,
+  commandBase
+} from '../common/index.ts';
 import {
   parsePackageJson,
   searchScripts,
   selectScript,
   selectWorkspace,
-  executePackageJsonScript,
+  executePackageJsonScript
 } from './utils/index.ts';
 
 const args = yargsWrapper()
   .option('watch', {
     alias: 'W',
     describe: 'Use build task with watcher instead of single-run',
-    type: 'boolean',
+    type: 'boolean'
   })
   .option('workspace', {
     alias: 'w',
     describe:
       'If the build should be executed inside a workspace project instead',
-    type: 'boolean',
+    type: 'boolean'
   }).argv;
 
-commandBase<'nb'>(async ({workingDirectory, settings, setSetting}) => {
+await commandBase<'nb'>(async ({ workingDirectory, settings, setSetting }) => {
   let packageJson = await parsePackageJson(workingDirectory);
 
   if (args.workspace) {
     const workspace = await selectWorkspace(
       workingDirectory,
       packageJson,
-      settings.lastSelectedWorkspace,
+      settings.lastSelectedWorkspace
     );
 
     await setSetting('lastSelectedWorkspace', workspace.relativePath);
@@ -35,17 +39,17 @@ commandBase<'nb'>(async ({workingDirectory, settings, setSetting}) => {
     packageJson = await parsePackageJson(workingDirectory);
   }
 
-  const {scripts} = packageJson;
+  const { scripts } = packageJson;
 
   let buildScripts;
 
   if (args.watch) {
     buildScripts = searchScripts(
-      /build:watch|build-watch|build_watch$/i,
-      scripts,
+      /build:watch|build-watch|build_watch$/iv,
+      scripts
     );
   } else {
-    buildScripts = searchScripts(/build$/i, scripts);
+    buildScripts = searchScripts(/build$/iv, scripts);
   }
 
   const buildScriptKeys = Object.keys(buildScripts);
@@ -56,7 +60,7 @@ commandBase<'nb'>(async ({workingDirectory, settings, setSetting}) => {
     await executePackageJsonScript(
       buildScriptKeys[0],
       buildScripts,
-      workingDirectory,
+      workingDirectory
     );
   } else {
     const scriptToRun = await selectScript(buildScripts);

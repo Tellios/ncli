@@ -1,22 +1,22 @@
-import {yargsWrapper, commandBase} from '../common/index.ts';
+import { yargsWrapper, commandBase } from '../common/index.ts';
 import {
   getCurrentBranch,
   selectBranch,
   checkout,
   merge,
-  localizeBranchName,
+  localizeBranchName
 } from './utils/index.ts';
 
 const args = yargsWrapper()
   .option('branch', {
     alias: 'b',
     describe: 'Specifies the branch to merge to',
-    type: 'string',
+    type: 'string'
   })
   .option('filter', {
     alias: 'f',
     describe: 'Optional filter if no branch is specified',
-    type: 'string',
+    type: 'string'
   }).argv;
 
 async function getBranchToMergeTo(workingDirectory: string): Promise<string> {
@@ -28,14 +28,14 @@ async function getBranchToMergeTo(workingDirectory: string): Promise<string> {
     workingDirectory,
     false,
     'Select branch to merge TO',
-    args.filter,
+    args.filter
   ).then((branch) => branch.name);
 }
 
-commandBase(async ({workingDirectory}) => {
+await commandBase(async ({ workingDirectory }) => {
   const [sourceBranch, targetBranch] = await Promise.all([
     getCurrentBranch(workingDirectory),
-    getBranchToMergeTo(workingDirectory),
+    getBranchToMergeTo(workingDirectory)
   ]);
 
   await checkout(localizeBranchName(targetBranch));

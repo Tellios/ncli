@@ -1,10 +1,10 @@
-import type execa from 'execa';
+import type { ExecaReturnBase, ExecaReturnValue } from 'execa';
 import {
   type ProcessOptions,
   type ProcessRunOptions,
-  Process,
+  Process
 } from './process.ts';
-import {ProcessesBase} from './processes-base.ts';
+import { ProcessesBase } from './processes-base.ts';
 
 export class SequentialProcesses extends ProcessesBase {
   protected readonly processes: readonly Process[];
@@ -14,10 +14,12 @@ export class SequentialProcesses extends ProcessesBase {
     this.processes = this.processOptions.map((options) => new Process(options));
   }
 
-  async run(options: ProcessRunOptions): Promise<execa.ExecaReturnValue[]> {
-    const responses: execa.ExecaReturnValue[] = [];
+  async run(
+    options: ProcessRunOptions
+  ): Promise<Array<ExecaReturnValue | ExecaReturnBase<string>>> {
+    const responses: Array<ExecaReturnValue | ExecaReturnBase<string>> = [];
 
-    for await (const process of this.processes) {
+    for (const process of this.processes) {
       const result = await this.runProcess(process, options);
 
       if (!result) {
@@ -25,6 +27,7 @@ export class SequentialProcesses extends ProcessesBase {
       }
 
       if (result.failed) {
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw result;
       }
 

@@ -2,7 +2,8 @@ import path from 'node:path';
 import glob from 'glob';
 import fs from 'fs-extra';
 import jsYaml from 'js-yaml';
-import {parsePackageJson} from './package-json-parser.ts';
+import type { PackageJson } from '../types.ts';
+import { parsePackageJson } from './package-json-parser.ts';
 
 export type Workspace = {
   name: string;
@@ -12,7 +13,7 @@ export type Workspace = {
 
 async function getWorkspacePatterns(
   packageJsonDirectory: string,
-  packageJson: NcliNode.PackageJson,
+  packageJson: PackageJson
 ): Promise<string[]> {
   if (packageJson.workspaces && packageJson.workspaces.length > 0) {
     return packageJson.workspaces;
@@ -20,13 +21,13 @@ async function getWorkspacePatterns(
 
   const pnpmWorkspaceFile = path.join(
     packageJsonDirectory,
-    'pnpm-workspace.yaml',
+    'pnpm-workspace.yaml'
   );
 
   if (await fs.pathExists(pnpmWorkspaceFile)) {
     const pnpmWorkspace = jsYaml.safeLoad(
-      await fs.readFile(pnpmWorkspaceFile, 'utf8'),
-    ) as {packages?: string[]} | undefined;
+      await fs.readFile(pnpmWorkspaceFile, 'utf8')
+    ) as { packages?: string[] } | undefined;
 
     return pnpmWorkspace?.packages ?? [];
   }
@@ -36,50 +37,51 @@ async function getWorkspacePatterns(
 
 export async function getWorkspacePaths(
   packageJsonDirectory: string,
-  packageJson: NcliNode.PackageJson,
+  packageJson: PackageJson
 ): Promise<Workspace[]> {
   const patterns = await getWorkspacePatterns(
     packageJsonDirectory,
-    packageJson,
+    packageJson
   );
   const includePatterns = patterns.filter((p) => !p.startsWith('!'));
   const ignorePatterns = patterns
     .filter((p) => p.startsWith('!'))
     .map((p) => path.join(p.slice(1), 'package.json'));
 
-  const workspaces: Workspace[] = [];
+  const workspaceMatches = await Promise.all(
+    includePatterns.map(
+      async (workspace) =>
+        new Promise<string[]>((resolve, reject) => {
+          glob(
+            path.join(workspace, 'package.json'),
+            {
+              cwd: packageJsonDirectory,
+              ignore: ['**/node_modules/**', ...ignorePatterns]
+            },
+            (error, matches) => {
+              if (error) {
+                reject(error);
+                return;
+              }
 
-  for (const workspace of includePatterns) {
-    const workspaceMatches = await new Promise<string[]>((resolve, reject) => {
-      glob(
-        path.join(workspace, 'package.json'),
-        {
-          cwd: packageJsonDirectory,
-          ignore: ['**/node_modules/**', ...ignorePatterns],
-        },
-        (error, matches) => {
-          if (error) {
-            reject(error);
-            return;
-          }
+              resolve(matches);
+            }
+          );
+        })
+    )
+  );
 
-          resolve(matches);
-        },
-      );
-    });
-
-    for (const match of workspaceMatches) {
+  return Promise.all(
+    workspaceMatches.flat().map(async (match) => {
       const relativePath = path.dirname(match);
       const absolutePath = path.resolve(packageJsonDirectory, relativePath);
-      const {name} = await parsePackageJson(absolutePath);
+      const { name } = await parsePackageJson(absolutePath);
 
-      workspaces.push({
+      return {
         name: name ?? relativePath,
         relativePath,
-        absolutePath,
-      });
-    }
-  }
-
-  return workspaces;
+        absolutePath
+      };
+    })
+  );
 }

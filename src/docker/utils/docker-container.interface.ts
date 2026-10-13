@@ -1,4 +1,4 @@
-import {type ContainerStatus} from './container-status.ts';
+import { type ContainerStatus } from './container-status.ts';
 
 export type DockerContainer = {
   containerId: string;

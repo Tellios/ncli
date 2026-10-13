@@ -1,1 +1,1 @@
-export const namedArgsRegexProvider = (): RegExp => /\$\{(\S+)\}/g;
+export const namedArgsRegexProvider = (): RegExp => /\$\{(\S+)\}/gv;

@@ -3,5 +3,14 @@
   "yaml.schemas": {
     "https://json.schemastore.org/github-action.json": "file:///home/sonny/code/tellios/ncli/.github/build.yaml",
     "https://json.schemastore.org/github-workflow.json": "file:///home/sonny/code/tellios/ncli/.github/workflows/build.yaml"
+  },
+  "editor.formatOnSave": true,
+  "xo.enable": true,
+  "xo.format.enable": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "samverschueren.linter-xo"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "samverschueren.linter-xo"
   }
 }

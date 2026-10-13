@@ -1,29 +1,31 @@
-import {PassThrough} from 'node:stream';
-import {cyan, yellow, bold} from 'chalk';
-import type execa from 'execa';
-import {ConsoleInterface} from '../console/index.ts';
-import {type ProcessRunOptions, type Process} from './process.ts';
+import { PassThrough } from 'node:stream';
+import { bold, cyan, yellow } from 'chalk';
+import type { ExecaReturnValue, ExecaReturnBase } from 'execa';
+import { ConsoleInterface } from '../console/index.ts';
+import { type Process, type ProcessRunOptions } from './process.ts';
 
 type ActiveProcess = {
   process: Process;
   closeStream: () => void;
-  promise: Promise<execa.ExecaReturnValue>;
+  promise: Promise<ExecaReturnValue | ExecaReturnBase<string>>;
 };
 
 export abstract class ProcessesBase {
   private activeProcesses: ActiveProcess[] = [];
   private isExiting = false;
 
-  abstract run(options: ProcessRunOptions): Promise<execa.ExecaReturnValue[]>;
+  abstract run(
+    options: ProcessRunOptions
+  ): Promise<Array<ExecaReturnValue | ExecaReturnBase<string>>>;
 
   async exit(): Promise<void> {
     this.isExiting = true;
 
-    for await (const activeProcess of this.activeProcesses) {
+    for (const activeProcess of this.activeProcesses) {
       ConsoleInterface.printLine(
         `${this.getProcessPrefix(activeProcess.process)} ${yellow(
-          'Stopping process',
-        )}`,
+          'Stopping process'
+        )}`
       );
 
       await activeProcess.process.exit();
@@ -35,10 +37,11 @@ export abstract class ProcessesBase {
   }
 
   filterStreams(scriptNames: string[]): void {
-    for (const {process} of this.activeProcesses) {
-      if (scriptNames.length === 0) {
-        process.resumeOutput();
-      } else if (scriptNames.includes(process.options.name)) {
+    for (const { process } of this.activeProcesses) {
+      if (
+        scriptNames.length === 0 ||
+        scriptNames.includes(process.options.name)
+      ) {
         process.resumeOutput();
       } else {
         process.pauseOutput();
@@ -48,8 +51,8 @@ export abstract class ProcessesBase {
 
   protected async runProcess(
     process: Process,
-    {stdout}: ProcessRunOptions,
-  ): Promise<execa.ExecaReturnValue | undefined> {
+    { stdout }: ProcessRunOptions
+  ): Promise<ExecaReturnValue | ExecaReturnBase<string> | undefined> {
     if (this.isExiting) {
       return;
     }
@@ -60,9 +63,9 @@ export abstract class ProcessesBase {
         closeStream: () => undefined,
         promise: process.run({}).finally(() => {
           this.activeProcesses = this.activeProcesses.filter(
-            (activeProcess) => activeProcess.process !== process,
+            (p) => p.process !== process
           );
-        }),
+        })
       };
 
       this.activeProcesses.push(activeProcess);
@@ -72,7 +75,7 @@ export abstract class ProcessesBase {
 
     const onData = (data: Buffer) => {
       stdout?.write(
-        `${this.getProcessPrefix(process)} ${data.toString('utf-8')}`,
+        `${this.getProcessPrefix(process)} ${data.toString('utf8')}`
       );
     };
 
@@ -87,12 +90,12 @@ export abstract class ProcessesBase {
     const activeProcess: ActiveProcess = {
       process,
       closeStream,
-      promise: process.run({stdout: stream}).finally(() => {
+      promise: process.run({ stdout: stream }).finally(() => {
         closeStream();
         this.activeProcesses = this.activeProcesses.filter(
-          (activeProcess) => activeProcess.process !== process,
+          (p) => p.process !== process
         );
-      }),
+      })
     };
 
     this.activeProcesses.push(activeProcess);
@@ -104,7 +107,7 @@ export abstract class ProcessesBase {
     return [
       bold(yellow('[')),
       bold(cyan(process.options.name)),
-      bold(yellow(']')),
+      bold(yellow(']'))
     ].join('');
   }
 }

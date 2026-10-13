@@ -1,7 +1,7 @@
-import {selectItem} from '../../common/index.ts';
-import {type ResourceType} from './resource-type.ts';
+import { selectItem } from '../../common/index.ts';
+import { type ResourceType } from './resource-type.ts';
 
-export type ResolveResourceTypeParams = Record<
+export type ResolveResourceTypeParameters = Record<
   ResourceType,
   boolean | undefined
 >;
@@ -10,7 +10,7 @@ const autoResolveableTypes: Record<ResourceType, boolean> = {
   deployment: true,
   pod: true,
   service: true,
-  ingress: true,
+  ingress: true
 };
 
 const selectableTypes = Object.entries(autoResolveableTypes)
@@ -18,14 +18,14 @@ const selectableTypes = Object.entries(autoResolveableTypes)
   .map(([key]) => key) as ResourceType[];
 
 const getTypeToUse = (
-  parameters: ResolveResourceTypeParams,
+  parameters: ResolveResourceTypeParameters
 ): ResourceType | undefined =>
   Object.entries(parameters)
     .filter(([_, value]) => value === true)
     .map(([key]) => key)[0] as ResourceType | undefined;
 
 export async function resolveResourceType(
-  parameters: ResolveResourceTypeParams,
+  parameters: ResolveResourceTypeParameters
 ): Promise<ResourceType> {
   const type = getTypeToUse(parameters);
 

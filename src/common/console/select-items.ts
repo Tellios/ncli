@@ -1,6 +1,6 @@
 import inquirer from 'inquirer';
 
-export type SelectItemsParams = {
+export type SelectItemsParameters = {
   items: string[];
   message?: string;
   searchString?: string;
@@ -9,22 +9,22 @@ export type SelectItemsParams = {
 export async function selectItems({
   items,
   message = 'Select an item',
-  searchString,
-}: SelectItemsParams): Promise<number[]> {
+  searchString
+}: SelectItemsParameters): Promise<number[]> {
   if (items.length === 0) {
-    throw 'Items must be an instantiated array with items';
+    throw new Error('Items must be an instantiated array with items');
   }
 
   let choices = items;
 
-  if (searchString) {
+  if (searchString !== undefined && searchString.length > 0) {
     const loweredSearchString = searchString.toLowerCase();
     choices = choices.filter((choice) =>
-      choice.toLowerCase().includes(loweredSearchString),
+      choice.toLowerCase().includes(loweredSearchString)
     );
 
     if (choices.length === 0) {
-      throw `No items matches the search filter: ${searchString}`;
+      throw new Error(`No items matches the search filter: ${searchString}`);
     }
   }
 
@@ -34,8 +34,8 @@ export async function selectItems({
       name: 'item',
       pageSize: 10,
       message,
-      choices,
-    },
+      choices
+    }
   ]);
 
   return choice.item.map((item: string) => items.indexOf(item));

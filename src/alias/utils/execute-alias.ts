@@ -1,34 +1,35 @@
+import process from 'node:process';
 import chalk from 'chalk';
 import {
   ConsoleInterface,
   type ProcessOptions,
   ParallelProcesses,
   SequentialProcesses,
-  Type,
+  Type
 } from '../../common/index.ts';
 import {
   type ExecutionPlan,
   type Alias,
-  type ExecutionStep,
+  type ExecutionStep
 } from '../alias.interfaces.ts';
-import {type ProcessesBase} from '../../common/process/processes-base.ts';
-import {parseCommand} from './parse-command.ts';
-import {resolveMissingArguments} from './resolve-missing-arguments.ts';
-import {parseUserArguments} from './parse-user-arguments.ts';
-import {injectArguments} from './inject-arguments.ts';
-import {type UserArguments} from './index.ts';
-import {resolveStepInteractive} from './detect-interactive-command.ts';
+import { type ProcessesBase } from '../../common/process/processes-base.ts';
+import { parseCommand } from './parse-command.ts';
+import { resolveMissingArguments } from './resolve-missing-arguments.ts';
+import { parseUserArguments } from './parse-user-arguments.ts';
+import { injectArguments } from './inject-arguments.ts';
+import { type UserArguments } from './index.ts';
+import { resolveStepInteractive } from './detect-interactive-command.ts';
 
 export const executeAlias = async (
   alias: Alias,
   print: boolean,
-  args: string[],
+  args: string[]
 ): Promise<void> => {
   const executionPlan = parseCommand(alias);
 
   const userArguments = await resolveMissingArguments(
     executionPlan,
-    parseUserArguments(args),
+    parseUserArguments(args)
   );
 
   if (print) {
@@ -37,13 +38,13 @@ export const executeAlias = async (
     await executeParallelPlan(
       executionPlan,
       userArguments,
-      alias.workingDirectory,
+      alias.workingDirectory
     );
   } else {
     await executeSequentialPlan(
       executionPlan,
       userArguments,
-      alias.workingDirectory,
+      alias.workingDirectory
     );
   }
 };
@@ -51,7 +52,7 @@ export const executeAlias = async (
 const printExecutionPlan = (
   alias: Alias,
   executionPlan: ExecutionPlan,
-  userArguments: UserArguments,
+  userArguments: UserArguments
 ) => {
   ConsoleInterface.printLine(`Execution plan for ${alias.name}`);
 
@@ -65,7 +66,7 @@ const printExecutionPlan = (
     const commandTexts = injectArguments(
       step.commands,
       userArguments,
-      process.cwd(),
+      process.cwd()
     );
 
     if (step.type === 'sequential') {
@@ -91,20 +92,20 @@ const printExecutionPlan = (
 const executeSequentialPlan = async (
   executionPlan: ExecutionPlan,
   userArguments: UserArguments,
-  aliasWorkingDirectory: string | undefined,
+  aliasWorkingDirectory: string | undefined
 ): Promise<void> => {
-  for await (const step of executionPlan) {
+  for (const step of executionPlan) {
     const commandTexts = injectArguments(
       step.commands,
       userArguments,
-      process.cwd(),
+      process.cwd()
     );
 
     const options = commandTexts.map((commandText): ProcessOptions => {
       const [executable, ...args] = commandText.split(' ');
       const isInteractive = resolveStepInteractive(
         commandText,
-        step.interactive,
+        step.interactive
       );
 
       return {
@@ -113,7 +114,7 @@ const executeSequentialPlan = async (
         executable,
         workingDirectory: step.workingDirectory ?? aliasWorkingDirectory,
         interactive: isInteractive,
-        shellCommand: isInteractive ? commandText : undefined,
+        shellCommand: isInteractive ? commandText : undefined
       };
     });
 
@@ -125,7 +126,7 @@ const executeSequentialPlan = async (
         : new ParallelProcesses(options);
 
     await processor.run({
-      stdout: process.stdout,
+      stdout: process.stdout
     });
   }
 };
@@ -133,7 +134,7 @@ const executeSequentialPlan = async (
 const executeParallelPlan = async (
   executionPlan: ExecutionPlan,
   userArguments: UserArguments,
-  aliasWorkingDirectory: string | undefined,
+  aliasWorkingDirectory: string | undefined
 ): Promise<void> => {
   const processors: ProcessesBase[] = [];
 
@@ -141,14 +142,14 @@ const executeParallelPlan = async (
     const commandTexts = injectArguments(
       step.commands,
       userArguments,
-      process.cwd(),
+      process.cwd()
     );
 
     const options = commandTexts.map((commandText): ProcessOptions => {
       const [executable, ...args] = commandText.split(' ');
       const isInteractive = resolveStepInteractive(
         commandText,
-        step.interactive,
+        step.interactive
       );
 
       return {
@@ -157,7 +158,7 @@ const executeParallelPlan = async (
         executable,
         workingDirectory: step.workingDirectory ?? aliasWorkingDirectory,
         interactive: isInteractive,
-        shellCommand: isInteractive ? commandText : undefined,
+        shellCommand: isInteractive ? commandText : undefined
       };
     });
 
@@ -174,15 +175,15 @@ const executeParallelPlan = async (
   await Promise.all(
     processors.map(async (p) =>
       p.run({
-        stdout: process.stdout,
-      }),
-    ),
+        stdout: process.stdout
+      })
+    )
   );
 };
 
 const warnInteractiveStep = (
   step: ExecutionStep,
-  options: ProcessOptions[],
+  options: ProcessOptions[]
 ): void => {
   if (options.every((option) => !option.interactive)) {
     return;
@@ -191,14 +192,14 @@ const warnInteractiveStep = (
   if (!process.stdin.isTTY) {
     ConsoleInterface.printLine(
       'Interactive alias requires a terminal (stdin is not a TTY)',
-      Type.warn,
+      Type.warn
     );
   }
 
   if (step.type === 'parallel' && step.commands.length > 1) {
     ConsoleInterface.printLine(
       'Interactive mode is not supported for parallel steps with multiple commands',
-      Type.warn,
+      Type.warn
     );
   }
 };

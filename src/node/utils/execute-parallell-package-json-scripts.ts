@@ -1,21 +1,22 @@
-import {exit, stdout} from 'node:process';
-import {PassThrough} from 'node:stream';
+import { exit, stdout } from 'node:process';
+import { PassThrough } from 'node:stream';
 import {
   type ProcessOptions,
   ParallelProcesses,
   selectItems,
   ShortcutListener,
-  CommonShortcuts,
+  CommonShortcuts
 } from '../../common/index.ts';
-import {detectPackageManagerOrUseDefault} from './detect-package-manager.ts';
+import type { Scripts } from '../types.ts';
+import { detectPackageManagerOrUseDefault } from './detect-package-manager.ts';
 
 export async function executeParallellPackageJsonScripts(
   scripts: string[],
-  packageJsonScripts: NcliNode.Scripts,
-  directory: string,
+  packageJsonScripts: Scripts,
+  directory: string
 ): Promise<void> {
   const invalidScripts = scripts
-    .filter((script) => !(script in packageJsonScripts))
+    .filter((script) => !Object.hasOwn(packageJsonScripts, script))
     .join(', ');
 
   if (invalidScripts.length > 0) {
@@ -28,7 +29,7 @@ export async function executeParallellPackageJsonScripts(
     name: script,
     executable: packageManager,
     args: ['run', script],
-    workingDirectory: directory,
+    workingDirectory: directory
   }));
 
   const pp = new ParallelProcesses(processOptions);
@@ -43,7 +44,7 @@ export async function executeParallellPackageJsonScripts(
   });
 
   const runPromise = pp.run({
-    stdout: terminalPassthrough,
+    stdout: terminalPassthrough
   });
 
   const shortcutListener = new ShortcutListener();
@@ -60,7 +61,7 @@ export async function executeParallellPackageJsonScripts(
 
     const indices = await selectItems({
       items: scripts,
-      message: 'Select streams to follow',
+      message: 'Select streams to follow'
     });
 
     shortcutListener.start();

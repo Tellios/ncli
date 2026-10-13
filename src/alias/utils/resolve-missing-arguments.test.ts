@@ -1,12 +1,13 @@
-import {inputString} from '../../common/index.ts';
-import {resolveMissingArguments} from './resolve-missing-arguments.ts';
-import {type UserArguments} from './index.ts';
+import { type Mock } from 'vitest';
+import { inputString } from '../../common/index.ts';
+import { resolveMissingArguments } from './resolve-missing-arguments.ts';
+import { type UserArguments } from './index.ts';
 
-jest.mock('../../common', () => ({
-  inputString: jest.fn(),
+vi.mock('../../common/index.ts', () => ({
+  inputString: vi.fn()
 }));
 
-const mockInputString = inputString as jest.Mock<Promise<string>>;
+const mockInputString = inputString as Mock<() => Promise<string>>;
 
 describe('resolveMissingArguments', () => {
   beforeEach(() => {
@@ -20,20 +21,20 @@ describe('resolveMissingArguments', () => {
       [
         {
           type: 'sequential',
-          commands: [{commandText: 'echo $1', positionalArguments: ['$1']}],
-        },
+          commands: [{ commandText: 'echo $1', positionalArguments: ['$1'] }]
+        }
       ],
       {
         appended: [],
         named: {},
-        positional: [],
-      },
+        positional: []
+      }
     );
 
     expect(resolvedArgs).toEqual<UserArguments>({
       appended: [],
       named: {},
-      positional: ['foo'],
+      positional: ['foo']
     });
   });
 
@@ -44,20 +45,20 @@ describe('resolveMissingArguments', () => {
       [
         {
           type: 'sequential',
-          commands: [{commandText: 'echo $1', positionalArguments: ['$1']}],
-        },
+          commands: [{ commandText: 'echo $1', positionalArguments: ['$1'] }]
+        }
       ],
       {
         appended: [],
         named: {},
-        positional: ['this'],
-      },
+        positional: ['this']
+      }
     );
 
     expect(resolvedArgs).toEqual<UserArguments>({
       appended: [],
       named: {},
-      positional: ['this'],
+      positional: ['this']
     });
   });
 
@@ -71,22 +72,22 @@ describe('resolveMissingArguments', () => {
           commands: [
             {
               commandText: 'echo $2 $3 $1',
-              positionalArguments: ['$2', '$3', '$1'],
-            },
-          ],
-        },
+              positionalArguments: ['$2', '$3', '$1']
+            }
+          ]
+        }
       ],
       {
         appended: [],
         named: {},
-        positional: ['one', 'two'],
-      },
+        positional: ['one', 'two']
+      }
     );
 
     expect(resolvedArgs).toEqual<UserArguments>({
       appended: [],
       named: {},
-      positional: ['one', 'two', 'three'],
+      positional: ['one', 'two', 'three']
     });
   });
 
@@ -100,23 +101,24 @@ describe('resolveMissingArguments', () => {
           type: 'sequential',
           commands: [
             {
+              // eslint-disable-next-line no-template-curly-in-string
               commandText: 'echo $1 ${foo}',
-              positionalArguments: ['$1'],
-            },
-          ],
-        },
+              positionalArguments: ['$1']
+            }
+          ]
+        }
       ],
       {
         appended: [],
         named: {},
-        positional: [],
-      },
+        positional: []
+      }
     );
 
     expect(resolvedArgs).toEqual<UserArguments>({
       appended: [],
-      named: {foo: 'named'},
-      positional: ['one'],
+      named: { foo: 'named' },
+      positional: ['one']
     });
   });
 
@@ -130,23 +132,24 @@ describe('resolveMissingArguments', () => {
           type: 'sequential',
           commands: [
             {
+              // eslint-disable-next-line no-template-curly-in-string
               commandText: 'echo ${foo} ${bar} ${lorem}',
-              positionalArguments: [],
-            },
-          ],
-        },
+              positionalArguments: []
+            }
+          ]
+        }
       ],
       {
         appended: [],
-        named: {bar: 'bar'},
-        positional: [],
-      },
+        named: { bar: 'bar' },
+        positional: []
+      }
     );
 
     expect(resolvedArgs).toEqual<UserArguments>({
       appended: [],
-      named: {bar: 'bar', foo: 'name1', lorem: 'name2'},
-      positional: [],
+      named: { bar: 'bar', foo: 'name1', lorem: 'name2' },
+      positional: []
     });
   });
 
@@ -161,39 +164,39 @@ describe('resolveMissingArguments', () => {
           commands: [
             {
               commandText: 'echo $1 $2',
-              positionalArguments: ['$1', '$2'],
+              positionalArguments: ['$1', '$2']
             },
             {
               commandText: 'echo $1 $2',
-              positionalArguments: ['$1', '$2'],
-            },
-          ],
+              positionalArguments: ['$1', '$2']
+            }
+          ]
         },
         {
           type: 'sequential',
           commands: [
             {
               commandText: 'echo $1 $2',
-              positionalArguments: ['$1', '$2'],
+              positionalArguments: ['$1', '$2']
             },
             {
               commandText: 'echo $1 $2',
-              positionalArguments: ['$1', '$2'],
-            },
-          ],
-        },
+              positionalArguments: ['$1', '$2']
+            }
+          ]
+        }
       ],
       {
         appended: [],
         named: {},
-        positional: [],
-      },
+        positional: []
+      }
     );
 
     expect(resolvedArgs).toEqual<UserArguments>({
       appended: [],
       named: {},
-      positional: ['pos1', 'pos2'],
+      positional: ['pos1', 'pos2']
     });
   });
 
@@ -207,40 +210,44 @@ describe('resolveMissingArguments', () => {
           type: 'parallel',
           commands: [
             {
+              // eslint-disable-next-line no-template-curly-in-string
               commandText: 'echo ${foo} ${bar}',
-              positionalArguments: [],
+              positionalArguments: []
             },
             {
+              // eslint-disable-next-line no-template-curly-in-string
               commandText: 'echo ${foo} ${bar}',
-              positionalArguments: [],
-            },
-          ],
+              positionalArguments: []
+            }
+          ]
         },
         {
           type: 'sequential',
           commands: [
             {
+              // eslint-disable-next-line no-template-curly-in-string
               commandText: 'echo ${foo} ${bar}',
-              positionalArguments: [],
+              positionalArguments: []
             },
             {
+              // eslint-disable-next-line no-template-curly-in-string
               commandText: 'echo ${foo} ${bar}',
-              positionalArguments: [],
-            },
-          ],
-        },
+              positionalArguments: []
+            }
+          ]
+        }
       ],
       {
         appended: [],
         named: {},
-        positional: [],
-      },
+        positional: []
+      }
     );
 
     expect(resolvedArgs).toEqual<UserArguments>({
       appended: [],
-      named: {foo: 'name1', bar: 'name2'},
-      positional: [],
+      named: { foo: 'name1', bar: 'name2' },
+      positional: []
     });
   });
 });

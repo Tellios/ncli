@@ -1,7 +1,7 @@
-import {ConsoleInterface, Type, commandBase} from '../common/index.ts';
-import {getCurrentBranch} from './utils/index.ts';
+import { ConsoleInterface, Type, commandBase } from '../common/index.ts';
+import { getCurrentBranch } from './utils/index.ts';
 
-commandBase(async ({workingDirectory}) => {
+await commandBase(async ({ workingDirectory }) => {
   const branch = await getCurrentBranch(workingDirectory);
 
   if (branch) {
@@ -9,7 +9,7 @@ commandBase(async ({workingDirectory}) => {
   } else {
     ConsoleInterface.printLine(
       'Unable to determine current branch from working directory',
-      Type.error,
+      Type.error
     );
   }
 });

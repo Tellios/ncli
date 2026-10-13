@@ -15,7 +15,7 @@ export function parseUserArguments(userArgs: string[]): UserArguments {
   const parsedUserArgs: UserArguments = {
     positional: [],
     named: {},
-    appended: [],
+    appended: []
   };
   let isAppendArgs = false;
 
@@ -29,7 +29,7 @@ export function parseUserArguments(userArgs: string[]): UserArguments {
 
       if (value === undefined) {
         throw new UserArgumentParseError(
-          `'${key}' argument provided incorrectly. Named arguments must be supplied using the format '--key=value'.`,
+          `'${key}' argument provided incorrectly. Named arguments must be supplied using the format '--key=value'.`
         );
       }
 

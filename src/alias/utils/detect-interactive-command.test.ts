@@ -1,6 +1,6 @@
 import {
   detectInteractiveCommand,
-  resolveStepInteractive,
+  resolveStepInteractive
 } from './detect-interactive-command.ts';
 
 describe('detectInteractiveCommand', () => {
@@ -26,7 +26,7 @@ describe('resolveStepInteractive', () => {
 
   it('should auto-detect when not configured', () => {
     expect(resolveStepInteractive('yarn test -- --watch', undefined)).toBe(
-      true,
+      true
     );
   });
 });

@@ -4,20 +4,20 @@ import {
   Type,
   commandBase,
   selectItem,
-  yargsWrapper,
+  yargsWrapper
 } from '../common/index.ts';
-import {getLog, showCommit} from './utils/index.ts';
+import { getLog, showCommit } from './utils/index.ts';
 
 const args = yargsWrapper().option({
   maxCommits: {
     alias: 'm',
     describe: 'Maximum number of commits to include, by default this is 100',
     type: 'number',
-    default: 100,
-  },
+    default: 100
+  }
 }).argv;
 
-commandBase(async ({workingDirectory}) => {
+await commandBase(async ({ workingDirectory }) => {
   ConsoleInterface.printLine('Fetching log entries...');
   const entries = await getLog(workingDirectory, args.maxCommits);
 
@@ -25,7 +25,7 @@ commandBase(async ({workingDirectory}) => {
     (entry, index) =>
       `${chalk.yellow(entry.shortId)}${
         index === 0 ? chalk.greenBright(' (latest)') : ''
-      }: ${entry.message} (${chalk.blueBright(entry.date)})`,
+      }: ${entry.message} (${chalk.blueBright(entry.date)})`
   );
 
   if (entries.length === 0) {
@@ -41,7 +41,7 @@ commandBase(async ({workingDirectory}) => {
     const selectedIndex = await selectItem(
       entriesAsSelectables,
       'Select a commit to view',
-      entriesAsSelectables[lastSelectedIndex],
+      entriesAsSelectables[lastSelectedIndex]
     );
 
     lastSelectedIndex = selectedIndex;

@@ -1,19 +1,19 @@
-import {selectItems, ConsoleInterface, Type} from '../../common/index.ts';
+import { selectItems, ConsoleInterface, Type } from '../../common/index.ts';
 import {
   getContainers,
   deleteContainer,
-  getDockerContainersStatusRows,
+  getDockerContainersStatusRows
 } from '../utils/index.ts';
 
-export type DeleteCommandParams = {
+export type DeleteCommandParameters = {
   onlyShowRunning: boolean;
   forcefullyDelete: boolean;
 };
 
 export const deleteCommand = async ({
   onlyShowRunning,
-  forcefullyDelete,
-}: DeleteCommandParams): Promise<void> => {
+  forcefullyDelete
+}: DeleteCommandParameters): Promise<void> => {
   const containers = await getContainers(onlyShowRunning);
 
   if (containers.length === 0) {
@@ -24,12 +24,14 @@ export const deleteCommand = async ({
   const rows = getDockerContainersStatusRows(containers);
   const selectedIndexes = await selectItems({
     items: rows,
-    message: 'Select containers to remove',
+    message: 'Select containers to remove'
   });
 
   const processesToRemove = selectedIndexes.map((index) => containers[index]);
 
-  for (const process of processesToRemove) {
-    await deleteContainer(forcefullyDelete, process.containerId);
-  }
+  await Promise.all(
+    processesToRemove.map(async (process) =>
+      deleteContainer(forcefullyDelete, process.containerId)
+    )
+  );
 };

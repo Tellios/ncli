@@ -1,8 +1,8 @@
-import {commandBase} from '../../common/index.ts';
-import {getAliases, executeAlias} from '../utils/index.ts';
+import { commandBase } from '../../common/index.ts';
+import { getAliases, executeAlias } from '../utils/index.ts';
 
 export const executeMatchingAlias = async (args: string[]): Promise<void> => {
-  commandBase(async () => {
+  await commandBase(async () => {
     const aliases = await getAliases();
     let isPrint = false;
 

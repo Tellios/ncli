@@ -1,19 +1,19 @@
-import {runCmdInConsole, CmdError, confirm} from '../../common/index.ts';
-import {getCurrentBranch} from './get-current-branch.ts';
-import {setUpstream} from './set-upstream.ts';
-import {appendNoVerifyIfEnabled} from './append-no-verify-if-enabled.ts';
+import { runCmdInConsole, CmdError, confirm } from '../../common/index.ts';
+import { getCurrentBranch } from './get-current-branch.ts';
+import { setUpstream } from './set-upstream.ts';
+import { appendNoVerifyIfEnabled } from './append-no-verify-if-enabled.ts';
 
 export async function push(
   workingDirectory: string,
   useNoVerify: boolean,
   alsoPushTags: boolean,
-  force: boolean,
+  force: boolean
 ): Promise<void> {
   try {
     if (
       force &&
       !(await confirm(
-        'WARNING: Force push will be performed, are you sure you want to continue?',
+        'WARNING: Force push will be performed, are you sure you want to continue?'
       ))
     ) {
       throw new Error('Push aborted');
@@ -21,7 +21,10 @@ export async function push(
 
     let pushArgs = ['push'];
     pushArgs = appendNoVerifyIfEnabled(useNoVerify, pushArgs);
-    force && pushArgs.push('--force');
+
+    if (force) {
+      pushArgs.push('--force');
+    }
 
     await runCmdInConsole('git', pushArgs);
 
@@ -33,7 +36,7 @@ export async function push(
       if (error.exitCode === 128) {
         if (
           await confirm(
-            'Push failed, upstream may be missing, do you want to set it?',
+            'Push failed, upstream may be missing, do you want to set it?'
           )
         ) {
           const currentBranch = await getCurrentBranch(workingDirectory);
@@ -47,7 +50,7 @@ export async function push(
           return;
         }
       } else {
-        throw new Error(error.processMessage);
+        throw new Error(error.processMessage, { cause: error });
       }
     }
 

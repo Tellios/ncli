@@ -1,18 +1,18 @@
-import {ConsoleInterface, Type} from '../../common/index.ts';
+import { ConsoleInterface, Type } from '../../common/index.ts';
 import {
   selectResource,
   getResources,
   describeResource,
   resolveResourceType,
-  type ResolveResourceTypeParams,
+  type ResolveResourceTypeParameters
 } from '../utils/index.ts';
 
-export type DescribeScriptParams = {
-  type: ResolveResourceTypeParams;
+export type DescribeScriptParameters = {
+  type: ResolveResourceTypeParameters;
 };
 
 export async function describeCommand(
-  parameters: DescribeScriptParams,
+  parameters: DescribeScriptParameters
 ): Promise<void> {
   const type = await resolveResourceType(parameters.type);
   const resources = await getResources(type);
@@ -20,7 +20,7 @@ export async function describeCommand(
   if (resources.length === 0) {
     ConsoleInterface.printLine(
       `No resources of type ${type} was found using current context`,
-      Type.warn,
+      Type.warn
     );
     return;
   }

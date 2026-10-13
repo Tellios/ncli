@@ -1,9 +1,10 @@
 import _ from 'lodash';
 
-const delimiterRegex = /\s{2,100}/g;
+const delimiterRegex = /\s{2,100}/gv;
 const splitDelimiter = '[________]';
 
 function getRowColumns(row: string): string[] {
+  // eslint-disable-next-line unicorn/no-unsafe-string-replacement
   return row.replaceAll(delimiterRegex, splitDelimiter).split(splitDelimiter);
 }
 
@@ -34,7 +35,7 @@ export const parseContainerRows = (processRows: string[]): ContainerRow[] => {
   const dataRows = processRows.slice(1);
 
   const columnNames = getRowColumns(columnRow).map((column) =>
-    _.camelCase(column),
+    _.camelCase(column)
   );
 
   const processes: ContainerRow[] = [];
@@ -50,7 +51,7 @@ export const parseContainerRows = (processRows: string[]): ContainerRow[] => {
     const process = columnNames.reduce(
       (process: Record<string, string | undefined>, columnName: string) => {
         if (columnName === 'ports' && !hasPortColumn(dataColumns)) {
-          process[columnName] = null;
+          process[columnName] = undefined;
           return process;
         }
 
@@ -61,7 +62,7 @@ export const parseContainerRows = (processRows: string[]): ContainerRow[] => {
 
         return process;
       },
-      {},
+      {}
     );
 
     processes.push(process as unknown as ContainerRow);

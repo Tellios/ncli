@@ -1,20 +1,20 @@
-import execa, {type ExecaError} from 'execa';
-import {CmdError} from './cmd-error.ts';
+import execa, { type ExecaError } from 'execa';
+import { CmdError } from './cmd-error.ts';
 
 function isExecaError(error: any): error is ExecaError {
-  return error.exitCode != null;
+  return error.exitCode !== null && error.exitCode !== undefined;
 }
 
 export async function runCmdInConsole(
   cmd: string,
   args: string[],
   inheritStdio = true,
-  cwd: string | undefined = undefined,
+  cwd?: string
 ): Promise<void> {
   try {
     await execa(cmd, args, {
       stdio: inheritStdio ? 'inherit' : undefined,
-      cwd,
+      cwd
     });
   } catch (error) {
     if (isExecaError(error)) {
@@ -22,10 +22,10 @@ export async function runCmdInConsole(
         error.exitCode,
         error.message,
         error.stdout,
-        'Command failed',
+        'Command failed'
       );
     }
 
-    throw new Error('Command failed with an unknown error');
+    throw new Error('Command failed with an unknown error', { cause: error });
   }
 }

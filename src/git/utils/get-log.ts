@@ -1,4 +1,4 @@
-import {getCmdResult} from '../../common/index.ts';
+import { getCmdResult } from '../../common/index.ts';
 
 export type LogEntry = {
   shortId: string;
@@ -8,12 +8,12 @@ export type LogEntry = {
 
 export const getLog = async (
   workingDirectory: string,
-  maxCommitsToInclude: number,
+  maxCommitsToInclude: number
 ): Promise<LogEntry[]> => {
   const result = await getCmdResult(
     'git',
     ['log', `-${maxCommitsToInclude}`, '--pretty=reference'],
-    workingDirectory,
+    workingDirectory
   );
 
   /**
@@ -26,12 +26,12 @@ export const getLog = async (
     .split('\n')
     .map((line): LogEntry => {
       const [shortId, message, date] =
-        /^([0-9a-f]+) \((.+), (.+)\)$/.exec(line)?.slice(1) ?? [];
+        /^([0-9a-f]+) \((.+), (.+)\)$/v.exec(line)?.slice(1) ?? [];
 
       return {
         shortId,
         message,
-        date,
+        date
       };
     })
     .filter((entry) => entry.shortId && entry.message && entry.date);

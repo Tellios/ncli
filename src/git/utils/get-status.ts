@@ -1,4 +1,4 @@
-import {getCmdResult} from '../../common/index.ts';
+import { getCmdResult } from '../../common/index.ts';
 
 export type GitStatus = {
   hasChanges: boolean;
@@ -9,7 +9,8 @@ export type GitStatus = {
 
 function getChanges(
   statuses: string[],
-  filterFunc: (change: string) => boolean,
+
+  filterFunc: (change: string) => boolean
 ): string[] {
   return statuses
     .filter((status) => filterFunc(status.slice(0, 2)))
@@ -23,19 +24,19 @@ function parseStatuses(statusData: string): GitStatus {
     hasChanges: statusLines.length > 0,
     newFiles: getChanges(
       statusLines,
-      (modifiers) => modifiers.includes('?') || modifiers.includes('A'),
+      (modifiers) => modifiers.includes('?') || modifiers.includes('A')
     ),
     changedFiles: getChanges(statusLines, (modifiers) =>
-      modifiers.includes('M'),
+      modifiers.includes('M')
     ),
     deletedFiles: getChanges(statusLines, (modifiers) =>
-      modifiers.includes('D'),
-    ),
+      modifiers.includes('D')
+    )
   };
 }
 
 export async function getStatus(repositoryPath: string): Promise<GitStatus> {
   return getCmdResult('git', ['status', '-s'], repositoryPath).then(
-    parseStatuses,
+    parseStatuses
   );
 }

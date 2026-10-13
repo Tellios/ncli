@@ -1,4 +1,4 @@
-import {type PersistedSettings} from './persisted-settings.interface.ts';
+import { type PersistedSettings } from './persisted-settings.interface.ts';
 
 export type SettingsFile = {
   version: number;

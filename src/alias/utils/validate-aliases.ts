@@ -1,5 +1,5 @@
 import joi from 'joi';
-import {type Alias, type AliasTask} from '../alias.interfaces.ts';
+import { type Alias, type AliasTask } from '../alias.interfaces.ts';
 
 const aliasTypeSchema = joi.string().allow('parallel', 'sequential');
 
@@ -10,7 +10,7 @@ const aliasTaskSchema = joi.object<AliasTask>({
     .alternatives(joi.string().min(1), joi.array().items(joi.string()).min(1))
     .required(),
   workingDirectory: joi.string(),
-  interactive: joi.boolean(),
+  interactive: joi.boolean()
 });
 
 const aliasSchema = joi.object<Alias>({
@@ -20,12 +20,12 @@ const aliasSchema = joi.object<Alias>({
     .alternatives(
       joi.string().min(1),
       joi.array().items(joi.string().required()).min(1),
-      joi.array().items(aliasTaskSchema.required()).min(1),
+      joi.array().items(aliasTaskSchema.required()).min(1)
     )
     .required(),
   description: joi.string(),
   workingDirectory: joi.string(),
-  interactive: joi.boolean(),
+  interactive: joi.boolean()
 });
 
 const aliasesSchema = joi.array().items(aliasSchema);

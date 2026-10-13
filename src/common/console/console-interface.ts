@@ -1,12 +1,15 @@
 import Table from 'cli-table3';
 import chalk from 'chalk';
 
+// Is enum-like
+
 export const Type = {
   log: 1,
   warn: 2,
-  error: 3,
+  error: 3
 };
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class ConsoleInterface {
   public static printLine(line: string, type = Type.log): void {
     switch (type) {
@@ -41,7 +44,7 @@ export class ConsoleInterface {
     columns = columns.map((column) => chalk.cyan(column));
 
     const table = new Table({
-      head: columns,
+      head: columns
     });
 
     (table as any).push(...rows);

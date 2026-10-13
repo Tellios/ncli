@@ -1,10 +1,10 @@
-import {cwd} from 'node:process';
-import {updateSetting} from '../../common/index.ts';
+import { cwd } from 'node:process';
+import { updateSetting } from '../../common/index.ts';
 import {
   selectCommandToConfigure,
   selectScope,
   selectSetting,
-  selectSettingValue,
+  selectSettingValue
 } from '../utils/index.ts';
 
 export const setCommand = async (): Promise<void> => {
@@ -17,6 +17,6 @@ export const setCommand = async (): Promise<void> => {
     key: settingKey,
     scope,
     workingDirectory: scope === 'workingDirectory' ? cwd() : undefined,
-    value,
+    value
   });
 };

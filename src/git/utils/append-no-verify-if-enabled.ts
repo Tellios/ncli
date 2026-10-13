@@ -1,4 +1,4 @@
 export const appendNoVerifyIfEnabled = (
-  useNoVerify: boolean,
-  args: string[],
-): string[] => (useNoVerify ? [...args, '--no-verify'] : args);
+  shouldUseNoVerify: boolean,
+  args: string[]
+): string[] => (shouldUseNoVerify ? [...args, '--no-verify'] : args);

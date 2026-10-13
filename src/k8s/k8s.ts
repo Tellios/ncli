@@ -1,53 +1,53 @@
-import {type Options} from 'yargs';
-import {yargsWrapper, selectItem, commandBase} from '../common/index.ts';
+import { type Options } from 'yargs';
+import { yargsWrapper, selectItem, commandBase } from '../common/index.ts';
 import {
-  type ResolveResourceTypeParams,
-  type ResourceType,
+  type ResolveResourceTypeParameters,
+  type ResourceType
 } from './utils/index.ts';
 import {
   describeCommand,
   listCommand,
   deleteCommand,
   logCommand,
-  contextCommand,
+  contextCommand
 } from './sub-commands/index.ts';
 
 const selectResourceArgs: Record<ResourceType, Options> = {
   deployment: {
     alias: 'd',
-    desc: 'Quick select deployment(s) as target for the command',
+    desc: 'Quick select deployment(s) as target for the command'
   },
   pod: {
     alias: 'p',
-    desc: 'Quick select pod(s) as target for the command',
+    desc: 'Quick select pod(s) as target for the command'
   },
   service: {
     alias: 's',
-    desc: 'Quick select service(s) as target for the command',
+    desc: 'Quick select service(s) as target for the command'
   },
   ingress: {
     alias: 'i',
-    desc: 'Quick select ingress(es) as target for the command',
-  },
+    desc: 'Quick select ingress(es) as target for the command'
+  }
 };
 
 const commands: Record<
   string,
-  {desc: string; options?: Record<string, Options>}
+  { desc: string; options?: Record<string, Options> }
 > = {
-  desc: {desc: 'Describe a k8s resource', options: selectResourceArgs},
-  ls: {desc: 'List k8s resources', options: selectResourceArgs},
-  del: {desc: 'Delete a k8s resource', options: selectResourceArgs},
+  desc: { desc: 'Describe a k8s resource', options: selectResourceArgs },
+  ls: { desc: 'List k8s resources', options: selectResourceArgs },
+  del: { desc: 'Delete a k8s resource', options: selectResourceArgs },
   logs: {
     desc: 'Print logs for a pod',
     options: {
       follow: {
         alias: 'f',
-        desc: 'If logs should be streamed',
-      },
-    },
+        desc: 'If logs should be streamed'
+      }
+    }
   },
-  ctx: {desc: 'Switch k8s context'},
+  ctx: { desc: 'Switch k8s context' }
 };
 
 const yargs = yargsWrapper();
@@ -58,35 +58,37 @@ for (const [cmd, config] of Object.entries(commands)) {
 
 const args = yargs.argv;
 
-const type: ResolveResourceTypeParams = {
+const type: ResolveResourceTypeParameters = {
   deployment: args.deployment === true,
   pod: args.pod === true,
   service: args.service === true,
-  ingress: args.ingress === true,
+  ingress: args.ingress === true
 };
 
-const runCommandIfMatch = async (cmd: string | number): Promise<boolean> => {
+const willRunCommandIfMatch = async (
+  cmd: string | number
+): Promise<boolean> => {
   switch (cmd) {
     case 'desc': {
-      await describeCommand({type});
+      await describeCommand({ type });
 
       break;
     }
 
     case 'ls': {
-      await listCommand({type});
+      await listCommand({ type });
 
       break;
     }
 
     case 'del': {
-      await deleteCommand({type});
+      await deleteCommand({ type });
 
       break;
     }
 
     case 'logs': {
-      await logCommand({follow: args.follow === true});
+      await logCommand({ follow: args.follow === true });
 
       break;
     }
@@ -105,16 +107,16 @@ const runCommandIfMatch = async (cmd: string | number): Promise<boolean> => {
   return true;
 };
 
-commandBase(async (): Promise<void> => {
-  if (await runCommandIfMatch(args._[0])) {
+await commandBase(async (): Promise<void> => {
+  if (await willRunCommandIfMatch(args._[0])) {
     return;
   }
 
   const commandEntries = Object.entries(commands);
   const commandTexts = commandEntries.map(
-    ([key, config]) => `${key} - ${config.desc}`,
+    ([key, config]) => `${key} - ${config.desc}`
   );
   const index = await selectItem(commandTexts, 'Select command to execute');
   const selectedCommand = commandEntries[index][0];
-  await runCommandIfMatch(selectedCommand);
+  await willRunCommandIfMatch(selectedCommand);
 });

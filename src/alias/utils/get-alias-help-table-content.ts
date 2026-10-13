@@ -1,34 +1,34 @@
 import chalk from 'chalk';
-import {colorizeCommand} from '../../common/index.ts';
-import {type Alias} from '../alias.interfaces.ts';
+import { colorizeCommand } from '../../common/index.ts';
+import { type Alias } from '../alias.interfaces.ts';
 
 export const getAliasHelpTableContent = (
-  alias: Alias,
+  alias: Alias
 ): Array<Array<Record<string, unknown>>> => {
-  const texts: any[] = [{name: alias.name}];
-
-  if (alias.description) {
-    texts.push({description: alias.description});
-  }
+  let texts: any[] = [
+    { name: alias.name },
+    ...(alias.description ? [{ description: alias.description }] : [])
+  ];
 
   if (Array.isArray(alias.cmd)) {
-    texts.push(
+    texts = [
+      ...texts,
       ...alias.cmd.map((cmd, index) => {
         const key = `cmd ${index + 1}`;
 
         if (typeof cmd === 'string') {
           return {
-            [key]: colorizeCommand(cmd),
+            [key]: colorizeCommand(cmd)
           };
         }
 
         return {
-          [key]: chalk.yellow('[task]'),
+          [key]: chalk.yellow('[task]')
         };
-      }),
-    );
+      })
+    ];
   } else {
-    texts.push({cmd: colorizeCommand(alias.cmd)});
+    texts.push({ cmd: colorizeCommand(alias.cmd) });
   }
 
   return texts;

@@ -1,21 +1,23 @@
-import {ConsoleInterface} from '../../common/index.ts';
+import { ConsoleInterface } from '../../common/index.ts';
 import {
   getResources,
   resolveResourceType,
-  type ResolveResourceTypeParams,
+  type ResolveResourceTypeParameters
 } from '../utils/index.ts';
 
-export type ListScriptParams = {
-  type: ResolveResourceTypeParams;
+export type ListScriptParameters = {
+  type: ResolveResourceTypeParameters;
 };
 
-export async function listCommand(parameters: ListScriptParams): Promise<void> {
+export async function listCommand(
+  parameters: ListScriptParameters
+): Promise<void> {
   const type = await resolveResourceType(parameters.type);
   const resources = await getResources(type);
 
   if (resources.length === 0) {
     ConsoleInterface.printLine(
-      `No ${type} resources available in current context`,
+      `No ${type} resources available in current context`
     );
     return;
   }

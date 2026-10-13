@@ -1,5 +1,5 @@
-import chalk, {type Chalk} from 'chalk';
-import {type DockerContainer} from './docker-container.interface.ts';
+import chalk, { type Chalk } from 'chalk';
+import { type DockerContainer } from './docker-container.interface.ts';
 
 export const containerStatusColoring = (container: DockerContainer): Chalk => {
   const state = container.properties.State;
@@ -31,10 +31,6 @@ export const containerStatusColoring = (container: DockerContainer): Chalk => {
 
     case 'dead': {
       return chalk.red;
-    }
-
-    default: {
-      throw new Error(`Unknown state: ${state.Status}`);
     }
   }
 };

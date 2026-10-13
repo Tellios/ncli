@@ -1,7 +1,8 @@
-import {confirm, ConsoleInterface} from '../../common/index.ts';
-import {type Alias} from '../alias.interfaces.ts';
-import {validateAliases} from './validate-aliases.ts';
-import {aliasFile} from './alias-file.ts';
+import process from 'node:process';
+import { confirm, ConsoleInterface } from '../../common/index.ts';
+import { type Alias } from '../alias.interfaces.ts';
+import { validateAliases } from './validate-aliases.ts';
+import { aliasFile } from './alias-file.ts';
 
 export const getAliases = async (): Promise<Alias[]> => {
   const isExists = await aliasFile.exists();
@@ -21,7 +22,7 @@ export const getAliases = async (): Promise<Alias[]> => {
 
   if (!doc) {
     throw new Error(
-      'Failed to load yaml config, expected object but got undefined',
+      'Failed to load yaml config, expected object but got undefined'
     );
   }
 

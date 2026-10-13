@@ -3,11 +3,12 @@
     "strict": true,
     "alwaysStrict": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["ES2025"],
+    "lib": ["ES2025", "ESNext.Array"],
     "target": "ES2025",
     "sourceMap": true,
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "rewriteRelativeImportExtensions": true
+    "rewriteRelativeImportExtensions": true,
+    "types": ["node", "vitest/globals"]
   }
 }

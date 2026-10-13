@@ -1,10 +1,10 @@
-import type execa from 'execa';
+import type { ExecaReturnValue, ExecaReturnBase } from 'execa';
 import {
   type ProcessOptions,
   type ProcessRunOptions,
-  Process,
+  Process
 } from './process.ts';
-import {ProcessesBase} from './processes-base.ts';
+import { ProcessesBase } from './processes-base.ts';
 
 export class ParallelProcesses extends ProcessesBase {
   protected readonly processes: readonly Process[];
@@ -14,8 +14,10 @@ export class ParallelProcesses extends ProcessesBase {
     this.processes = this.processOptions.map((options) => new Process(options));
   }
 
-  async run(options: ProcessRunOptions): Promise<execa.ExecaReturnValue[]> {
-    const results: execa.ExecaReturnValue[] = [];
+  async run(
+    options: ProcessRunOptions
+  ): Promise<Array<ExecaReturnValue | ExecaReturnBase<string>>> {
+    const results: Array<ExecaReturnValue | ExecaReturnBase<string>> = [];
 
     const instances = this.processes.map(async (process) => {
       const result = await this.runProcess(process, options);

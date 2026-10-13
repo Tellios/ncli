@@ -1,18 +1,18 @@
-import {getCmdResult} from '../../common/index.ts';
-import {type Branch} from './branch.interface.ts';
-import {parseBranches} from './parse-branches.ts';
-import {sortBranches} from './sort-branches.ts';
-import {filterBranches} from './filter-branches.ts';
+import { getCmdResult } from '../../common/index.ts';
+import { type Branch } from './branch.interface.ts';
+import { parseBranches } from './parse-branches.ts';
+import { sortBranches } from './sort-branches.ts';
+import { filterBranches } from './filter-branches.ts';
 
 export const getBranches = async (
   repositoryPath: string,
   includeRemote: boolean,
-  filter?: string,
+  filter?: string
 ): Promise<Branch[]> => {
-  const gitArgs = ['branch', '--list', '--no-color'];
+  let gitArgs = ['branch', '--list', '--no-color'];
 
   if (includeRemote) {
-    gitArgs.push('-a');
+    gitArgs = [...gitArgs, '-a'];
   }
 
   return getCmdResult('git', gitArgs, repositoryPath)

@@ -1,7 +1,7 @@
-import {type SettingType} from './setting-type.ts';
+import { type SettingType } from './setting-type.ts';
 
-export type SettingDescription<TSettingType extends SettingType> = {
+export type SettingDescription<Type extends SettingType> = {
   description: string;
-  type: TSettingType;
+  type: Type;
   hidden?: boolean;
 };

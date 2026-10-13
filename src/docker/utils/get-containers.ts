@@ -1,8 +1,8 @@
-import {getCmdResult} from '../../common/index.ts';
-import {type DockerContainer, parseContainerRows} from './index.ts';
+import { getCmdResult } from '../../common/index.ts';
+import { type DockerContainer, parseContainerRows } from './index.ts';
 
 export const getContainers = async (
-  onlyRunning = false,
+  onlyRunning = false
 ): Promise<DockerContainer[]> =>
   getCmdResult('docker', ['ps', onlyRunning ? '' : '-a']).then(
     async (result) => {
@@ -16,11 +16,11 @@ export const getContainers = async (
 
               return {
                 ...container,
-                properties: containerInfo,
+                properties: containerInfo
               };
-            },
-          ),
-        ),
+            }
+          )
+        )
       );
-    },
+    }
   );

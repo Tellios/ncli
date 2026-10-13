@@ -5,7 +5,7 @@ import {
   buildExecArgs,
   listBinaries,
   parseBinaryArgs,
-  splitArguments,
+  splitArguments
 } from './execute-binary.ts';
 
 describe('buildExecArgs', () => {
@@ -14,7 +14,7 @@ describe('buildExecArgs', () => {
       'exec',
       'eslint',
       '--fix',
-      '.',
+      '.'
     ]);
   });
 
@@ -23,7 +23,7 @@ describe('buildExecArgs', () => {
       'exec',
       '--',
       'eslint',
-      '--fix',
+      '--fix'
     ]);
   });
 
@@ -33,7 +33,7 @@ describe('buildExecArgs', () => {
       '--no',
       '--',
       'eslint',
-      '--fix',
+      '--fix'
     ]);
   });
 });
@@ -75,7 +75,7 @@ describe('splitArguments', () => {
 
   it('should keep quoted text together', () => {
     expect(
-      splitArguments(String.raw`--grep "foo bar" --name='a b' "" it\'s`),
+      splitArguments(String.raw`--grep "foo bar" --name='a b' "" it\'s`)
     ).toEqual(['--grep', 'foo bar', '--name=a b', '', "it's"]);
   });
 
@@ -88,7 +88,7 @@ describe('parseBinaryArgs', () => {
   it('should parse the arguments per binary', () => {
     expect(parseBinaryArgs('{"tsc":"--noEmit","jest":"--watch"}')).toEqual({
       tsc: '--noEmit',
-      jest: '--watch',
+      jest: '--watch'
     });
   });
 
@@ -97,7 +97,7 @@ describe('parseBinaryArgs', () => {
     expect(parseBinaryArgs('--noEmit')).toEqual({});
     expect(parseBinaryArgs('["--noEmit"]')).toEqual({});
     expect(parseBinaryArgs('{"tsc":"--noEmit","jest":1}')).toEqual({
-      tsc: '--noEmit',
+      tsc: '--noEmit'
     });
   });
 });

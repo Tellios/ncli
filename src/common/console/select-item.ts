@@ -1,15 +1,16 @@
 import inquirer from 'inquirer';
 import autocomplete from 'inquirer-autocomplete-prompt';
 
+// eslint-disable-next-line unicorn/no-top-level-side-effects
 inquirer.registerPrompt('autocomplete', autocomplete);
 
 export async function selectItem(
   items: string[],
   message?: string,
-  preSelectedItem?: string,
+  preSelectedItem?: string
 ): Promise<number> {
   if (items.length === 0) {
-    throw 'Items must be an instantiated array with items';
+    throw new Error('Items must be an instantiated array with items');
   }
 
   if (message === undefined) {
@@ -25,8 +26,8 @@ export async function selectItem(
       pageSize: 10,
       message,
       source: async (_: any, input?: string): Promise<string[]> =>
-        selectableItems.filter((i) => i.includes(input ?? '')),
-    },
+        selectableItems.filter((i) => i.includes(input ?? ''))
+    }
   ]);
 
   return items.indexOf(choice.item);
@@ -34,7 +35,7 @@ export async function selectItem(
 
 function getSelectableItems(
   items: string[],
-  preSelectedItem?: string,
+  preSelectedItem?: string
 ): string[] {
   const preSelectedIndex = getPreSelectedIndex(items, preSelectedItem);
 
@@ -50,8 +51,12 @@ function getSelectableItems(
 
 function getPreSelectedIndex(
   items: string[],
-  preSelectedItem?: string,
+  preSelectedItem?: string
 ): number | undefined {
+  if (!preSelectedItem) {
+    return undefined;
+  }
+
   const preSelectedIndex = items.indexOf(preSelectedItem);
   return preSelectedIndex === -1 ? undefined : preSelectedIndex;
 }

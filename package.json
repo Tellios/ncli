@@ -1,11 +1,11 @@
 {
   "name": "tellios-ncli",
   "version": "0.0.1",
+  "private": true,
   "description": "Helper scripts for easing workflow",
   "license": "ISC",
-  "author": "",
+  "author": "Tellios",
   "type": "module",
-  "main": "./index.js",
   "bin": {
     "na": "./bin/alias",
     "ncode64": "./bin/ncode64",
@@ -38,16 +38,19 @@
   "scripts": {
     "prettier": "prettier --check --write \"{lib,src}/**/*.ts\"",
     "prettier:ci": "prettier -l \"{lib,src}/**/*.ts\"",
-    "pretest": "npm run lint",
-    "test": "jest --coverage",
-    "test:watch": "jest --watchAll --runInBand",
+    "pretest": "pnpm run lint",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "build:watch": "tsc --watch -p tsconfig.build.json",
-    "setup": "sh -c \"unset npm_config_allow_scripts NPM_CONFIG_ALLOW_SCRIPTS; npm ci && npm run prettier && npm run test && npm run build && npm link\"",
-    "lint": "npm run script:lint -- --fix",
-    "lint:ci": "npm run script:lint",
-    "script:lint": "xo . --max-warnings=0 --space --prettier"
+    "setup": "pnpm install --frozen-lockfile && pnpm run prettier && pnpm run test && pnpm run build && pnpm link",
+    "lint": "pnpm run script:lint -- --fix",
+    "lint:ci": "pnpm run script:lint",
+    "script:lint": "xo . --max-warnings=0"
   },
+  "files": [
+    "./dist"
+  ],
   "dependencies": {
     "chalk": "^4.1.0",
     "cli-table3": "^0.6.0",
@@ -66,30 +69,25 @@
     "yargs": "^16.1.0"
   },
   "devDependencies": {
-    "@types/cli-table2": "^0.2.2",
     "@types/concurrently": "^6.2.1",
     "@types/fs-extra": "^9.0.3",
     "@types/glob": "^7.1.3",
-    "@types/inquirer": "7.3.1",
+    "@types/inquirer": "^7.3.1",
     "@types/inquirer-autocomplete-prompt": "^1.3.0",
-    "@types/jest": "^28.1.0",
     "@types/js-yaml": "^3.12.5",
     "@types/lodash": "^4.14.165",
     "@types/node": "^26.6.5",
     "@types/readline-sync": "^1.4.3",
     "@types/yargs": "^15.0.9",
+    "@vitest/coverage-v8": "^5.0.3",
+    "eslint-config-xo-space": "^1.0.0",
     "husky": "^4.3.0",
-    "jest": "^28.1.0",
     "lint-staged": "^10.5.1",
-    "prettier": "^2.6.2",
+    "prettier": "^3.9.10",
     "rimraf": "^3.0.2",
-    "ts-jest": "^28.0.4",
     "typescript": "^7.0.2",
+    "vitest": "^5.0.3",
     "xo": "^5.0.1"
-  },
-  "allowScripts": {
-    "husky": true,
-    "node-pty": true
   },
   "husky": {
     "hooks": {
@@ -98,6 +96,6 @@
   },
   "lint-staged": {
     "*.{ts,md}": "prettier --write",
-    "*.{ts}": "xo --prettier --max-warnings 0 --fix"
+    "*.{ts}": "xo --max-warnings 0 --fix"
   }
 }

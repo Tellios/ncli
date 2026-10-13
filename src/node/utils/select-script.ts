@@ -1,14 +1,15 @@
-import {selectItem} from '../../common/index.ts';
+import { selectItem } from '../../common/index.ts';
+import type { Scripts } from '../types.ts';
 
 export async function selectScript(
-  availableScripts: NcliNode.Scripts,
-  preSelectedScript?: string,
+  availableScripts: Scripts,
+  preSelectedScript?: string
 ): Promise<string> {
   const scriptNames = Object.keys(availableScripts);
   const selectedIndex = await selectItem(
     scriptNames,
     'Select script',
-    preSelectedScript,
+    preSelectedScript
   );
 
   return scriptNames[selectedIndex];

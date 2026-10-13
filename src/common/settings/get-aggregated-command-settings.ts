@@ -1,15 +1,15 @@
 import process from 'node:process';
-import {uniqBy} from 'lodash';
-import {ConsoleInterface, Type} from '../console/index.ts';
-import {type NcliCommand} from './ncli-command.ts';
-import {type Settings} from './settings.interface.ts';
-import {type PersistedSetting} from './persisted-setting.interface.ts';
-import {type PersistedSettings} from './persisted-settings.interface.ts';
+import { uniqBy } from 'lodash';
+import { ConsoleInterface, Type } from '../console/index.ts';
+import { type NcliCommand } from './ncli-command.ts';
+import { type Settings } from './settings.interface.ts';
+import { type PersistedSetting } from './persisted-setting.interface.ts';
+import { type PersistedSettings } from './persisted-settings.interface.ts';
 
 export const getAggregatedCommandSettings = async (
   command: NcliCommand,
   settings: PersistedSettings,
-  directory = process.cwd(),
+  directory = process.cwd()
 ): Promise<Settings> => {
   const commandSettings = settings[command] ?? [];
 
@@ -21,10 +21,10 @@ export const getAggregatedCommandSettings = async (
 
 const getSettingsInCurrentScope = (
   settings: PersistedSetting[],
-  directory: string,
+  directory: string
 ): PersistedSetting[] =>
   settings.filter(
-    (s) => s.scope === 'global' || s.workingDirectory === directory,
+    (s) => s.scope === 'global' || s.workingDirectory === directory
   );
 
 const getUniqueSettingKeys = (settings: PersistedSetting[]): string[] =>
@@ -32,7 +32,7 @@ const getUniqueSettingKeys = (settings: PersistedSetting[]): string[] =>
 
 const getAggregatedSettings = (
   keys: string[],
-  settings: PersistedSetting[],
+  settings: PersistedSetting[]
 ): Settings =>
   keys.reduce((aggregatedSettings: Settings, key) => {
     const global = getGlobalSetting(settings, key);
@@ -42,7 +42,7 @@ const getAggregatedSettings = (
     if (value === undefined) {
       ConsoleInterface.printLine(
         `Setting '${key}' is unexpectedly missing a value`,
-        Type.warn,
+        Type.warn
       );
     } else {
       aggregatedSettings[key] = value;
@@ -53,17 +53,17 @@ const getAggregatedSettings = (
 
 const getGlobalSetting = (
   settings: PersistedSetting[],
-  key: string,
+  key: string
 ): PersistedSetting | undefined =>
   settings.find((s) => s.key === key && s.scope === 'global');
 
 const getWorkingDirectorySetting = (
   settings: PersistedSetting[],
-  key: string,
+  key: string
 ): PersistedSetting | undefined =>
   settings.find((s) => s.key === key && s.scope === 'workingDirectory');
 
 const getAggregatedValue = (
   global?: PersistedSetting,
-  workingDirectory?: PersistedSetting,
+  workingDirectory?: PersistedSetting
 ): boolean | string | undefined => workingDirectory?.value ?? global?.value;

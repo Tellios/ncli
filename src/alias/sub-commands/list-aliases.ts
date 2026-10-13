@@ -1,5 +1,5 @@
-import {ConsoleInterface, commandBase} from '../../common/index.ts';
-import {getAliases, getAliasHelpTableContent} from '../utils/index.ts';
+import { ConsoleInterface, commandBase } from '../../common/index.ts';
+import { getAliases, getAliasHelpTableContent } from '../utils/index.ts';
 
 export const listAliases = async (): Promise<void> => {
   await commandBase(async () => {

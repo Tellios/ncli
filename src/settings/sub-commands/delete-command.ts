@@ -4,11 +4,11 @@ import {
   ConsoleInterface,
   Type,
   selectItems,
-  type NcliCommand,
+  type NcliCommand
 } from '../../common/index.ts';
 import {
   selectCommandToConfigure,
-  getPrintableSettings,
+  getPrintableSettings
 } from '../utils/index.ts';
 
 export const deleteCommand = async (): Promise<void> => {
@@ -31,7 +31,7 @@ export const deleteCommand = async (): Promise<void> => {
   const selectables = getPrintableSettings(commandSettings);
   const indexes = await selectItems({
     items: selectables,
-    message: 'Select items to delete',
+    message: 'Select items to delete'
   });
   const selectedSettings = indexes.map((index) => commandSettings[index]);
 

@@ -1,12 +1,13 @@
-import {runCmdInConsole} from '../../common/index.ts';
-import {detectPackageManagerOrUseDefault} from './detect-package-manager.ts';
+import { runCmdInConsole } from '../../common/index.ts';
+import type { Scripts } from '../types.ts';
+import { detectPackageManagerOrUseDefault } from './detect-package-manager.ts';
 
 export async function executePackageJsonScript(
   script: string,
-  availableScripts: NcliNode.Scripts,
-  directory: string,
+  availableScripts: Scripts,
+  directory: string
 ): Promise<void> {
-  if (script in availableScripts) {
+  if (Object.hasOwn(availableScripts, script)) {
     const packageManager = await detectPackageManagerOrUseDefault(directory);
     await runCmdInConsole(packageManager, ['run', script], true, directory);
   } else {

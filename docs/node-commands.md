@@ -168,6 +168,6 @@ ni del
 
 Update one or more packages to their latest version. Packages are selected from a list in the terminal.
 
-```
+```bash
 ni update
 ```

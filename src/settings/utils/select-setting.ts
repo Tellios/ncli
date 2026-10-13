@@ -3,11 +3,11 @@ import {
   type NcliCommand,
   type SettingDescription,
   availableSettings,
-  type SettingType,
+  type SettingType
 } from '../../common/index.ts';
 
 export const selectSetting = async (
-  command: NcliCommand,
+  command: NcliCommand
 ): Promise<[string, SettingDescription<SettingType>]> => {
   const commandSettings = availableSettings[command];
   const settingEntries =
@@ -15,8 +15,8 @@ export const selectSetting = async (
 
   const index = await selectItem(
     settingEntries.map(
-      ([key, {type, description}]) => `${key} (${type}): ${description}`,
-    ),
+      ([key, { type, description }]) => `${key} (${type}): ${description}`
+    )
   );
 
   return settingEntries[index];

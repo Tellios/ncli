@@ -1,36 +1,36 @@
-import {cloneDeep} from 'lodash';
-import {inputString} from '../../common/index.ts';
-import {type ExecutionPlan} from '../alias.interfaces.ts';
-import {type UserArguments} from './parse-user-arguments.ts';
-import {builtInArguments} from './built-in-arguments.ts';
+import { cloneDeep } from 'lodash';
+import { inputString } from '../../common/index.ts';
+import { type ExecutionPlan } from '../alias.interfaces.ts';
+import { type UserArguments } from './parse-user-arguments.ts';
+import { builtInArguments } from './built-in-arguments.ts';
 
 export const resolveMissingArguments = async (
   plan: ExecutionPlan,
-  userArguments: UserArguments,
+  userArguments: UserArguments
 ): Promise<UserArguments> => {
   const newUserArguments = cloneDeep(userArguments);
 
   const commands = plan.flatMap((step) =>
-    step.commands.map((c) => c.commandText),
+    step.commands.map((c) => c.commandText)
   );
 
   const requestedPositionalArguments = await getMissingPositionalArguments(
     commands,
-    userArguments,
+    userArguments
   );
 
   const requestedNamedArguments = await getMissingNamedArguments(
     commands,
-    userArguments,
+    userArguments
   );
 
   newUserArguments.named = {
     ...newUserArguments.named,
-    ...requestedNamedArguments,
+    ...requestedNamedArguments
   };
   newUserArguments.positional = [
     ...newUserArguments.positional,
-    ...requestedPositionalArguments,
+    ...requestedPositionalArguments
   ];
 
   return newUserArguments;
@@ -38,84 +38,69 @@ export const resolveMissingArguments = async (
 
 const getMissingNamedArguments = async (
   commands: string[],
-  userArguments: UserArguments,
+  userArguments: UserArguments
 ): Promise<Record<string, string>> => {
   const namedArguments = getNamedArgumentsFromCommands(commands);
   const missingNamedArguments = getNamedArgumentsMissingInUserArguments(
     userArguments,
-    namedArguments,
+    namedArguments
   );
   return requestMissingNamedArguments(missingNamedArguments);
 };
 
 const getMissingPositionalArguments = async (
   commands: string[],
-  userArguments: UserArguments,
+  userArguments: UserArguments
 ): Promise<string[]> => {
   const positionalArguments = getPositionalArgumentsFromCommands(commands);
   const missingPositionalArguments =
     getPositionalArgumentsMissingInUserArguments(
       userArguments,
-      positionalArguments,
+      positionalArguments
     );
 
   return requestMissingPositionalArguments(missingPositionalArguments);
 };
 
 const getNamedArgumentsFromCommands = (commands: string[]): string[] =>
-  commands
-    .map((c) => c.match(/\$\{([a-z])*\}/gi))
-    .reduce(appendArgumentIfUnique, [])
-    .map(extractArgumentName);
+  getUniqueMatches(commands, /\$\{([a-z])*\}/giv).map(extractArgumentName);
 
 const getPositionalArgumentsFromCommands = (commands: string[]): string[] =>
-  commands
-    .map((c) => c.match(/\$\d+/g))
-    .reduce(appendArgumentIfUnique, [])
+  getUniqueMatches(commands, /\$\d+/gv)
     .map((a) => a.slice(1))
-    .sort();
+    .toSorted();
 
-const appendArgumentIfUnique = (
-  acc: string[],
-  current: RegExpMatchArray | undefined,
-): string[] => {
-  current?.forEach((match) => {
-    if (!acc.includes(match)) {
-      acc.push(match);
-    }
-  });
+const getUniqueMatches = (commands: string[], pattern: RegExp): string[] => [
+  ...new Set(commands.flatMap((c) => c.match(pattern) ?? []))
+];
 
-  return acc;
-};
-
-const extractArgumentName = (argument: string): string =>
-  argument.substring(2, argument.length - 1);
+const extractArgumentName = (argument: string): string => argument.slice(2, -1);
 
 const getNamedArgumentsMissingInUserArguments = (
   userArguments: UserArguments,
-  expectedArguments: string[],
+  expectedArguments: string[]
 ): string[] =>
   expectedArguments.filter(
     (commandArgument) =>
-      !(commandArgument in userArguments.named) &&
-      !builtInArguments.includes(commandArgument),
+      !Object.hasOwn(userArguments.named, commandArgument) &&
+      !builtInArguments.includes(commandArgument)
   );
 
 const getPositionalArgumentsMissingInUserArguments = (
   userArguments: UserArguments,
-  expectedArguments: string[],
+  expectedArguments: string[]
 ): string[] => {
   const missingArgumentCount = Math.abs(
-    userArguments.positional.length - expectedArguments.length,
+    userArguments.positional.length - expectedArguments.length
   );
 
   return expectedArguments.slice(
-    expectedArguments.length - missingArgumentCount,
+    expectedArguments.length - missingArgumentCount
   );
 };
 
 const requestMissingNamedArguments = async (
-  missingArguments: string[],
+  missingArguments: string[]
 ): Promise<Record<string, string>> => {
   const requestedArguments: Record<string, string> = {};
 
@@ -128,22 +113,19 @@ const requestMissingNamedArguments = async (
 };
 
 const requestMissingPositionalArguments = async (
-  missingPositionalArguments: string[],
+  missingPositionalArguments: string[]
 ): Promise<string[]> => {
-  const requestedArguments: string[] = [];
-
-  for (const positionalArgument of missingPositionalArguments) {
-    requestedArguments.push(
-      await requestArgumentUsingConsole(`Positional ${positionalArgument}`),
-    );
-  }
-
+  const requestedArguments: string[] = await Array.fromAsync(
+    missingPositionalArguments,
+    async (positionalArgument) =>
+      requestArgumentUsingConsole(`Positional ${positionalArgument}`)
+  );
   return requestedArguments;
 };
 
 const requestArgumentUsingConsole = async (argument: string): Promise<string> =>
   inputString(argument, (input) => {
-    if (/\s/.test(input)) {
+    if (/\s/v.test(input)) {
       return "Parameter can't contain whitespace";
     }
 

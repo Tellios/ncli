@@ -1,13 +1,13 @@
-import {runCmdInConsole} from '../../common/index.ts';
+import { runCmdInConsole } from '../../common/index.ts';
 
 export const deleteContainer = async (
   force: boolean,
-  containerId: string,
+  containerId: string
 ): Promise<void> => {
-  const args = ['rm'];
+  let args = ['rm'];
 
   if (force) {
-    args.push('-f');
+    args = [...args, '-f'];
   }
 
   args.push(containerId);

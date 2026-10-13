@@ -1,11 +1,10 @@
-export function searchScripts(
-  pattern: RegExp,
-  scripts: NcliNode.Scripts,
-): NcliNode.Scripts {
-  const result: NcliNode.Scripts = {};
+import type { Scripts } from '../types.ts';
+
+export function searchScripts(pattern: RegExp, scripts: Scripts): Scripts {
+  const result: Scripts = {};
 
   for (const script in scripts) {
-    if (script in scripts && pattern.test(script)) {
+    if (Object.hasOwn(scripts, script) && pattern.test(script)) {
       result[script] = scripts[script];
     }
   }

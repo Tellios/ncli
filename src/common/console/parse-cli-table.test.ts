@@ -1,4 +1,4 @@
-import {parseCliTable} from './parse-cli-table.ts';
+import { parseCliTable } from './parse-cli-table.ts';
 
 describe('parseCliTable', () => {
   it('should use columns as property names', () => {
@@ -10,15 +10,15 @@ describe('parseCliTable', () => {
       {
         some: 'foo',
         headers: 'bar',
-        lastheader: 'test',
-      },
+        lastheader: 'test'
+      }
     ]);
   });
 
   it('should handle multi word columns', () => {
     const rows = [
       'SPACES IN HEADER      DASH-HEADER',
-      'foo                   bar',
+      'foo                   bar'
     ];
 
     const result = parseCliTable(rows);
@@ -26,8 +26,8 @@ describe('parseCliTable', () => {
     expect(result).toEqual([
       {
         spacesInHeader: 'foo',
-        dashHeader: 'bar',
-      },
+        dashHeader: 'bar'
+      }
     ]);
   });
 
@@ -52,7 +52,7 @@ describe('parseCliTable', () => {
       'one     two',
       'foo     bar',
       '2020    0225',
-      '0777    index.js',
+      '0777    index.js'
     ];
 
     const result = parseCliTable(rows);
@@ -60,16 +60,16 @@ describe('parseCliTable', () => {
     expect(result).toEqual([
       {
         one: 'foo',
-        two: 'bar',
+        two: 'bar'
       },
       {
         one: '2020',
-        two: '0225',
+        two: '0225'
       },
       {
         one: '0777',
-        two: 'index.js',
-      },
+        two: 'index.js'
+      }
     ]);
   });
 
@@ -78,7 +78,7 @@ describe('parseCliTable', () => {
       'headOne  headTwo  headThree  headFour',
       '1        2',
       '1        2        3',
-      '1        2        3          4',
+      '1        2        3          4'
     ];
 
     const result = parseCliTable(rows);
@@ -88,20 +88,20 @@ describe('parseCliTable', () => {
         headOne: '1',
         headTwo: '2',
         headThree: undefined,
-        headFour: undefined,
+        headFour: undefined
       },
       {
         headOne: '1',
         headTwo: '2',
         headThree: '3',
-        headFour: undefined,
+        headFour: undefined
       },
       {
         headOne: '1',
         headTwo: '2',
         headThree: '3',
-        headFour: '4',
-      },
+        headFour: '4'
+      }
     ]);
   });
 });

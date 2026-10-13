@@ -1,7 +1,7 @@
-import {type Branch} from './branch.interface.ts';
+import { type Branch } from './branch.interface.ts';
 
 export function sortBranches(branches: Branch[]): Branch[] {
-  return branches.sort((a, b) => {
+  return branches.toSorted((a, b) => {
     if (a.isCurrent && !b.isCurrent) {
       return -1;
     }

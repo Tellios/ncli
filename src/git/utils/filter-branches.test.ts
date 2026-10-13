@@ -1,5 +1,5 @@
-import {filterBranches} from './filter-branches.ts';
-import {type Branch} from './branch.interface.ts';
+import { filterBranches } from './filter-branches.ts';
+import { type Branch } from './branch.interface.ts';
 
 describe('filterBranches', () => {
   let mockBranches: Branch[];
@@ -9,46 +9,43 @@ describe('filterBranches', () => {
       {
         isCurrent: true,
         isRemote: false,
-        name: 'develop',
+        name: 'develop'
       },
       {
         isCurrent: false,
         isRemote: false,
-        name: 'master',
+        name: 'master'
       },
       {
         isCurrent: false,
         isRemote: true,
-        name: 'remotes/origin/develop',
+        name: 'remotes/origin/develop'
       },
       {
         isCurrent: false,
         isRemote: true,
-        name: 'remotes/origin/feature/test',
+        name: 'remotes/origin/feature/test'
       },
       {
         isCurrent: false,
         isRemote: true,
-        name: 'remotes/origin/release/1.9',
+        name: 'remotes/origin/release/1.9'
       },
       {
         isCurrent: false,
         isRemote: false,
-        name: 'feature/test',
-      },
+        name: 'feature/test'
+      }
     ];
   });
 
-  it('should accept empty/null/undefined filter', () => {
+  it('should accept empty/undefined filter', () => {
     expect(filterBranches(mockBranches).length).toEqual(mockBranches.length);
-    expect(filterBranches(mockBranches, null).length).toEqual(
-      mockBranches.length,
-    );
     expect(filterBranches(mockBranches, '').length).toEqual(
-      mockBranches.length,
+      mockBranches.length
     );
     expect(filterBranches(mockBranches, ' ').length).toEqual(
-      mockBranches.length,
+      mockBranches.length
     );
   });
 

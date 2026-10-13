@@ -1,6 +1,6 @@
 import process from 'node:process';
 import path from 'node:path';
-import {ConsoleInterface, Type, CmdError} from '../console/index.ts';
+import { ConsoleInterface, Type, CmdError } from '../console/index.ts';
 import {
   getSettings,
   getAggregatedCommandSettings,
@@ -8,26 +8,26 @@ import {
   type SettingsFor,
   type AvailableSettings,
   updateSetting,
-  type SettingValue,
+  type SettingValue
 } from '../settings/index.ts';
 
-export type ExecutorParams<T extends NcliCommand> = {
+export type ExecutorParameters<T extends NcliCommand> = {
   workingDirectory: string;
   settings: SettingsFor<T>;
-  setSetting: <TKey extends keyof AvailableSettings[T]>(
+  setSetting: <Key extends keyof AvailableSettings[T]>(
     key: keyof AvailableSettings[T],
-    value: NonNullable<SettingsFor<T>[TKey]>,
-    directory?: string,
+    value: NonNullable<SettingsFor<T>[Key]>,
+    directory?: string
   ) => Promise<void>;
   getSettings: (directory?: string) => Promise<SettingsFor<T>>;
 };
 
 export type Executor<T extends NcliCommand> = (
-  parameters: ExecutorParams<T>,
+  parameters: ExecutorParameters<T>
 ) => Promise<void>;
 
 export async function commandBase<T extends NcliCommand = any>(
-  executor: Executor<T>,
+  executor: Executor<T>
 ): Promise<void> {
   const workingDirectory = process.cwd();
   const commandExecuted = path.parse(process.argv[1]).name as NcliCommand;
@@ -36,7 +36,7 @@ export async function commandBase<T extends NcliCommand = any>(
     const settings = await getSettings();
     const commandSettings = await getAggregatedCommandSettings(
       commandExecuted,
-      settings,
+      settings
     );
 
     await executor({
@@ -51,25 +51,27 @@ export async function commandBase<T extends NcliCommand = any>(
           // cast it here.
           value: value as SettingValue,
           scope: 'workingDirectory',
-          workingDirectory: directory ?? workingDirectory,
+          workingDirectory: directory ?? workingDirectory
         });
       },
       async getSettings(directory) {
         const retrievedSettings = await getAggregatedCommandSettings(
           commandExecuted,
           settings,
-          directory,
+          directory
         );
 
         return retrievedSettings as SettingsFor<T>;
-      },
+      }
     });
   } catch (error) {
     if (error instanceof CmdError) {
       ConsoleInterface.printLine(error.processMessage, Type.error);
     } else {
-      ConsoleInterface.printLine((error as any).toString(), Type.error);
+      ConsoleInterface.printLine(String(error), Type.error);
     }
+
+    // This is a CLI app
 
     process.exit(1);
   }

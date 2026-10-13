@@ -1,12 +1,13 @@
 import {
   executePackageJsonScript,
-  executeParallellPackageJsonScripts,
+  executeParallellPackageJsonScripts
 } from '../utils/index.ts';
+import type { PackageJson } from '../types.ts';
 
 export async function runScripts(
   scriptsToRun: string[],
-  packageJson: NcliNode.PackageJson,
-  directory: string,
+  packageJson: PackageJson,
+  directory: string
 ): Promise<void> {
   if (scriptsToRun.length === 1) {
     const script = scriptsToRun[0];
@@ -15,7 +16,7 @@ export async function runScripts(
     await executeParallellPackageJsonScripts(
       scriptsToRun,
       packageJson.scripts,
-      directory,
+      directory
     );
   }
 }

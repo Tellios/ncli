@@ -1,7 +1,7 @@
-import {ensureFile, readFile} from 'fs-extra';
-import {getSettingsFilename} from './get-settings-filename.ts';
-import {type SettingsFile} from './settings-file.interface.ts';
-import {type PersistedSettings} from './persisted-settings.interface.ts';
+import { ensureFile, readFile } from 'fs-extra';
+import { getSettingsFilename } from './get-settings-filename.ts';
+import { type SettingsFile } from './settings-file.interface.ts';
+import { type PersistedSettings } from './persisted-settings.interface.ts';
 
 export const getSettings = async (): Promise<PersistedSettings> => {
   const settingsFilename = getSettingsFilename();

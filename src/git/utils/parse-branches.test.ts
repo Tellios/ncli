@@ -1,4 +1,4 @@
-import {parseBranches} from './parse-branches.ts';
+import { parseBranches } from './parse-branches.ts';
 
 describe('parseBranch', () => {
   it('can determine if branch is local', () => {

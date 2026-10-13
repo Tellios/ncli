@@ -1,5 +1,6 @@
+import process from 'node:process';
 import execa from 'execa';
-import {shellQuote} from './shell-quote.ts';
+import { shellQuote } from './shell-quote.ts';
 
 export type InteractiveSpawn = {
   file: string;
@@ -8,32 +9,32 @@ export type InteractiveSpawn = {
 
 export const buildInteractiveShellCommand = (
   shellCommand: string,
-  workingDirectory: string,
+  workingDirectory: string
 ): string => `cd ${shellQuote(workingDirectory)} && ${shellCommand}`;
 
 export const getInteractiveSpawn = (
   shellCommand: string,
-  workingDirectory: string,
+  workingDirectory: string
 ): InteractiveSpawn => {
   const command = buildInteractiveShellCommand(shellCommand, workingDirectory);
 
   if (process.platform === 'darwin') {
     return {
       file: 'script',
-      args: ['-q', '/dev/null', 'sh', '-ec', command],
+      args: ['-q', '/dev/null', 'sh', '-ec', command]
     };
   }
 
   if (process.platform === 'linux') {
     return {
       file: 'script',
-      args: ['-q', '-c', command, '/dev/null'],
+      args: ['-q', '-c', command, '/dev/null']
     };
   }
 
   return {
     file: 'sh',
-    args: ['-ec', command],
+    args: ['-ec', command]
   };
 };
 

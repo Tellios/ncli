@@ -1,19 +1,19 @@
-import {selectItem} from '../../common/index.ts';
+import { selectItem } from '../../common/index.ts';
 import {
   getContainers,
   getDockerContainersStatusRows,
-  logContainer,
+  logContainer
 } from '../utils/index.ts';
 
-export type LogCommandParams = {
+export type LogCommandParameters = {
   onlyShowRunning: boolean;
   follow: boolean;
 };
 
 export const logCommand = async ({
   onlyShowRunning,
-  follow,
-}: LogCommandParams): Promise<void> => {
+  follow
+}: LogCommandParameters): Promise<void> => {
   const containers = await getContainers(onlyShowRunning);
   const rows: string[] = getDockerContainersStatusRows(containers);
 

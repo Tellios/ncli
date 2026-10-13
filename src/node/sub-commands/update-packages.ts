@@ -1,13 +1,14 @@
-import {type Workspace} from '../utils/index.ts';
-import {selectPackages} from './select-packages.ts';
-import {installPackages} from './install-packages.ts';
+import { type Workspace } from '../utils/index.ts';
+import type { PackageJson } from '../types.ts';
+import { selectPackages } from './select-packages.ts';
+import { installPackages } from './install-packages.ts';
 
 export async function updatePackages(
   workingDirectory: string,
-  packageJson: NcliNode.PackageJson,
+  packageJson: PackageJson,
   saveExact: boolean,
   searchString: string | undefined,
-  workspace: Workspace | undefined,
+  workspace: Workspace | undefined
 ): Promise<void> {
   const packages = await selectPackages(packageJson, searchString);
   const addLatestSuffix = (name: string): string => `${name}@latest`;
@@ -27,6 +28,6 @@ export async function updatePackages(
     devPackagesToUpdate,
     'ignore',
     saveExact,
-    workspace,
+    workspace
   );
 }

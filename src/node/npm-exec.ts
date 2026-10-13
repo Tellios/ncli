@@ -3,7 +3,7 @@ import {
   ConsoleInterface,
   commandBase,
   selectItem,
-  inputString,
+  inputString
 } from '../common/index.ts';
 import {
   parsePackageJson,
@@ -11,26 +11,26 @@ import {
   executeBinary,
   listBinaries,
   splitArguments,
-  parseBinaryArgs,
+  parseBinaryArgs
 } from './utils/index.ts';
 
 const args = yargsWrapper(false)
   // Stop parsing at the binary name so its arguments are passed through
-  .parserConfiguration({'halt-at-non-option': true})
+  .parserConfiguration({ 'halt-at-non-option': true })
   .option('workspace', {
     alias: 'w',
     describe:
       'If the binary should be executed inside a workspace project instead',
-    type: 'boolean',
+    type: 'boolean'
   }).argv;
 
-commandBase<'nex'>(async ({workingDirectory, settings, setSetting}) => {
+await commandBase<'nex'>(async ({ workingDirectory, settings, setSetting }) => {
   if (args.workspace) {
     const packageJson = await parsePackageJson(workingDirectory);
     const workspace = await selectWorkspace(
       workingDirectory,
       packageJson,
-      settings.lastSelectedWorkspace,
+      settings.lastSelectedWorkspace
     );
 
     await setSetting('lastSelectedWorkspace', workspace.relativePath);
@@ -68,19 +68,19 @@ commandBase<'nex'>(async ({workingDirectory, settings, setSetting}) => {
         return (error as Error).message;
       }
     },
-    binaryArgsPerBinary[selectedBinary],
+    binaryArgsPerBinary[selectedBinary]
   );
 
   await setSetting('lastExecutedBinary', selectedBinary, workingDirectory);
   await setSetting(
     'binaryArgs',
-    JSON.stringify({...binaryArgsPerBinary, [selectedBinary]: binaryArgs}),
-    workingDirectory,
+    JSON.stringify({ ...binaryArgsPerBinary, [selectedBinary]: binaryArgs }),
+    workingDirectory
   );
 
   await executeBinary(
     selectedBinary,
     splitArguments(binaryArgs),
-    workingDirectory,
+    workingDirectory
   );
 });

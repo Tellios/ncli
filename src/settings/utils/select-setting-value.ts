@@ -1,14 +1,14 @@
-import {cyanBright} from 'chalk';
+import { cyanBright } from 'chalk';
 import {
   confirm,
   inputString,
   UnreachableCaseError,
-  type SettingDescription,
+  type SettingDescription
 } from '../../common/index.ts';
 
 export const selectSettingValue = async (
   settingKey: string,
-  setting: SettingDescription<'boolean' | 'string'>,
+  setting: SettingDescription<'boolean' | 'string'>
 ): Promise<boolean | string> => {
   const key = cyanBright(settingKey);
 
@@ -19,10 +19,6 @@ export const selectSettingValue = async (
 
     case 'string': {
       return inputString('Set the value');
-    }
-
-    default: {
-      throw new UnreachableCaseError(setting.type);
     }
   }
 };

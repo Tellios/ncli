@@ -1,11 +1,11 @@
-import {getSettings} from './get-settings.ts';
-import {type PersistedSetting} from './persisted-setting.interface.ts';
-import {type NcliCommand} from './ncli-command.ts';
-import {persistSettings} from './persist-settings.ts';
+import { getSettings } from './get-settings.ts';
+import { type PersistedSetting } from './persisted-setting.interface.ts';
+import { type NcliCommand } from './ncli-command.ts';
+import { persistSettings } from './persist-settings.ts';
 
 export const updateSetting = async (
   command: NcliCommand,
-  setting: PersistedSetting,
+  setting: PersistedSetting
 ): Promise<void> => {
   const settings = await getSettings();
   const commandSettings = settings[command] ?? [];
@@ -14,7 +14,7 @@ export const updateSetting = async (
     (cs) =>
       cs.key === setting.key &&
       cs.scope === setting.scope &&
-      cs.workingDirectory === setting.workingDirectory,
+      cs.workingDirectory === setting.workingDirectory
   );
 
   if (index === -1) {

@@ -1,8 +1,8 @@
-import {runCmdInConsole, selectItem} from '../../common/index.ts';
-import {detectPackageManager, type PackageManager} from '../utils/index.ts';
+import { runCmdInConsole, selectItem } from '../../common/index.ts';
+import { detectPackageManager, type PackageManager } from '../utils/index.ts';
 
 export async function installAllPackagesUsingLockFile(
-  workingDirectory: string,
+  workingDirectory: string
 ): Promise<void> {
   switch (await detectPackageManager(workingDirectory)) {
     case 'pnpm': {
@@ -10,7 +10,7 @@ export async function installAllPackagesUsingLockFile(
         'pnpm',
         ['install', '--frozen-lockfile'],
         true,
-        workingDirectory,
+        workingDirectory
       );
       break;
     }
@@ -25,18 +25,18 @@ export async function installAllPackagesUsingLockFile(
       break;
     }
 
-    default: {
+    case undefined: {
       const options: Array<[string, PackageManager | undefined]> = [
         ['NPM', 'npm'],
         ['Yarn', 'yarn'],
         ['PNPM', 'pnpm'],
-        ['Do nothing', undefined],
+        ['Do nothing', undefined]
       ];
       const [, packageManager] =
         options[
           await selectItem(
             options.map(([label]) => label),
-            'No lock file found. Install packages using',
+            'No lock file found. Install packages using'
           )
         ];
 
@@ -45,7 +45,7 @@ export async function installAllPackagesUsingLockFile(
           packageManager,
           ['install'],
           true,
-          workingDirectory,
+          workingDirectory
         );
       }
     }

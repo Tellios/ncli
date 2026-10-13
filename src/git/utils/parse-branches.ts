@@ -1,4 +1,4 @@
-import {type Branch} from './branch.interface.ts';
+import { type Branch } from './branch.interface.ts';
 
 const currentBranchPrefix = '* ';
 const remoteBranchPrefix = 'remotes/';
@@ -19,7 +19,7 @@ export function parseBranches(branchData: string): Branch[] {
         return {
           name: branchName,
           isRemote,
-          isCurrent: branchString.startsWith(currentBranchPrefix),
+          isCurrent: branchString.startsWith(currentBranchPrefix)
         };
       })
   );

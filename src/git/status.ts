@@ -1,25 +1,29 @@
 import chalk from 'chalk';
-import {yargsWrapper, ConsoleInterface, commandBase} from '../common/index.ts';
-import {getStatus, type GitStatus} from './utils/index.ts';
+import {
+  yargsWrapper,
+  ConsoleInterface,
+  commandBase
+} from '../common/index.ts';
+import { getStatus, type GitStatus } from './utils/index.ts';
 
 const args = yargsWrapper()
   .option('new', {
     alias: 'n',
     describe: 'Only show new files',
     type: 'boolean',
-    default: false,
+    default: false
   })
   .option('modified', {
     alias: 'm',
     describe: 'Only show modified files',
     type: 'boolean',
-    default: false,
+    default: false
   })
   .option('deleted', {
     alias: 'd',
     describe: 'Only show deleted files',
     type: 'boolean',
-    default: false,
+    default: false
   }).argv;
 
 const getOrIgnore = (ignore: boolean, files: string[]): string[] =>
@@ -28,19 +32,19 @@ const getOrIgnore = (ignore: boolean, files: string[]): string[] =>
 const getStatusOutput = (status: GitStatus): string[] => [
   ...getOrIgnore(
     args.modified || args.deleted,
-    status.newFiles.map((file: string) => chalk.green(`+ ${file}`)),
+    status.newFiles.map((file: string) => chalk.green(`+ ${file}`))
   ),
   ...getOrIgnore(
     args.new || args.deleted,
-    status.changedFiles.map((file: string) => chalk.yellow(`M ${file}`)),
+    status.changedFiles.map((file: string) => chalk.yellow(`M ${file}`))
   ),
   ...getOrIgnore(
     args.new || args.modified,
-    status.deletedFiles.map((file: string) => chalk.red(`- ${file}`)),
-  ),
+    status.deletedFiles.map((file: string) => chalk.red(`- ${file}`))
+  )
 ];
 
-commandBase(async ({workingDirectory}) => {
+await commandBase(async ({ workingDirectory }) => {
   const status = await getStatus(workingDirectory);
 
   if (status.hasChanges) {

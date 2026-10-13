@@ -1,9 +1,10 @@
-import {confirm} from '../../common/index.ts';
-import {selectScript, updatePackageJson} from '../utils/index.ts';
+import { confirm } from '../../common/index.ts';
+import { selectScript, updatePackageJson } from '../utils/index.ts';
+import type { PackageJson } from '../types.ts';
 
 export async function deletePackageJsonScript(
   workingDirectory: string,
-  packageJson: NcliNode.PackageJson,
+  packageJson: PackageJson
 ): Promise<void> {
   const selectedScript = await selectScript(packageJson.scripts);
 
@@ -13,6 +14,7 @@ export async function deletePackageJsonScript(
     return;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
   delete packageJson.scripts[selectedScript];
   await updatePackageJson(workingDirectory, packageJson);
 }

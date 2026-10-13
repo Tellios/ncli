@@ -1,16 +1,18 @@
-import {ConsoleInterface, Type, selectItem} from '../../common/index.ts';
+import { ConsoleInterface, Type, selectItem } from '../../common/index.ts';
 import {
   getResources,
   selectResource,
   showResourceLogs,
-  getResourceInfo,
+  getResourceInfo
 } from '../utils/index.ts';
 
-export type LogScriptParams = {
+export type LogScriptParameters = {
   follow: boolean;
 };
 
-export async function logCommand(parameters: LogScriptParams): Promise<void> {
+export async function logCommand(
+  parameters: LogScriptParameters
+): Promise<void> {
   const resources = await getResources('pod');
 
   if (resources.length === 0) {
@@ -34,7 +36,7 @@ async function getContainerName(containerNames: string[]): Promise<string> {
 
   const index = await selectItem(
     containerNames,
-    'Select container to view logs for',
+    'Select container to view logs for'
   );
   return containerNames[index];
 }

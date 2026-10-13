@@ -2,11 +2,11 @@ import {
   getSettings,
   ConsoleInterface,
   Type,
-  type NcliCommand,
+  type NcliCommand
 } from '../../common/index.ts';
 import {
   selectCommandToConfigure,
-  getPrintableSettings,
+  getPrintableSettings
 } from '../utils/index.ts';
 
 export const listCommand = async (): Promise<void> => {

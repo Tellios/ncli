@@ -1,4 +1,4 @@
-import {runCmdInConsole} from '../../common/index.ts';
+import { runCmdInConsole } from '../../common/index.ts';
 
 const GIT_URL_SUFFIX = '.git';
 
@@ -8,23 +8,21 @@ function getDirectoryNameFromUrl(url: string): string {
   return directoryName.endsWith(GIT_URL_SUFFIX)
     ? directoryName.slice(
         0,
-        Math.max(0, directoryName.length - GIT_URL_SUFFIX.length),
+        Math.max(0, directoryName.length - GIT_URL_SUFFIX.length)
       )
     : directoryName;
 }
 
 export const clone = async (
   cloneUrl: string,
-  directoryName?: string,
+  directoryName?: string
 ): Promise<string> => {
-  let checkoutDir: string;
-
-  checkoutDir =
+  const checkoutDir =
     !directoryName || directoryName.length === 0
       ? getDirectoryNameFromUrl(cloneUrl)
       : directoryName;
 
   return runCmdInConsole('git', ['clone', cloneUrl, checkoutDir]).then(
-    () => checkoutDir,
+    () => checkoutDir
   );
 };

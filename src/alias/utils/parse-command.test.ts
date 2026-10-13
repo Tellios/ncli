@@ -1,48 +1,48 @@
-import {type ExecutionPlan} from '../alias.interfaces.ts';
-import {parseCommand} from './parse-command.ts';
+import { type ExecutionPlan } from '../alias.interfaces.ts';
+import { parseCommand } from './parse-command.ts';
 
 describe('parseCommand', () => {
   it('should return the positonal arguments and command text', () => {
-    const command = parseCommand({name: 'mock', cmd: 'test $1 $2'});
+    const command = parseCommand({ name: 'mock', cmd: 'test $1 $2' });
     const expected: ExecutionPlan = [
       {
         type: 'sequential',
         commands: [
           {
             commandText: 'test $1 $2',
-            positionalArguments: ['$1', '$2'],
-          },
-        ],
-      },
+            positionalArguments: ['$1', '$2']
+          }
+        ]
+      }
     ];
 
     expect(command).toEqual(expected);
   });
 
   it('should only return a positional argument once', () => {
-    const command = parseCommand({name: 'mock', cmd: 'test $1 $1 $2'});
+    const command = parseCommand({ name: 'mock', cmd: 'test $1 $1 $2' });
     const expected: ExecutionPlan = [
       {
         type: 'sequential',
         commands: [
           {
             commandText: 'test $1 $1 $2',
-            positionalArguments: ['$1', '$2'],
-          },
-        ],
-      },
+            positionalArguments: ['$1', '$2']
+          }
+        ]
+      }
     ];
 
     expect(command).toEqual(expected);
   });
 
   it('should return empty positional arguments array if there are none', () => {
-    const command = parseCommand({name: 'mock', cmd: 'docker rm -f'});
+    const command = parseCommand({ name: 'mock', cmd: 'docker rm -f' });
     const expected: ExecutionPlan = [
       {
         type: 'sequential',
-        commands: [{commandText: 'docker rm -f', positionalArguments: []}],
-      },
+        commands: [{ commandText: 'docker rm -f', positionalArguments: [] }]
+      }
     ];
 
     expect(command).toEqual(expected);
@@ -51,16 +51,16 @@ describe('parseCommand', () => {
   it('should handle multiple commands at the same time', () => {
     const command = parseCommand({
       name: 'mock',
-      cmd: ['docker rm -f $2', 'echo test arg $1'],
+      cmd: ['docker rm -f $2', 'echo test arg $1']
     });
     const expected: ExecutionPlan = [
       {
         type: 'sequential',
         commands: [
-          {commandText: 'docker rm -f $2', positionalArguments: ['$2']},
-          {commandText: 'echo test arg $1', positionalArguments: ['$1']},
-        ],
-      },
+          { commandText: 'docker rm -f $2', positionalArguments: ['$2'] },
+          { commandText: 'echo test arg $1', positionalArguments: ['$1'] }
+        ]
+      }
     ];
 
     expect(command).toEqual(expected);
@@ -71,57 +71,59 @@ describe('parseCommand', () => {
       name: 'mock',
       type: 'parallel',
       cmd: [
-        {name: 'step 1', cmd: ['docker rm -f $2', 'docker rm -f ${named}']},
-        {name: 'step 2', type: 'sequential', cmd: 'echo test arg $1'},
+        // eslint-disable-next-line no-template-curly-in-string
+        { name: 'step 1', cmd: ['docker rm -f $2', 'docker rm -f ${named}'] },
+        { name: 'step 2', type: 'sequential', cmd: 'echo test arg $1' },
         {
           name: 'step 3',
           type: 'parallel',
-          cmd: ['echo test step 3', 'this is parallel', 'and mocked'],
-        },
-      ],
+          cmd: ['echo test step 3', 'this is parallel', 'and mocked']
+        }
+      ]
     });
     const expected: ExecutionPlan = [
       {
         name: 'step 1',
         type: 'sequential',
         commands: [
-          {commandText: 'docker rm -f $2', positionalArguments: ['$2']},
-          {commandText: 'docker rm -f ${named}', positionalArguments: []},
+          { commandText: 'docker rm -f $2', positionalArguments: ['$2'] },
+          // eslint-disable-next-line no-template-curly-in-string
+          { commandText: 'docker rm -f ${named}', positionalArguments: [] }
         ],
-        workingDirectory: undefined,
+        workingDirectory: undefined
       },
       {
         name: 'step 2',
         type: 'sequential',
         commands: [
-          {commandText: 'echo test arg $1', positionalArguments: ['$1']},
+          { commandText: 'echo test arg $1', positionalArguments: ['$1'] }
         ],
-        workingDirectory: undefined,
+        workingDirectory: undefined
       },
       {
         name: 'step 3',
         type: 'parallel',
         commands: [
-          {commandText: 'echo test step 3', positionalArguments: []},
-          {commandText: 'this is parallel', positionalArguments: []},
-          {commandText: 'and mocked', positionalArguments: []},
+          { commandText: 'echo test step 3', positionalArguments: [] },
+          { commandText: 'this is parallel', positionalArguments: [] },
+          { commandText: 'and mocked', positionalArguments: [] }
         ],
-        workingDirectory: undefined,
-      },
+        workingDirectory: undefined
+      }
     ];
 
     expect(command).toEqual(expected);
   });
 
   it('should throw if command text is empty', () => {
-    expect(() => parseCommand({name: 'mock', cmd: ''})).toThrowError();
+    expect(() => parseCommand({ name: 'mock', cmd: '' })).toThrowError();
   });
 
   it('should propagate interactive flag on top-level alias', () => {
     const command = parseCommand({
       name: 'mock',
       interactive: true,
-      cmd: 'docker run -it alpine sh',
+      cmd: 'docker run -it alpine sh'
     });
 
     expect(command).toEqual([
@@ -131,10 +133,10 @@ describe('parseCommand', () => {
         commands: [
           {
             commandText: 'docker run -it alpine sh',
-            positionalArguments: [],
-          },
-        ],
-      },
+            positionalArguments: []
+          }
+        ]
+      }
     ]);
   });
 
@@ -143,14 +145,14 @@ describe('parseCommand', () => {
       name: 'mock',
       interactive: true,
       cmd: [
-        {name: 'prep', cmd: 'docker pull alpine'},
+        { name: 'prep', cmd: 'docker pull alpine' },
         {
           name: 'shell',
           interactive: false,
-          cmd: 'docker run alpine echo hi',
+          cmd: 'docker run alpine echo hi'
         },
-        {name: 'interactive shell', cmd: 'docker run -it alpine sh'},
-      ],
+        { name: 'interactive shell', cmd: 'docker run -it alpine sh' }
+      ]
     });
 
     expect(command).toEqual([
@@ -160,8 +162,8 @@ describe('parseCommand', () => {
         interactive: true,
         workingDirectory: undefined,
         commands: [
-          {commandText: 'docker pull alpine', positionalArguments: []},
-        ],
+          { commandText: 'docker pull alpine', positionalArguments: [] }
+        ]
       },
       {
         name: 'shell',
@@ -169,8 +171,8 @@ describe('parseCommand', () => {
         interactive: false,
         workingDirectory: undefined,
         commands: [
-          {commandText: 'docker run alpine echo hi', positionalArguments: []},
-        ],
+          { commandText: 'docker run alpine echo hi', positionalArguments: [] }
+        ]
       },
       {
         name: 'interactive shell',
@@ -178,9 +180,9 @@ describe('parseCommand', () => {
         interactive: true,
         workingDirectory: undefined,
         commands: [
-          {commandText: 'docker run -it alpine sh', positionalArguments: []},
-        ],
-      },
+          { commandText: 'docker run -it alpine sh', positionalArguments: [] }
+        ]
+      }
     ]);
   });
 });

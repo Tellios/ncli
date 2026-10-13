@@ -1,8 +1,8 @@
-import {EOL} from 'node:os';
+import { EOL } from 'node:os';
 import chalk from 'chalk';
-import {positionalArgsRegexProvider} from './positional-args-regex-provider.ts';
-import {namedArgsRegexProvider} from './named-args-regex-provider.ts';
-import {dashArgsRegexProvider} from './dash-args-regex-provider.ts';
+import { positionalArgsRegexProvider } from './positional-args-regex-provider.ts';
+import { namedArgsRegexProvider } from './named-args-regex-provider.ts';
+import { dashArgsRegexProvider } from './dash-args-regex-provider.ts';
 
 const controlOperators = new Set(['&&', '||']);
 
@@ -17,6 +17,8 @@ export const colorizeCommand = (commandText: string): string => {
         return chalk.greenBright(cmdPart);
       }
 
+      // This is intended, it is part of the config file format
+      // eslint-disable-next-line no-template-curly-in-string
       if (cmdPart.includes('${cwd}')) {
         return chalk.blue(cmdPart);
       }

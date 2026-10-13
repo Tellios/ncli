@@ -1,12 +1,12 @@
-import {runCmdInConsole} from '../../common/index.ts';
+import { runCmdInConsole } from '../../common/index.ts';
 
 export const deleteBranch = async (
   branchName: string,
   {
-    alsoDeleteRemote = false,
-    noVerify = false,
-    force = false,
-  }: {alsoDeleteRemote: boolean; noVerify: boolean; force: boolean},
+    alsoDeleteRemote,
+    noVerify,
+    force
+  }: { alsoDeleteRemote: boolean; noVerify: boolean; force: boolean }
 ): Promise<void> => {
   const args = ['branch', '-d', branchName];
 
@@ -21,7 +21,7 @@ export const deleteBranch = async (
         'origin',
         '--delete',
         branchName,
-        noVerify ? '--no-verify' : '',
+        noVerify ? '--no-verify' : ''
       ]);
     }
   });

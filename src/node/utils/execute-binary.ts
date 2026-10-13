@@ -1,9 +1,9 @@
 import path from 'node:path';
 import fs from 'fs-extra';
-import {runCmdInConsole} from '../../common/index.ts';
+import { runCmdInConsole } from '../../common/index.ts';
 import {
   detectPackageManagerOrUseDefault,
-  type PackageManager,
+  type PackageManager
 } from './detect-package-manager.ts';
 
 /**
@@ -16,7 +16,7 @@ import {
 export function buildExecArgs(
   packageManager: PackageManager,
   cmd: string,
-  args: string[],
+  args: string[]
 ): string[] {
   switch (packageManager) {
     case 'pnpm': {
@@ -36,14 +36,14 @@ export function buildExecArgs(
 export async function executeBinary(
   cmd: string,
   args: string[],
-  directory: string,
+  directory: string
 ): Promise<void> {
   const packageManager = await detectPackageManagerOrUseDefault(directory);
   await runCmdInConsole(
     packageManager,
     buildExecArgs(packageManager, cmd, args),
     true,
-    directory,
+    directory
   );
 }
 
@@ -60,10 +60,10 @@ export async function listBinaries(directory: string): Promise<string[]> {
 
   const entries = await fs.readdir(binDirectory);
   const binaries = entries
-    .filter((entry) => !/\.(cmd|ps1)$/i.test(entry))
-    .map((entry) => entry.replace(/\.exe$/i, ''));
+    .filter((entry) => !/\.(?:cmd|ps1)$/iv.test(entry))
+    .map((entry) => entry.replace(/\.exe$/iv, ''));
 
-  return [...new Set(binaries)].sort();
+  return [...new Set(binaries)].toSorted();
 }
 
 /**
@@ -97,7 +97,7 @@ export function splitArguments(input: string): string[] {
     } else if (char === '"' || char === "'") {
       quote = char;
       isInArgument = true;
-    } else if (/\s/.test(char)) {
+    } else if (/\s/v.test(char)) {
       if (isInArgument) {
         args.push(current);
         current = '';
@@ -141,7 +141,7 @@ export function parseBinaryArgs(json?: string): Record<string, string> {
     }
 
     return Object.fromEntries(
-      Object.entries(parsed).filter(([, args]) => typeof args === 'string'),
+      Object.entries(parsed).filter(([, args]) => typeof args === 'string')
     ) as Record<string, string>;
   } catch {
     return {};

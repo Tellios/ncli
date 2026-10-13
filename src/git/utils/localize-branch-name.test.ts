@@ -1,4 +1,4 @@
-import {localizeBranchName} from './localize-branch-name.ts';
+import { localizeBranchName } from './localize-branch-name.ts';
 
 describe('parseBranch', () => {
   it('does not change local branch name', () => {

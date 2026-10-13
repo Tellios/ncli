@@ -1,8 +1,8 @@
-import {type DockerContainer} from './docker-container.interface.ts';
-import {containerStatusColoring} from './container-status-coloring.ts';
+import { type DockerContainer } from './docker-container.interface.ts';
+import { containerStatusColoring } from './container-status-coloring.ts';
 
 export const getDockerContainersStatusRows = (
-  containers: DockerContainer[],
+  containers: DockerContainer[]
 ): string[] =>
   containers.map((process) => {
     const color = containerStatusColoring(process);
@@ -11,7 +11,7 @@ export const getDockerContainersStatusRows = (
       process.names,
       process.image,
       process.status,
-      process.containerId,
+      process.containerId
     ].join(' - ');
 
     return color(row);

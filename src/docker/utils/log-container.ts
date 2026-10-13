@@ -1,12 +1,9 @@
-import {runCmdInConsole} from '../../common/index.ts';
+import { runCmdInConsole } from '../../common/index.ts';
 
 export const logContainer = async (
   containerId: string,
-  follow: boolean,
+  follow: boolean
 ): Promise<void> => {
-  const args = ['logs'];
-  follow && args.push('-f');
-  args.push(containerId);
-
+  const args = ['logs', ...(follow ? ['-f'] : []), containerId];
   await runCmdInConsole('docker', args);
 };

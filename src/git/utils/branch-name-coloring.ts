@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import {type Branch} from './branch.interface.ts';
+import { type Branch } from './branch.interface.ts';
 
 export const branchNameColoring = (branches: Branch[]): string[] =>
   branches.map((branch) => {

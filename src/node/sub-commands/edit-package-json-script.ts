@@ -1,13 +1,14 @@
-import {editString} from '../../common/index.ts';
+import { editString } from '../../common/index.ts';
 import {
   selectScript,
   updatePackageJson,
-  validateScript,
+  validateScript
 } from '../utils/index.ts';
+import type { PackageJson } from '../types.ts';
 
 export async function editPackageJsonScript(
   workingDirectory: string,
-  packageJson: NcliNode.PackageJson,
+  packageJson: PackageJson
 ): Promise<void> {
   const selectedScript = await selectScript(packageJson.scripts);
   const script = packageJson.scripts[selectedScript];
