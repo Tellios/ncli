@@ -4,7 +4,7 @@ import { type DockerContainer, parseContainerRows } from './index.ts';
 export const getContainers = async (
   onlyRunning = false
 ): Promise<DockerContainer[]> =>
-  getCmdResult('docker', ['ps', onlyRunning ? '' : '-a']).then(
+  getCmdResult('docker', ['ps', ...(onlyRunning ? [] : ['-a'])]).then(
     async (result) => {
       const containers = parseContainerRows(result.split('\n'));
 

@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'fs-extra';
-import jsYaml from 'js-yaml';
+import { dump, load } from 'js-yaml';
 import { getNcliDir } from '../../common/index.ts';
 import { type AliasesConfig } from '../alias.interfaces.ts';
 
@@ -18,12 +18,12 @@ export const aliasFile = {
       aliases: []
     };
 
-    const data = jsYaml.dump(aliasesConfig);
+    const data = dump(aliasesConfig);
 
     await fs.outputFile(configPath, data, { encoding: 'utf8' });
   },
   async read(): Promise<AliasesConfig | undefined> {
     const config = await fs.readFile(configPath, 'utf8');
-    return jsYaml.safeLoad(config) as AliasesConfig | undefined;
+    return load(config) as AliasesConfig | undefined;
   }
 };

@@ -14,10 +14,10 @@ export const listCommand = async ({
     const color = containerStatusColoring(process);
 
     const row = [
-      process.names,
+      process.names ?? '',
       process.image,
       process.status,
-      process.ports || '',
+      process.ports ?? '',
       process.containerId
     ];
 

@@ -1,14 +1,13 @@
 import process from 'node:process';
 import { type Stream, type Writable } from 'node:stream';
 import { styleText } from 'node:util';
-import execa, {
-  type ExecaReturnBase,
-  type ExecaError,
-  type ExecaReturnValue
-} from 'execa';
+import { execa, type ExecaError, type Result, type ResultPromise } from 'execa';
 import treeKill from 'tree-kill';
 import type pty from 'node-pty';
-import { startInteractivePty } from './run-interactive-pty.ts';
+import {
+  startInteractivePty,
+  type InteractivePtyResult
+} from './run-interactive-pty.ts';
 
 export type ProcessOptions = {
   name: string;
@@ -27,14 +26,10 @@ export type ProcessRunOptions = {
   stdout?: Writable;
 };
 
-export type ProcessResult = {
-  exitCode: number | undefined;
-  failed: boolean;
-  canceled: boolean;
-};
+export type ProcessResult = Result | ExecaError | InteractivePtyResult;
 
 export class Process {
-  private instance: execa.ExecaChildProcess | undefined = undefined;
+  private instance: ResultPromise | undefined = undefined;
   private ptyProcess: pty.IPty | undefined = undefined;
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onData: (data: Buffer) => void = () => {};
@@ -52,9 +47,7 @@ export class Process {
     };
   }
 
-  async run({
-    stdout
-  }: ProcessRunOptions): Promise<ExecaReturnValue | ExecaReturnBase<string>> {
+  async run({ stdout }: ProcessRunOptions): Promise<ProcessResult> {
     if (this.instance) {
       throw new Error(`Process '${this.options.name}' is already running`);
     }
@@ -134,12 +127,12 @@ export class Process {
 
         return result;
       })
-      .catch((error: unknown): ExecaReturnBase<string> => {
+      .catch((error: unknown): ProcessResult => {
         if (this.isExiting) {
           // If the process was killed an error will bubble up,
           // but we want to treat it as any other response since
           // it is expected.
-          return error as ExecaReturnBase<string>;
+          return error as ExecaError;
         }
 
         if (
@@ -147,7 +140,7 @@ export class Process {
           'exitCode' in (error as any) &&
           typeof (error as any).exitCode === 'number'
         ) {
-          return error as ExecaReturnBase<string>;
+          return error as ExecaError;
         }
 
         throw error;

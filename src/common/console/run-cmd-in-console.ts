@@ -1,9 +1,5 @@
-import execa, { type ExecaError } from 'execa';
+import { execa, ExecaError } from 'execa';
 import { CmdError } from './cmd-error.ts';
-
-function isExecaError(error: any): error is ExecaError {
-  return error.exitCode !== null && error.exitCode !== undefined;
-}
 
 export async function runCmdInConsole(
   cmd: string,
@@ -17,11 +13,11 @@ export async function runCmdInConsole(
       cwd
     });
   } catch (error) {
-    if (isExecaError(error)) {
+    if (error instanceof ExecaError && error.exitCode !== undefined) {
       throw new CmdError(
         error.exitCode,
         error.message,
-        error.stdout,
+        error.stdout ?? '',
         'Command failed'
       );
     }

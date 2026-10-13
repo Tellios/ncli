@@ -1,7 +1,7 @@
 import path from 'node:path';
-import glob from 'glob';
+import { glob } from 'glob';
 import fs from 'fs-extra';
-import jsYaml from 'js-yaml';
+import { load } from 'js-yaml';
 import type { PackageJson } from '../types.ts';
 import { parsePackageJson } from './package-json-parser.ts';
 
@@ -25,9 +25,8 @@ async function getWorkspacePatterns(
   );
 
   if (await fs.pathExists(pnpmWorkspaceFile)) {
-    const pnpmWorkspace = jsYaml.safeLoad(
-      await fs.readFile(pnpmWorkspaceFile, 'utf8')
-    ) as { packages?: string[] } | undefined;
+    const pnpmWorkspace = load(await fs.readFile(pnpmWorkspaceFile, 'utf8')) as
+      { packages?: string[] } | undefined;
 
     return pnpmWorkspace?.packages ?? [];
   }
@@ -49,25 +48,11 @@ export async function getWorkspacePaths(
     .map((p) => path.join(p.slice(1), 'package.json'));
 
   const workspaceMatches = await Promise.all(
-    includePatterns.map(
-      async (workspace) =>
-        new Promise<string[]>((resolve, reject) => {
-          glob(
-            path.join(workspace, 'package.json'),
-            {
-              cwd: packageJsonDirectory,
-              ignore: ['**/node_modules/**', ...ignorePatterns]
-            },
-            (error, matches) => {
-              if (error) {
-                reject(error);
-                return;
-              }
-
-              resolve(matches);
-            }
-          );
-        })
+    includePatterns.map(async (workspace) =>
+      glob(path.join(workspace, 'package.json'), {
+        cwd: packageJsonDirectory,
+        ignore: ['**/node_modules/**', ...ignorePatterns]
+      })
     )
   );
 

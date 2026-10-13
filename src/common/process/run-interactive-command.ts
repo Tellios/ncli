@@ -1,5 +1,5 @@
 import process from 'node:process';
-import execa from 'execa';
+import { execa } from 'execa';
 import { shellQuote } from './shell-quote.ts';
 
 export type InteractiveSpawn = {

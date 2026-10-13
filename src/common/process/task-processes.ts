@@ -1,11 +1,10 @@
-import { type ExecaReturnBase, type ExecaReturnValue } from 'execa';
 import { UnreachableCaseError } from '../errors/index.ts';
 import {
   type ProcessOptions,
   ParallelProcesses,
   SequentialProcesses
 } from './index.ts';
-import { type ProcessRunOptions } from './process.ts';
+import { type ProcessResult, type ProcessRunOptions } from './process.ts';
 import { ProcessesBase } from './processes-base.ts';
 
 export type ProcessingTask = {
@@ -34,10 +33,8 @@ export class TaskProcesses extends ProcessesBase {
     });
   }
 
-  async run(
-    options: ProcessRunOptions
-  ): Promise<Array<ExecaReturnValue | ExecaReturnBase<string>>> {
-    const results: Array<ExecaReturnValue | ExecaReturnBase<string>> = [];
+  async run(options: ProcessRunOptions): Promise<ProcessResult[]> {
+    const results: ProcessResult[] = [];
 
     for (const task of this.tasks) {
       if (this.isExited) {

@@ -1,8 +1,8 @@
-import type { ExecaReturnBase, ExecaReturnValue } from 'execa';
 import {
   type ProcessOptions,
   type ProcessRunOptions,
-  Process
+  Process,
+  type ProcessResult
 } from './process.ts';
 import { ProcessesBase } from './processes-base.ts';
 
@@ -14,10 +14,8 @@ export class SequentialProcesses extends ProcessesBase {
     this.processes = this.processOptions.map((options) => new Process(options));
   }
 
-  async run(
-    options: ProcessRunOptions
-  ): Promise<Array<ExecaReturnValue | ExecaReturnBase<string>>> {
-    const responses: Array<ExecaReturnValue | ExecaReturnBase<string>> = [];
+  async run(options: ProcessRunOptions): Promise<ProcessResult[]> {
+    const responses: ProcessResult[] = [];
 
     for (const process of this.processes) {
       const result = await this.runProcess(process, options);

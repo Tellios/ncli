@@ -1,22 +1,23 @@
 import { PassThrough } from 'node:stream';
 import { styleText } from 'node:util';
-import type { ExecaReturnValue, ExecaReturnBase } from 'execa';
 import { ConsoleInterface } from '../console/index.ts';
-import { type Process, type ProcessRunOptions } from './process.ts';
+import {
+  type Process,
+  type ProcessResult,
+  type ProcessRunOptions
+} from './process.ts';
 
 type ActiveProcess = {
   process: Process;
   closeStream: () => void;
-  promise: Promise<ExecaReturnValue | ExecaReturnBase<string>>;
+  promise: Promise<ProcessResult>;
 };
 
 export abstract class ProcessesBase {
   private activeProcesses: ActiveProcess[] = [];
   private isExiting = false;
 
-  abstract run(
-    options: ProcessRunOptions
-  ): Promise<Array<ExecaReturnValue | ExecaReturnBase<string>>>;
+  abstract run(options: ProcessRunOptions): Promise<ProcessResult[]>;
 
   async exit(): Promise<void> {
     this.isExiting = true;
@@ -53,7 +54,7 @@ export abstract class ProcessesBase {
   protected async runProcess(
     process: Process,
     { stdout }: ProcessRunOptions
-  ): Promise<ExecaReturnValue | ExecaReturnBase<string> | undefined> {
+  ): Promise<ProcessResult | undefined> {
     if (this.isExiting) {
       return;
     }
