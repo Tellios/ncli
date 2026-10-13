@@ -1,25 +1,16 @@
-import inquirer from 'inquirer';
+import { input } from '@inquirer/prompts';
 
 export async function inputString(
   message: string,
   validateFn?: (input: string) => boolean | string,
   prefill?: string
 ): Promise<string> {
-  const prompt = inquirer.prompt({
+  return input({
     message,
-    name: 'input',
-    type: 'input',
     default: prefill,
+    // Makes the prefilled text editable, instead of only being
+    // used when the input is left empty
+    prefill: 'editable',
     validate: validateFn
   });
-
-  if (prefill) {
-    // Writing to the readline makes the text editable, unlike
-    // inquirer's default which is only used for empty input
-    // (prompt as any).ui.rl.write(prefill);
-  }
-
-  const result: any = await prompt;
-
-  return result.input;
 }

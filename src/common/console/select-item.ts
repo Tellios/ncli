@@ -1,62 +1,23 @@
-import inquirer from 'inquirer';
-import autocomplete from 'inquirer-autocomplete-prompt';
-
-// eslint-disable-next-line unicorn/no-top-level-side-effects
-inquirer.registerPrompt('autocomplete', autocomplete);
+import { search } from '@inquirer/prompts';
 
 export async function selectItem(
   items: string[],
-  message?: string,
+  message = 'Select an item',
   preSelectedItem?: string
 ): Promise<number> {
   if (items.length === 0) {
     throw new Error('Items must be an instantiated array with items');
   }
 
-  if (message === undefined) {
-    message = 'Select an item';
-  }
+  const choices = items.map((item, index) => ({ name: item, value: index }));
+  const preSelectedIndex = preSelectedItem
+    ? items.indexOf(preSelectedItem)
+    : -1;
 
-  const selectableItems = getSelectableItems(items, preSelectedItem);
-
-  const choice: any = await inquirer.prompt([
-    {
-      type: 'autocomplete',
-      name: 'item',
-      pageSize: 10,
-      message,
-      source: async (_: any, input?: string): Promise<string[]> =>
-        selectableItems.filter((i) => i.includes(input ?? ''))
-    }
-  ]);
-
-  return items.indexOf(choice.item);
-}
-
-function getSelectableItems(
-  items: string[],
-  preSelectedItem?: string
-): string[] {
-  const preSelectedIndex = getPreSelectedIndex(items, preSelectedItem);
-
-  if (preSelectedIndex === undefined) {
-    return items;
-  }
-
-  const partOne = items.slice(0, preSelectedIndex);
-  const partTwo = items.slice(preSelectedIndex);
-
-  return [...partTwo, ...partOne];
-}
-
-function getPreSelectedIndex(
-  items: string[],
-  preSelectedItem?: string
-): number | undefined {
-  if (!preSelectedItem) {
-    return undefined;
-  }
-
-  const preSelectedIndex = items.indexOf(preSelectedItem);
-  return preSelectedIndex === -1 ? undefined : preSelectedIndex;
+  return search({
+    message,
+    pageSize: 10,
+    default: preSelectedIndex === -1 ? undefined : preSelectedIndex,
+    source: (term) => choices.filter((c) => c.name.includes(term ?? ''))
+  });
 }

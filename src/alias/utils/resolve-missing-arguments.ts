@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'es-toolkit';
 import { inputString } from '../../common/index.ts';
 import { type ExecutionPlan } from '../alias.interfaces.ts';
 import { type UserArguments } from './parse-user-arguments.ts';

@@ -1,4 +1,4 @@
-import { camelCase } from 'lodash';
+import { camelCase } from 'es-toolkit';
 
 const delimiterRegex = /\s{2,100}/gv;
 const splitDelimiter = '[________]';

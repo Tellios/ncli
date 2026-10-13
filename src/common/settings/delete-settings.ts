@@ -1,4 +1,4 @@
-import { differenceWith, isEqual } from 'lodash';
+import { differenceWith, isEqual } from 'es-toolkit';
 import { type NcliCommand } from './ncli-command.ts';
 import { type PersistedSetting } from './persisted-setting.interface.ts';
 import { getSettings } from './get-settings.ts';

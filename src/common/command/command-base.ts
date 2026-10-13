@@ -65,6 +65,11 @@ export async function commandBase<T extends NcliCommand = any>(
       }
     });
   } catch (error) {
+    // Thrown by @inquirer/prompts when the user presses Ctrl+C in a prompt
+    if (error instanceof Error && error.name === 'ExitPromptError') {
+      process.exit(130);
+    }
+
     if (error instanceof CmdError) {
       ConsoleInterface.printLine(error.processMessage, Type.error);
     } else {

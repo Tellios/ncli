@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { camelCase } from 'es-toolkit';
 
 const delimiterRegex = /\s{2,100}/gv;
 const splitDelimiter = '[________]';
@@ -35,7 +35,7 @@ export const parseContainerRows = (processRows: string[]): ContainerRow[] => {
   const dataRows = processRows.slice(1);
 
   const columnNames = getRowColumns(columnRow).map((column) =>
-    _.camelCase(column)
+    camelCase(column)
   );
 
   const processes: ContainerRow[] = [];

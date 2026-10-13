@@ -1,17 +1,13 @@
-import inquirer from 'inquirer';
+import { editor } from '@inquirer/prompts';
 
 export async function editString(
   message: string,
   string_: string,
   validateFn?: (input: string) => boolean | string
 ): Promise<string> {
-  const result: any = await inquirer.prompt({
+  return editor({
     message,
     default: string_,
-    name: 'str',
-    type: 'editor',
     validate: validateFn
   });
-
-  return result.str;
 }

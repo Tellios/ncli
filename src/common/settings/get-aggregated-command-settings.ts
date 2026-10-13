@@ -1,5 +1,5 @@
 import process from 'node:process';
-import { uniqBy } from 'lodash';
+import { uniqBy } from 'es-toolkit';
 import { ConsoleInterface, Type } from '../console/index.ts';
 import { type NcliCommand } from './ncli-command.ts';
 import { type Settings } from './settings.interface.ts';

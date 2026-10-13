@@ -1,4 +1,4 @@
-import inquirer from 'inquirer';
+import { checkbox } from '@inquirer/prompts';
 
 export type SelectItemsParameters = {
   items: string[];
@@ -15,12 +15,12 @@ export async function selectItems({
     throw new Error('Items must be an instantiated array with items');
   }
 
-  let choices = items;
+  let choices = items.map((item, index) => ({ name: item, value: index }));
 
   if (searchString !== undefined && searchString.length > 0) {
     const loweredSearchString = searchString.toLowerCase();
     choices = choices.filter((choice) =>
-      choice.toLowerCase().includes(loweredSearchString)
+      choice.name.toLowerCase().includes(loweredSearchString)
     );
 
     if (choices.length === 0) {
@@ -28,15 +28,9 @@ export async function selectItems({
     }
   }
 
-  const choice = await inquirer.prompt([
-    {
-      type: 'checkbox',
-      name: 'item',
-      pageSize: 10,
-      message,
-      choices
-    }
-  ]);
-
-  return choice.item.map((item: string) => items.indexOf(item));
+  return checkbox({
+    message,
+    pageSize: 10,
+    choices
+  });
 }
