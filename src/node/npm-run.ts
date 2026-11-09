@@ -16,6 +16,13 @@ import {
 } from './sub-commands/index.ts';
 
 const args = yargsWrapper()
+  .command('$0 [scripts..]', 'Run NPM scripts', (y) =>
+    y.positional('scripts', {
+      describe: 'The NPM scripts to run',
+      type: 'string',
+      array: true
+    })
+  )
   .option('list', {
     alias: 'l',
     describe: 'Lists the available NPM scripts',
@@ -49,6 +56,8 @@ const args = yargsWrapper()
   })
   .parseSync();
 
+const scripts = (args.scripts as string[] | undefined) ?? [];
+
 await commandBase<'nr'>(
   async ({ workingDirectory, settings, setSetting, getSettings }) => {
     let packageJson = await parsePackageJson(workingDirectory);
@@ -75,9 +84,9 @@ await commandBase<'nr'>(
       await editPackageJsonScript(workingDirectory, packageJson);
     } else if (args.delete) {
       await deletePackageJsonScript(workingDirectory, packageJson);
-    } else if (args._ && args._.length > 0) {
+    } else if (scripts.length > 0) {
       await runScripts(
-        args._.map((a) => a.toString()),
+        scripts,
         packageJson,
         workingDirectory,
         Boolean(args.async)
