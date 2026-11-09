@@ -7,16 +7,27 @@ import type { PackageJson } from '../types.ts';
 export async function runScripts(
   scriptsToRun: string[],
   packageJson: PackageJson,
-  directory: string
+  directory: string,
+  runInParallel = false
 ): Promise<void> {
-  if (scriptsToRun.length === 1) {
-    const script = scriptsToRun[0];
-    await executePackageJsonScript(script, packageJson.scripts, directory);
-  } else {
+  const invalidScripts = scriptsToRun.filter(
+    (script) => !Object.hasOwn(packageJson.scripts, script)
+  );
+
+  if (invalidScripts.length > 0) {
+    throw new Error(`Scripts not found: ${invalidScripts.join(', ')}`);
+  }
+
+  if (runInParallel && scriptsToRun.length > 1) {
     await executeParallellPackageJsonScripts(
       scriptsToRun,
       packageJson.scripts,
       directory
     );
+    return;
+  }
+
+  for (const script of scriptsToRun) {
+    await executePackageJsonScript(script, packageJson.scripts, directory);
   }
 }

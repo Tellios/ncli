@@ -4,14 +4,14 @@
 
 Executes and manages NPM package.json scripts. Scripts are executed using the package manager (NPM, Yarn or PNPM) detected from the project's lock file. The lock file is searched for in the current directory and its parent directories up to the git repository root, so commands run inside a workspace package use the package manager of the monorepo.
 
-| Argument  | Alias | Description                                     |
-| --------- | ----- | ----------------------------------------------- |
-| list      | l     | Lists the available NPM scripts                 |
-| add       | a     | Add a new NPM script                            |
-| async     |       | Select multiple NPM scripts to run concurrently |
-| edit      | e     | Edit an existing NPM script                     |
-| delete    | d     | Delete an existing NPM script                   |
-| workspace | w     | Execute the script inside a workspace project   |
+| Argument  | Alias | Description                                      |
+| --------- | ----- | ------------------------------------------------ |
+| list      | l     | Lists the available NPM scripts                  |
+| add       | a     | Add a new NPM script                             |
+| async     |       | Run scripts concurrently instead of sequentially |
+| edit      | e     | Edit an existing NPM script                      |
+| delete    | d     | Delete an existing NPM script                    |
+| workspace | w     | Execute the script inside a workspace project    |
 
 Run a package.json script:
 
@@ -19,10 +19,16 @@ Run a package.json script:
 nr [script]
 ```
 
-Run multiple package.json scripts concurrently:
+Run multiple package.json scripts sequentially (stops on first failure):
 
 ```bash
 nr [script1] [script2]
+```
+
+Run multiple package.json scripts concurrently:
+
+```bash
+nr [script1] [script2] --async
 ```
 
 When multiple scripts are executed at the same time you can filter their `stdout` output using the shortcut `Ctrl + L`. This is helpful if you want to run multiple scripts, but you are only interested in the output from some of them.
