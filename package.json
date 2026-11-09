@@ -45,7 +45,7 @@
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "build:watch": "tsc --watch -p tsconfig.build.json",
     "setup": "pnpm install --frozen-lockfile && pnpm run lint && pnpm run test && pnpm run build && pnpm add --global link:.",
-    "lint": "pnpm run prettier && pnpm run script:lint -- --fix",
+    "lint": "pnpm run prettier --write && pnpm run script:lint -- --fix",
     "lint:ci": "pnpm run prettier:ci && pnpm run script:lint",
     "script:lint": "xo . --max-warnings=0"
   },

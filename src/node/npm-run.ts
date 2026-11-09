@@ -27,7 +27,9 @@ const args = yargsWrapper()
     type: 'boolean'
   })
   .option('async', {
-    describe: 'Select multiple NPM scripts to run concurrently'
+    describe:
+      'Run the provided NPM scripts concurrently, or select multiple scripts to run concurrently',
+    type: 'boolean'
   })
   .option('edit', {
     alias: 'e',
@@ -73,14 +75,15 @@ await commandBase<'nr'>(
       await editPackageJsonScript(workingDirectory, packageJson);
     } else if (args.delete) {
       await deletePackageJsonScript(workingDirectory, packageJson);
-    } else if (args.async) {
-      await selectScripts(packageJson, workingDirectory);
     } else if (args._ && args._.length > 0) {
       await runScripts(
         args._.map((a) => a.toString()),
         packageJson,
-        workingDirectory
+        workingDirectory,
+        Boolean(args.async)
       );
+    } else if (args.async) {
+      await selectScripts(packageJson, workingDirectory);
     } else {
       const selectedScript = await selectScript(
         packageJson.scripts,
