@@ -27,6 +27,8 @@ export class ShortcutListener {
 
   stop(): void {
     stdin.off('data', this.onStdinData);
+    stdin.setRawMode(false);
+    stdin.pause();
   }
 
   registerShortcut(shortcut: string, callback: ShortcutCallback): void {

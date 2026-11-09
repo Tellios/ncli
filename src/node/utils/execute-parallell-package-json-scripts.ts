@@ -78,7 +78,11 @@ export async function executeParallellPackageJsonScripts(
   shortcutListener.registerShortcut(CommonShortcuts.Ctrl_L, filterOutput);
   shortcutListener.start();
 
-  await runPromise;
+  try {
+    await runPromise;
+  } finally {
+    shortcutListener.stop();
+  }
 
   terminalPassthrough.removeAllListeners();
   terminalPassthrough.destroy();
